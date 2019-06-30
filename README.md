@@ -29,3 +29,4 @@ Resulting map image: '4_mapWithObjects.png'.
 ```
 
 After that review new created files. World map with all objects may be found in *4_mapWithObjects.png* image.
+![Example](https://drive.google.com/uc?export=download&id=1hcLq6xomVYWAzoHsWW_E8ydCaemAvEF_)

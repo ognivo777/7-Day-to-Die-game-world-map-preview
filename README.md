@@ -34,4 +34,4 @@ Resulting map image: '5_mapWithObjects.png'.
 After that review new created files. World map with all objects may be found in *5_mapWithObjects.png* image.
 
 ## Example image
-![Example](https://ydnvqg.db.files.1drv.com/y4moZmdOLOhff9MvZFkUDu0ao7MNBeWDFTc4AR7XSlOnrfC7D0l2Zx7kOtN0pWe0irGbsjCpBp9r7-iL_N9cPhofVdbz_CnsyNriS6PDRw6UAtb-WPI5hnoAPAsgGKlHBxrGuTHKGOtIQqhKkplpqbvYnsIuFBAt0ghVcGK49RviuneicpiYoTqbsqyo1MZKNu2YDpt7uzIF69g-4zrFoLicA/5_mapWithObjects.png?psid=1)
+![Example](https://ydnvqg.db.files.1drv.com/y4moZmdOLOhff9MvZFkUDu0ao7MNBeWDFTc4AR7XSlOnrfC7D0l2Zx7kOtN0pWe0irGbsjCpBp9r7-iL_N9cPhofVdbz_CnsyNriS6PDRw6UAtb-WPI5hnoAPAsgGKlHBxrGuTHKGOtIQqhKkplpqbvYnsIuFBAt0ghVcGK49RviuneicpiYoTqbsqyo1MZKNu2YDpt7uzIF69g-4zrFoLicA/5_mapWithObjects.png)

@@ -2,11 +2,11 @@
 The simple tool for create informative map image with schematics roads, houses, caves and water towers. Relief information also applied to make map more imformative about the landscape.
 
 ## Prerequists
-Java 8 or higher. You can download java here: https://www.oracle.com/technetwork/java/javase/downloads/index.html
+Java 8 or higher. You can download java [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
 ## Usage
-Download latest release an put 7dtd-rgw-map-image-builder.jar into `%USER_HOME%\AppData\Roaming\7DaysToDie\GeneratedWorlds\<world name>\`.
-After that double clicking the jar or use command line execution:
+Download [latest release](https://github.com/ognivo777/7D2D_RGW_Create_Map_Preview_Image_Tool/releases/latest) and put 7dtd-rgw-map-image-builder.jar into `%USER_HOME%\AppData\Roaming\7DaysToDie\GeneratedWorlds\<world name>\`.
+After that use double click on the jar or use command line for execute:
 `java -jar 7dtd-rgw-map-image-builder.jar`
 
 You will see program output:

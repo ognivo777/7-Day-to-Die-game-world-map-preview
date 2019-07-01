@@ -13,27 +13,22 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 public class MapBuilder {
 
     private String path = ".";
     private int downScale = 4;
-    private float gamma = 5;
+    private double gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
     private int scaledSize;
     private long totalPixels;
     private BufferedImage iHeigths;
     private BufferedImage iBiomes;
-    private int waterLine;
-    private boolean doBlureBiomes = true;
-    private int bloorK = 256; //part of image size used as blure radius
 
     public static void main(String[] args) {
         //TODO command line options
@@ -48,7 +43,7 @@ public class MapBuilder {
             drawRoads();
             drawPrefabs();
             //water: 22,116,168
-            System.out.println("All work done!\nResulting map image: '4_mapWithObjects.png'.");
+            System.out.println("All work done!\nResulting map image: '5_mapWithObjects.png'.");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
@@ -74,43 +69,43 @@ public class MapBuilder {
         int i80 = 8 * i10;
         int i160 = 16 * i10;
 
-        while(xmlr.hasNext()) {
+        while (xmlr.hasNext()) {
             eventType = xmlr.next();
-            if(eventType == XMLEvent.START_ELEMENT) {
-                if(xmlr.getAttributeCount()==4) {
+            if (eventType == XMLEvent.START_ELEMENT) {
+                if (xmlr.getAttributeCount() == 4) {
                     String attributeValue = xmlr.getAttributeValue(2);
                     String[] split = attributeValue.split(",");
-                    int x = (mapSize/2 + Integer.parseInt(split[0]))/downScale;
-                    int y = (mapSize/2 - Integer.parseInt(split[2]))/downScale;
+                    int x = (mapSize / 2 + Integer.parseInt(split[0])) / downScale;
+                    int y = (mapSize / 2 - Integer.parseInt(split[2])) / downScale;
 
                     int rgb = Color.RED.getRGB();
                     iBiomes.setRGB(x, y, rgb);
 
                     g.setColor(Color.DARK_GRAY);
-                    g.fillOval(x- i20, y- i20, i40, i40);
+                    g.fillRect(x, y, i20, i20);
 
-                    if(xmlr.getAttributeValue(1).startsWith("water")) {
-                        g.setColor(new Color(153, 217, 234));
+                    if (xmlr.getAttributeValue(1).startsWith("cave")) {
+                        g.setColor(new Color(180, 151, 0));
+                        g.fillOval(x, y, i20 + 4, i20 + 2);
                     } else {
-//                            g.setColor(Color.RED);
-                        g.setColor(new Color(185, 122, 87));
+                        if (xmlr.getAttributeValue(1).startsWith("water")) {
+                            g.setColor(new Color(22, 116, 168));
+                        } else {
+                            g.setColor(new Color(114, 112, 114));
+                        }
+                        g.fill3DRect(x + 1, y - 4, i20, 8, true);
                     }
-                    g.fillOval(x- i15, y- i15, i30, i30);
 
-                    if(xmlr.getAttributeValue(1).startsWith("water")) {
-                        g.setColor(Color.BLUE);
-                    } else if(xmlr.getAttributeValue(1).startsWith("cave")) {
+                    if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(Color.BLACK);
-                    }else {
-                        //g.setColor(Color.YELLOW);
-                        //g.setColor(new Color(239, 228, 176));
+                        g.fillOval(x + 2, y + 2, i20, i20);
                     }
-                    g.fillOval(x- i10, y- i10, i20, i20);
+
                 }
             }
         }
 
-        File mapWithObjects = new File(path + "\\4_mapWithObjects.png");
+        File mapWithObjects = new File(path + "\\5_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 
@@ -127,7 +122,7 @@ public class MapBuilder {
             }
         }
 
-        File map_with_roads = new File(path + "\\5_map_with_roads.png");
+        File map_with_roads = new File(path + "\\4_map_with_roads.png");
         ImageIO.write(iBiomes, "PNG", map_with_roads);
     }
 
@@ -146,7 +141,7 @@ public class MapBuilder {
         inputImage.flush();
 
         //fix Original RGB
-        Map<Integer, Color> mapColor = new HashMap<>();
+        HashMap<Integer, Color> mapColor = new HashMap();
         mapColor.put(-16760832, new Color(55, 95, 68));
         mapColor.put(-1, new Color(203, 197, 194));
         mapColor.put(-7049, new Color(124, 116, 94));
@@ -166,22 +161,10 @@ public class MapBuilder {
             }
         }
 
-        if(doBlureBiomes) {
-            BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
-            new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
-            iBiomes.flush();
-            iBiomes = iBiomesBlured;
-        }
-
-        //Draw lakes
-        WritableRaster iHeigthsRaster = iHeigths.getRaster();
-        for (int x = 0; x < scaledSize; x++) {
-            for (int y = 0; y < scaledSize; y++) {
-                if(iHeigthsRaster.getSample(x, y, 0)<waterLine) {
-                    iBiomes.setRGB(x, y, Color.BLUE.getRGB());
-                }
-            }
-        }
+        BufferedImage iBiomesBlured = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
+        new BoxBlurFilter(scaledSize/256, scaledSize/256, 1).filter(iBiomes, iBiomesBlured);
+        iBiomes.flush();
+        iBiomes = iBiomesBlured;
 
         start = System.nanoTime();
         //write heights image to file
@@ -209,7 +192,7 @@ public class MapBuilder {
         ImageIO.write(iBiomes, "PNG", biomesShadow);
     }
 
-    private void autoAjustImage() throws IOException {
+    private void autoAjustImage() {
         WritableRaster raster = iHeigths.getRaster();
         // initialisation of image histogram array
         long hist[] = new long[256];
@@ -260,40 +243,29 @@ public class MapBuilder {
 //        System.out.println("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
-        int intrms = Math.toIntExact(rms);
-
         System.out.println("mean = " + Math.round(mean));
         System.out.println("rms = " + rms);
-        System.out.println("intrms = " + intrms);
         System.out.println("min = " + min);
         System.out.println("max = " + max);
-        StringBuilder sb = new StringBuilder();
-        float D = 0;
+
+        double D = 0;
         for (int i = 0; i < hist.length; i++) {
-            sb.append(i*256+"\t").append(hist[i]).append('\n');
             long a = i * 256 - rms;
             double tmp = Math.pow(a, 2);
             tmp/=tcount;
             tmp*=hist[i];
             D += tmp;
         }
-
-        Files.write(Paths.get(path+"\\heigthsHistogram.txt"), Collections.singleton(sb));
-
         D = Math.round(Math.sqrt(D));
         System.out.println("D2 = " + D);
 
-        int startHist = Math.round(intrms - gamma*D);
+        int startHist = (int) Math.round(rms - gamma*D);
         System.out.println("startHist = " + startHist);
-        float k = 256*256/(256*256 - startHist);
+        double k = 256*256/(256*256 - startHist);
         System.out.println("k = " + k);
 //        System.exit(0);
 
 
-        waterLine = intrms - Math.round(1.7f*D);
-        System.out.println("waterLine = " + waterLine);
-        waterLine = Math.round((waterLine - startHist) * k);
-        System.out.println("waterLine = " + waterLine);
         if(applyGammaCorrection)
             for (int x = raster.getMinX(); x < raster.getMinX()+raster.getWidth(); x++) {
                 for (int y = raster.getMinY(); y < raster.getMinY()+raster.getHeight(); y++) {

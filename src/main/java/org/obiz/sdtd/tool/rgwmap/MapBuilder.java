@@ -161,6 +161,11 @@ public class MapBuilder {
             }
         }
 
+        BufferedImage iBiomesBlured = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
+        new BoxBlurFilter(scaledSize/128, scaledSize/128, 1).filter(iBiomes, iBiomesBlured);
+        iBiomes.flush();
+        iBiomes = iBiomesBlured;
+
         start = System.nanoTime();
         //write heights image to file
         File bump = new File(path + "\\1_bump.png");
@@ -277,7 +282,12 @@ public class MapBuilder {
     }
 
     public void readWorldHeights() throws IOException {
-        File heightsFile = new File(path + "\\dtm.raw");
+        String dtmFileName = path + "\\dtm.raw";
+        File heightsFile = new File(dtmFileName);
+        if(!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
+            System.err.println("File not found: " + dtmFileName);
+            System.exit(1);
+        }
         mapSize = (int) Math.round(Math.sqrt(heightsFile.length()/2.));
         System.out.println("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
@@ -306,7 +316,7 @@ public class MapBuilder {
                     //TODO use avg of pixel color with same coordinate in scaled image.
                     //calculate pixel position
                     int x = (curPixelNum % mapSize) / downScale;
-                    int y = (curPixelNum / mapSize) / downScale;
+                    int y = (mapSize - 1 - curPixelNum / mapSize) / downScale;
                     //write pixel to resulting image
                     raster.setSample(x, y, 0, grayColor);
 

@@ -71,11 +71,11 @@ public class BumpMappingUtils {
         {
             for (y = 0; y < height; y++)
             {
-                intensity = 0.5f + 2*BumpIntensity (width/3, height*3, x, y, nv, width);
+                intensity = 0.6f + 20*BumpIntensity (width/3, height*6, x, y, nv, width);
 
                 // brighten slightly (ambient)
-//                intensity += 0.18;
-                if (intensity > 1.0) intensity = (float)1.0;
+                //intensity += 0.18;
+                //if (intensity > 1.0) intensity = (float)1.0;
 
 //                int sample = source.getRaster().getSample(x, y, 0)>> 8 & 0xff;
                 int rgb = source.getRGB(x, y);//>> 8 & 0xff;

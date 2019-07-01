@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class MapBuilder {
 
@@ -40,6 +42,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
+            //water: 22,116,168
             System.out.println("All work done!\nResulting map image: '4_mapWithObjects.png'.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,6 +83,7 @@ public class MapBuilder {
 
                     g.setColor(Color.DARK_GRAY);
                     g.fillOval(x- i20, y- i20, i40, i40);
+
                     if(xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(new Color(153, 217, 234));
                     } else {
@@ -87,13 +91,14 @@ public class MapBuilder {
                         g.setColor(new Color(185, 122, 87));
                     }
                     g.fillOval(x- i15, y- i15, i30, i30);
+
                     if(xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(Color.BLUE);
                     } else if(xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(Color.BLACK);
                     }else {
-//                            g.setColor(Color.YELLOW);
-                        g.setColor(new Color(239, 228, 176));
+                        //g.setColor(Color.YELLOW);
+                        //g.setColor(new Color(239, 228, 176));
                     }
                     g.fillOval(x- i10, y- i10, i20, i20);
                 }
@@ -134,6 +139,27 @@ public class MapBuilder {
 
         //free mem
         inputImage.flush();
+
+        //fix Original RGB
+        HashMap<Integer, Color> mapColor = new HashMap();
+        mapColor.put(-16760832, new Color(55, 95, 68));
+        mapColor.put(-1, new Color(203, 197, 194));
+        mapColor.put(-7049, new Color(124, 116, 94));
+        mapColor.put(-22528, new Color(175, 154, 107));
+        mapColor.put(-4587265, new Color(68, 70, 67));
+
+        MapBiomeColor:
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
+                int rgb = iBiomes.getRGB(x, y);
+                if (mapColor.containsKey(rgb))
+                    iBiomes.setRGB(x, y, mapColor.get(rgb).getRGB());
+                else {
+                    System.err.println("Unknown biome color: " + rgb);
+                    break MapBiomeColor;
+                }
+            }
+        }
 
         start = System.nanoTime();
         //write heights image to file

@@ -13,22 +13,27 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 
 public class MapBuilder {
 
     private String path = ".";
     private int downScale = 4;
-    private double gamma = 5;
+    private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
     private int scaledSize;
     private long totalPixels;
     private BufferedImage iHeigths;
     private BufferedImage iBiomes;
+    private int waterLine;
+    private boolean doBlureBiomes = true;
+    private int bloorK = 256; //part of image size used as blure radius
 
     public static void main(String[] args) {
         //TODO command line options
@@ -141,7 +146,7 @@ public class MapBuilder {
         inputImage.flush();
 
         //fix Original RGB
-        HashMap<Integer, Color> mapColor = new HashMap();
+        Map<Integer, Color> mapColor = new HashMap<>();
         mapColor.put(-16760832, new Color(55, 95, 68));
         mapColor.put(-1, new Color(203, 197, 194));
         mapColor.put(-7049, new Color(124, 116, 94));
@@ -161,10 +166,22 @@ public class MapBuilder {
             }
         }
 
-        BufferedImage iBiomesBlured = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
-        new BoxBlurFilter(scaledSize/128, scaledSize/128, 1).filter(iBiomes, iBiomesBlured);
-        iBiomes.flush();
-        iBiomes = iBiomesBlured;
+        if(doBlureBiomes) {
+            BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
+            new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
+            iBiomes.flush();
+            iBiomes = iBiomesBlured;
+        }
+
+        //Draw lakes
+        WritableRaster iHeigthsRaster = iHeigths.getRaster();
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
+                if(iHeigthsRaster.getSample(x, y, 0)<waterLine) {
+                    iBiomes.setRGB(x, y, Color.BLUE.getRGB());
+                }
+            }
+        }
 
         start = System.nanoTime();
         //write heights image to file
@@ -192,7 +209,7 @@ public class MapBuilder {
         ImageIO.write(iBiomes, "PNG", biomesShadow);
     }
 
-    private void autoAjustImage() {
+    private void autoAjustImage() throws IOException {
         WritableRaster raster = iHeigths.getRaster();
         // initialisation of image histogram array
         long hist[] = new long[256];
@@ -243,29 +260,40 @@ public class MapBuilder {
 //        System.out.println("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
+        int intrms = Math.toIntExact(rms);
+
         System.out.println("mean = " + Math.round(mean));
         System.out.println("rms = " + rms);
+        System.out.println("intrms = " + intrms);
         System.out.println("min = " + min);
         System.out.println("max = " + max);
-
-        double D = 0;
+        StringBuilder sb = new StringBuilder();
+        float D = 0;
         for (int i = 0; i < hist.length; i++) {
+            sb.append(i*256+"\t").append(hist[i]).append('\n');
             long a = i * 256 - rms;
             double tmp = Math.pow(a, 2);
             tmp/=tcount;
             tmp*=hist[i];
             D += tmp;
         }
+
+        Files.write(Paths.get(path+"\\heigthsHistogram.txt"), Collections.singleton(sb));
+
         D = Math.round(Math.sqrt(D));
         System.out.println("D2 = " + D);
 
-        int startHist = (int) Math.round(rms - gamma*D);
+        int startHist = Math.round(intrms - gamma*D);
         System.out.println("startHist = " + startHist);
-        double k = 256*256/(256*256 - startHist);
+        float k = 256*256/(256*256 - startHist);
         System.out.println("k = " + k);
 //        System.exit(0);
 
 
+        waterLine = intrms - Math.round(1.7f*D);
+        System.out.println("waterLine = " + waterLine);
+        waterLine = Math.round((waterLine - startHist) * k);
+        System.out.println("waterLine = " + waterLine);
         if(applyGammaCorrection)
             for (int x = raster.getMinX(); x < raster.getMinX()+raster.getWidth(); x++) {
                 for (int y = raster.getMinY(); y < raster.getMinY()+raster.getHeight(); y++) {

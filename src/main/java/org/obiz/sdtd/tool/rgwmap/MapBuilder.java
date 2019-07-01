@@ -36,6 +36,22 @@ public class MapBuilder {
     private boolean doBlureBiomes = true;
     private int bloorK = 256; //part of image size used as blure radius
 
+    //fixed object sized (autoscaled)
+    int i2 = 8/downScale;
+    int i10 = 10/(downScale*3/4);
+    int i15 = (i10*3)/2;
+    int i20 = 2 * i10;
+    int i25 = (i10*5)/2;
+    int i30 = 3 * i10;
+    int i35 = (7 * i10)/2;
+    int i40 = 4 * i10;
+    int i80 = 8 * i10;
+    int i160 = 16 * i10;
+    int i250 = 25 * i10;
+
+    int fileNum = 1;
+    private BufferedImage iWaterZones;
+
     public static void main(String[] args) {
         //TODO command line options
         new MapBuilder().build();
@@ -44,6 +60,8 @@ public class MapBuilder {
     private void build() {
         try {
             readWorldHeights();
+            readWatersPoint();
+//            System.exit(0);
             autoAjustImage();
             applyHeightsToBiomes();
             drawRoads();
@@ -57,6 +75,37 @@ public class MapBuilder {
         }
     }
 
+    private void readWatersPoint() throws IOException, XMLStreamException {
+        String prefabs = "\\water_info.xml";
+        XMLInputFactory xmlif = XMLInputFactory.newInstance();
+        XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
+
+        iWaterZones = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_BINARY);
+
+        Graphics graphics = iWaterZones.getGraphics();
+
+        int eventType;
+        while (xmlr.hasNext()) {
+            eventType = xmlr.next();
+            if (eventType == XMLEvent.START_ELEMENT) {
+                if(xmlr.getAttributeCount()==5) {
+                    String attributeValue = xmlr.getAttributeValue(0);
+                    String[] split = attributeValue.split(",");
+                    int x = (mapSize/2 + Integer.parseInt(split[0].trim()))/downScale;
+                    int y = (mapSize/2 - Integer.parseInt(split[2].trim()))/downScale;
+
+                    graphics.setColor(Color.WHITE);
+                    graphics.fillOval(x - i250 /2, y - i250 /2, i250, i250);
+
+                }
+            }
+        }
+
+        File waterZones = new File(path + "\\" + fileNum++ + "_waterZones.png");
+        ImageIO.write(iWaterZones, "PNG", waterZones);
+
+    }
+
     private void drawPrefabs() throws IOException, XMLStreamException {
         String prefabs = "\\prefabs.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
@@ -65,18 +114,6 @@ public class MapBuilder {
         Graphics g = iBiomes.getGraphics();
 
         int eventType;
-
-        //fixed object sized (autoscaled)
-        int i2 = 8/downScale;
-        int i10 = 10/(downScale*3/4);
-        int i15 = (i10*3)/2;
-        int i20 = 2 * i10;
-        int i25 = (i10*5)/2;
-        int i30 = 3 * i10;
-        int i35 = (7 * i10)/2;
-        int i40 = 4 * i10;
-        int i80 = 8 * i10;
-        int i160 = 16 * i10;
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -119,12 +156,11 @@ public class MapBuilder {
                         g.setColor(Color.BLACK);
                         g.fillOval(x + i2, y + i2, i20, i20);
                     }
-
                 }
             }
         }
 
-        File mapWithObjects = new File(path + "\\5_mapWithObjects.png");
+        File mapWithObjects = new File(path + "\\"+ fileNum+++"5_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 
@@ -147,7 +183,7 @@ public class MapBuilder {
             }
         }
 
-        File map_with_roads = new File(path + "\\4_map_with_roads.png");
+        File map_with_roads = new File(path + "\\"+ fileNum+++"_map_with_roads.png");
         ImageIO.write(iBiomes, "PNG", map_with_roads);
     }
 
@@ -197,7 +233,8 @@ public class MapBuilder {
         WritableRaster iHeigthsRaster = iHeigths.getRaster();
         for (int x = 0; x < scaledSize; x++) {
             for (int y = 0; y < scaledSize; y++) {
-                if(iHeigthsRaster.getSample(x, y, 0)<waterLine) {
+                if(iHeigthsRaster.getSample(x, y, 0)<waterLine
+                            && iWaterZones.getRaster().getSample(x, y, 0) > 0) {
                     iBiomes.setRGB(x, y, new Color(49, 87, 145).getRGB());
                 }
             }
@@ -205,10 +242,10 @@ public class MapBuilder {
 
         start = System.nanoTime();
         //write heights image to file
-        File bump = new File(path + "\\1_bump.png");
+        File bump = new File(path + "\\"+ fileNum+++"_bump.png");
         ImageIO.write(iHeigths, "PNG", bump);
         //write scaled biomes to file
-        File biomes = new File(path + "\\2_biomes.png");
+        File biomes = new File(path + "\\"+ fileNum+++"_biomes.png");
         ImageIO.write(iBiomes, "PNG", biomes);
         end = System.nanoTime();
         System.out.println("File saving time:  = " + (end-start)/1000000000 + "s");
@@ -225,7 +262,7 @@ public class MapBuilder {
         BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
 
         //Write bump-mapped biomes
-        File biomesShadow = new File(path + "\\3_biomesShadow.png");
+        File biomesShadow = new File(path + "\\"+ fileNum+++"_biomesShadow.png");
         ImageIO.write(iBiomes, "PNG", biomesShadow);
     }
 
@@ -322,7 +359,7 @@ public class MapBuilder {
                     if(grayColor < startHist) {
                         imageColor = 0;
                     } else {
-                        imageColor = (int) Math.round((grayColor - startHist) * k);
+                        imageColor = Math.round((grayColor - startHist) * k);
                     }
                     raster.setSample(x, y, 0, imageColor);
                 }
@@ -347,9 +384,7 @@ public class MapBuilder {
         iHeigths = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = iHeigths.getRaster();
 
-        FileInputStream hmis = new FileInputStream(heightsFile);
-
-        try {
+        try (FileInputStream hmis = new FileInputStream(heightsFile)) {
             byte buf[] = new byte[mapSize * 4];
 
             int readedBytes;
@@ -376,8 +411,6 @@ public class MapBuilder {
                 }
             }
             System.out.println("|\nDone.");
-        } finally {
-            hmis.close();
         }
     }
 }

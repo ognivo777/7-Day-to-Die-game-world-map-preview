@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class MapBuilder {
@@ -66,10 +67,13 @@ public class MapBuilder {
         int eventType;
 
         //fixed object sized (autoscaled)
+        int i2 = 8/downScale;
         int i10 = 10/(downScale*3/4);
         int i15 = (i10*3)/2;
         int i20 = 2 * i10;
+        int i25 = (i10*5)/2;
         int i30 = 3 * i10;
+        int i35 = (7 * i10)/2;
         int i40 = 4 * i10;
         int i80 = 8 * i10;
         int i160 = 16 * i10;
@@ -83,27 +87,37 @@ public class MapBuilder {
                     int x = (mapSize / 2 + Integer.parseInt(split[0])) / downScale;
                     int y = (mapSize / 2 - Integer.parseInt(split[2])) / downScale;
 
-                    int rgb = Color.RED.getRGB();
-                    iBiomes.setRGB(x, y, rgb);
+                    int rot = Integer.parseInt(xmlr.getAttributeValue(3));
 
-                    g.setColor(Color.DARK_GRAY);
-                    g.fillRect(x, y, i20, i20);
+                    //int rgb = Color.RED.getRGB();
+                   // iBiomes.setRGB(x, y, rgb);
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
-                        g.fillOval(x, y, i20 + 4, i20 + 2);
+                        g.fillOval(x, y, i35, i25);
                     } else {
                         if (xmlr.getAttributeValue(1).startsWith("water")) {
+                            g.setColor(Color.DARK_GRAY);
+                            g.fillOval(x, y, i25, i25);
                             g.setColor(new Color(22, 116, 168));
+                            g.fillOval(x, y, i15, i15);
                         } else {
+                            g.setColor(Color.DARK_GRAY);
+                            if (rot == 0 || rot == 2)
+                                g.fillRect(x, y, i30, i25);
+                            else
+                                g.fillRect(x, y, i25, i25);
                             g.setColor(new Color(114, 112, 114));
+                            if (rot == 0 || rot == 2)
+                                g.fill3DRect(x, y, i30, 6, true);
+                            else
+                                g.fill3DRect(x, y - i2, i20, 8, true);
                         }
-                        g.fill3DRect(x + 1, y - 4, i20, 8, true);
                     }
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(Color.BLACK);
-                        g.fillOval(x + 2, y + 2, i20, i20);
+                        g.fillOval(x + i2, y + i2, i20, i20);
                     }
 
                 }
@@ -117,12 +131,18 @@ public class MapBuilder {
     private void drawRoads() throws IOException {
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
         System.out.println("Roads loaded");
+        Color roadColor;
 
         for(int xi = roads.getMinX(); xi < roads.getWidth() ; xi ++) {
             for(int yi = roads.getMinY(); yi < roads.getHeight() ; yi ++) {
                 int p = roads.getRGB(xi, yi);
                 if(p!=0) {
-                    iBiomes.setRGB(xi/downScale, yi/downScale, new Color(97, 80, 75).getRGB());
+                    if (p==65280)
+                        roadColor = new Color(97, 80, 75);
+                    else
+                        roadColor = new Color(52, 59, 65);
+
+                    iBiomes.setRGB(xi/downScale, yi/downScale, roadColor.getRGB());
                 }
             }
         }

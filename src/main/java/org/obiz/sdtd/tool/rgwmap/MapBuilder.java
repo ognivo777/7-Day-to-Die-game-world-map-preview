@@ -61,7 +61,6 @@ public class MapBuilder {
         try {
             readWorldHeights();
             readWatersPoint();
-//            System.exit(0);
             autoAjustImage();
             applyHeightsToBiomes();
             drawRoads();

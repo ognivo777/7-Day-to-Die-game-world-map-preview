@@ -28,7 +28,7 @@ k = 2.0
 File saving time:  = 6s
 Roads loaded
 All work done!
-Resulting map image: '4_mapWithObjects.png'.
+Resulting map image: '5_mapWithObjects.png'.
 ```
 
 After that review new created files. World map with all objects may be found in *4_mapWithObjects.png* image.

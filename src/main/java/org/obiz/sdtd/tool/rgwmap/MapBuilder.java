@@ -126,12 +126,17 @@ public class MapBuilder {
         int i80 = 8 * i10;
         int i160 = 16 * i10;
 
-        HashMap<Integer, Color> buildColors = new HashMap();
-        buildColors.put(0, new Color(77, 72, 59));
-        buildColors.put(1, new Color(80, 81, 75));
-        buildColors.put(2, new Color(90, 92, 91));
-        buildColors.put(3, new Color(82, 83, 50));
-        buildColors.put(4, new Color(84, 62, 43));
+        HashMap<String, Color> buildColors = new HashMap();
+        buildColors.put("cabin", new Color(77, 72, 59));
+        buildColors.put("apartment", new Color(80, 81, 75));
+        buildColors.put("house", new Color(90, 92, 91));
+        buildColors.put("field", new Color(60, 83, 58));
+        buildColors.put("army", new Color(82, 83, 50));
+        buildColors.put("gas", new Color(89, 57, 56));
+        buildColors.put("garage", new Color(57, 55, 57));
+        buildColors.put("site", new Color(40, 55, 39));
+        buildColors.put("other", new Color(72, 69, 72));
+
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -157,8 +162,44 @@ public class MapBuilder {
                         g.fillOval(x, y, i40, i40);
                         g.setColor(new Color(22, 116, 168));
                         g.fillOval(x + i5, y + i5, i30, i30);
+                    } else if (xmlr.getAttributeValue(1).contains("house")) {
+                        g.setColor(buildColors.get("house"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                        else
+                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("army")) {
+                        g.setColor(buildColors.get("army"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                        else
+                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("cabin")){
+                        g.setColor(buildColors.get("cabin"));
+                        g.fill3DRect(x + i10, y + i20, i30, i30, true);
+                    } else if (xmlr.getAttributeValue(1).contains("garage")){
+                        g.setColor(buildColors.get("garage"));
+                        g.fill3DRect(x + i10, y + i10, i30, i30, true);
+                    } else if (xmlr.getAttributeValue(1).contains("apartment")){
+                        g.setColor(buildColors.get("apartment"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                        else
+                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("gas")){
+                        g.setColor(buildColors.get("gas"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                        else
+                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("field")){
+                        g.setColor(buildColors.get("field"));
+                        g.fill3DRect(x, y, i20, i20, true);
+                    } else if (xmlr.getAttributeValue(1).contains("trader") || (xmlr.getAttributeValue(1).contains("site"))){
+                        g.setColor(buildColors.get("site"));
+                        g.fill3DRect(x + i10, y + i10, i40, i40, true);
                     } else {
-                        g.setColor(buildColors.get(new Random().nextInt(5)));
+                        g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x + i10, y + i20, i40, i40, true);
                         else

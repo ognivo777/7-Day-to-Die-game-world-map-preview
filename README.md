@@ -11,24 +11,28 @@ After that use double click on the jar or use command line for execute:
 
 You will see program output:
 ```
+fileLength = 134217728
 Detected mapSize: 8192
 Resulting image side size will be: 2048px
 File load:
 |----------------|
 |----------------|
 Done.
-Time to solve stats: 253ms
-mean = 45586
-rms = 45593
-min = 0
-max = 65520
-D2 = 1644.0
-startHist = 37373
-k = 2.0
-File saving time:  = 6s
+Time to solve stats: 348ms
+mean = 12396
+rms = 12400
+min = 5856
+max = 38656
+D2 = 1426.0
+startHist = 5270
+k = 1.0
+waterLine = 9976
+after gamma waterLine = 4120
+File saving time:  = 3s
 Roads loaded
 All work done!
 Resulting map image: '6_mapWithObjects.png'.
+
 ```
 
 After that review new created files. World map with all objects may be found in *6_mapWithObjects.png* image.

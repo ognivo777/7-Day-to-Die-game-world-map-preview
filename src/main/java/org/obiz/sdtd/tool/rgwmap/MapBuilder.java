@@ -16,10 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class MapBuilder {
 
@@ -248,8 +245,6 @@ public class MapBuilder {
         ImageIO.write(iBiomes, "PNG", biomes);
         end = System.nanoTime();
         System.out.println("File saving time:  = " + (end-start)/1000000000 + "s");
-//        Desktop.getDesktop().open(output);
-
 
         // normal vectors array
         float[][] normalVectors = new float[scaledSize * scaledSize][3];
@@ -341,28 +336,22 @@ public class MapBuilder {
 
         int startHist = Math.round(intrms - gamma*D);
         System.out.println("startHist = " + startHist);
-        float k = 256*256/(256*256 - startHist);
+        float k = 256*256/(max - min);
         System.out.println("k = " + k);
-//        System.exit(0);
 
         waterLine = intrms - Math.round(1.7f*D);
         System.out.println("waterLine = " + waterLine);
-        waterLine = Math.round((waterLine - startHist) * k);
-        System.out.println("waterLine = " + waterLine);
-
-        if(applyGammaCorrection)
+        if(applyGammaCorrection) {
+            waterLine = Math.round((waterLine - min) * k);
+            System.out.println("after gamma waterLine = " + waterLine);
             for (int x = raster.getMinX(); x < raster.getMinX()+raster.getWidth(); x++) {
                 for (int y = raster.getMinY(); y < raster.getMinY()+raster.getHeight(); y++) {
                     int grayColor = raster.getSample(x, y, 0);
-                    int imageColor;
-                    if(grayColor < startHist) {
-                        imageColor = 0;
-                    } else {
-                        imageColor = Math.round((grayColor - startHist) * k);
-                    }
+                    int imageColor = Math.round((grayColor - min) * k);
                     raster.setSample(x, y, 0, imageColor);
                 }
             }
+        }
     }
 
     public void readWorldHeights() throws IOException {
@@ -372,7 +361,9 @@ public class MapBuilder {
             System.err.println("File not found: " + dtmFileName);
             System.exit(1);
         }
-        mapSize = (int) Math.round(Math.sqrt(heightsFile.length()/2.));
+        long fileLength = heightsFile.length();
+        System.out.println("fileLength = " + fileLength);
+        mapSize = (int) Math.round(Math.sqrt(fileLength /2.));
         System.out.println("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
         System.out.println("Resulting image side size will be: " + scaledSize + "px");
@@ -393,15 +384,13 @@ public class MapBuilder {
                 //TODO here potential problem if readedBytes%2 != 0
                 //convert every 2 bytes to new gray pixel
                 for (int i = 0; i < readedBytes / 2; i++) {
-                    int grayColor = buf[i * 2] + 128 + 256 * (buf[i * 2 + 1] + 128);
-
                     //TODO use avg of pixel color with same coordinate in scaled image.
                     //calculate pixel position
                     int x = (curPixelNum % mapSize) / downScale;
                     int y = (mapSize - 1 - curPixelNum / mapSize) / downScale;
                     //write pixel to resulting image
+                    int grayColor = (buf[i*2+1]<<8)|(((int)buf[i*2])&0xff);
                     raster.setSample(x, y, 0, grayColor);
-
                     curPixelNum++;
                     //Draw progress bar
                     if (curPixelNum % (mapSize * 512) == 0) {

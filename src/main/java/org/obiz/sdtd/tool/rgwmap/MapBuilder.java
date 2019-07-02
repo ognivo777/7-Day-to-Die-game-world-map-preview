@@ -44,7 +44,7 @@ public class MapBuilder {
     int i40 = 4 * i10;
     int i80 = 8 * i10;
     int i160 = 16 * i10;
-    int i250 = 25 * i10;
+    int i500 = 50 * i10;
 
     int fileNum = 1;
     private BufferedImage iWaterZones;
@@ -90,7 +90,7 @@ public class MapBuilder {
                     int y = (mapSize/2 - Integer.parseInt(split[2].trim()))/downScale;
 
                     graphics.setColor(Color.WHITE);
-                    graphics.fillOval(x - i250 /2, y - i250 /2, i250, i250);
+                    graphics.fillOval(x - i500 /downScale, y - i500 /downScale, i500, i500);
 
                 }
             }

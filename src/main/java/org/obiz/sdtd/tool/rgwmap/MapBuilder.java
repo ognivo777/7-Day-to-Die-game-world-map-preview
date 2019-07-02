@@ -120,13 +120,19 @@ public class MapBuilder {
         buildColors.put("cabin", new Color(77, 72, 59));
         buildColors.put("apartment", new Color(80, 81, 75));
         buildColors.put("house", new Color(90, 92, 91));
-        buildColors.put("field", new Color(60, 83, 58));
+        buildColors.put("field", new Color(79, 109, 77));
         buildColors.put("army", new Color(82, 83, 50));
-        buildColors.put("gas", new Color(89, 57, 56));
+        buildColors.put("gas", new Color(134, 78, 74));
         buildColors.put("garage", new Color(51, 49, 51));
         buildColors.put("site", new Color(61, 71, 55));
         buildColors.put("trader", new Color(180, 108, 5));
         buildColors.put("sky", new Color(76, 121, 126));
+        buildColors.put("hotel", new Color(83, 47, 61));
+        buildColors.put("pharmacy", new Color(33, 126, 46));
+        buildColors.put("hospital", new Color(181, 48, 42));
+        buildColors.put("gun", new Color(175, 147, 49));
+        buildColors.put("bank", new Color(208, 208, 0));
+        buildColors.put("church", new Color(33, 33, 33));
         buildColors.put("other", new Color(69, 72, 72));
 
 
@@ -157,27 +163,58 @@ public class MapBuilder {
                         g.fillOval(x, yShift + i10, i40, i40);
                         g.setColor(new Color(22, 116, 168));
                         g.fillOval(x + i5, yShift + i15, i30, i30);
+                    } else if ((xmlr.getAttributeValue(1).startsWith("church")) || (xmlr.getAttributeValue(1).startsWith("cemetery"))) {
+                        g.setColor(buildColors.get("church"));
+                        g.fillRect(x, yShift + i10, i30, i10);
+                        g.setColor(buildColors.get("church"));
+                        g.fillRect(x + i10, yShift, i10, i40);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x, yShift + i10, i40, i35, true);
+                            g.fill3DRect(x, yShift + i10, i35, i30, true);
                         else
-                            g.fill3DRect(x, yShift + i10, i35, i40, true);
+                            g.fill3DRect(x, yShift + i10, i30, i35, true);
+                    } else if (xmlr.getAttributeValue(1).contains("hotel")) {
+                        g.setColor(buildColors.get("hotel"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i5, y - i50, i30, i25, true);
+                        else
+                            g.fill3DRect(x + i5, y - i50, i25, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("sky")) {
                         g.setColor(buildColors.get("sky"));
                         g.fill3DRect(x, yShift - i10, i35, i50, true);
                     } else if (xmlr.getAttributeValue(1).contains("army")) {
                         g.setColor(buildColors.get("army"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
+                    } else if (xmlr.getAttributeValue(1).contains("bank")) {
+                        g.setColor(buildColors.get("bank"));
+                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("cabin")){
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
+                    } else if (xmlr.getAttributeValue(1).contains("pharmacy")){
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillOval(x + i10, yShift - i10, i45, i45);
+                        g.setColor(buildColors.get("pharmacy"));
+                        g.drawOval(x + i10, yShift - i10, i45, i45);
+                        g.fillRect(x + i20, yShift + i10, i30, i10);
+                        g.fillRect(x + i30, yShift, i10, i30);
+                    } else if (xmlr.getAttributeValue(1).contains("gun")){
+                        g.setColor(buildColors.get("gun"));
+                        g.fill3DRect(xShift - i10, yShift + i10, i35, i35, true);
+                    } else if (xmlr.getAttributeValue(1).contains("hospital")){
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillOval(x + i10, yShift - i10, i45, i45);
+                        g.setColor(buildColors.get("hospital"));
+                        g.drawOval(x + i10, yShift - i10, i45, i45);
+                        g.fillRect(x + i20, yShift + i10, i30, i10);
+                        g.fillRect(x + i30, yShift, i10, i30);
                     } else if (xmlr.getAttributeValue(1).contains("garage")){
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
                     } else if (xmlr.getAttributeValue(1).contains("parking")) {
                         g.setColor(buildColors.get("garage"));
-                        g.fill3DRect(x + i5, yShift + i10, i40, i40, true);
+                        g.fill3DRect(x + i5, yShift + i20, i40, i40, true);
                     } else if (xmlr.getAttributeValue(1).contains("apartment")){
                         g.setColor(buildColors.get("apartment"));
                         if (rot == 0 || rot == 2)
@@ -192,10 +229,12 @@ public class MapBuilder {
                             g.fill3DRect(xShift, yShift + i10, i25, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("field")){
                         g.setColor(buildColors.get("field"));
-                        g.fillRect(xShift, yShift + i10, i20, i20);
+                        g.fillRect(x + i5, yShift + i5, i25, i25);
                     } else if (xmlr.getAttributeValue(1).contains("site")){
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillOval(xShift - i5, yShift + i10, i35, i35);
                         g.setColor(buildColors.get("site"));
-                        g.fillOval(xShift, yShift + i10, i40, i40);
+                        g.fillOval(xShift, yShift + i15, i30, i30);
                     } else if (xmlr.getAttributeValue(1).contains("trader")){
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift, yShift, i50, i50);
@@ -204,9 +243,9 @@ public class MapBuilder {
                     }else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x, yShift + i10, i30, i25, true);
+                            g.fill3DRect(x, yShift, i30, i25, true);
                         else
-                            g.fill3DRect(x, yShift + i10, i25, i30, true);
+                            g.fill3DRect(x, yShift, i25, i30, true);
                     }
                 }
             }
@@ -255,11 +294,11 @@ public class MapBuilder {
 
         //fix Original RGB
         Map<Integer, Color> mapColor = new HashMap<>();
-        mapColor.put(-16760832, new Color(55, 95, 68));
-        mapColor.put(-1, new Color(203, 197, 194));
-        mapColor.put(-7049, new Color(124, 116, 94));
-        mapColor.put(-22528, new Color(175, 154, 107));
-        mapColor.put(-4587265, new Color(68, 70, 67));
+        mapColor.put(-16760832, new Color(55, 95, 68));//forest
+        mapColor.put(-1, new Color(203, 197, 194));//snow
+        mapColor.put(-7049, new Color(175, 154, 107));//desert
+        mapColor.put(-22528, new Color(124, 116, 94));//wasteland
+        mapColor.put(-4587265, new Color(68, 70, 67));//burned
 
         MapBiomeColor:
         for (int x = 0; x < scaledSize; x++) {

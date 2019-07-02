@@ -133,6 +133,7 @@ public class MapBuilder {
         buildColors.put("gun", new Color(175, 147, 49));
         buildColors.put("bank", new Color(208, 208, 0));
         buildColors.put("church", new Color(33, 33, 33));
+        buildColors.put("water", new Color(22, 116, 168));
         buildColors.put("other", new Color(69, 72, 72));
 
 
@@ -155,18 +156,17 @@ public class MapBuilder {
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
-                        g.fillArc(xShift, yShift, i40, i70, 0,180);
+                        g.fillArc(xShift, yShift, i40, i70, 0, 180);
                         g.setColor(Color.DARK_GRAY);
-                        g.fillArc(xShift + i10, yShift + i10, i20, i50, 0,180);
+                        g.fillArc(xShift + i10, yShift + i10, i20, i50, 0, 180);
                     } else if (xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x, yShift + i10, i40, i40);
-                        g.setColor(new Color(22, 116, 168));
-                        g.fillOval(x + i5, yShift + i15, i30, i30);
+                        g.setColor(buildColors.get("water"));
+                        g.fillArc(x + i5, yShift + i15, i30, i30, 180, 360);
                     } else if ((xmlr.getAttributeValue(1).startsWith("church")) || (xmlr.getAttributeValue(1).startsWith("cemetery"))) {
                         g.setColor(buildColors.get("church"));
                         g.fillRect(x, yShift + i10, i30, i10);
-                        g.setColor(buildColors.get("church"));
                         g.fillRect(x + i10, yShift, i10, i40);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
@@ -189,58 +189,61 @@ public class MapBuilder {
                     } else if (xmlr.getAttributeValue(1).contains("bank")) {
                         g.setColor(buildColors.get("bank"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("cabin")){
+                        g.setColor(Color.DARK_GRAY);
+                        g.setFont(new Font("Arial",0,24 / downScale));
+                        g.drawString("$", xShift + i5, y - i15 );
+                    } else if (xmlr.getAttributeValue(1).contains("cabin")) {
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("pharmacy")){
+                    } else if (xmlr.getAttributeValue(1).contains("pharmacy")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("pharmacy"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("gun")){
+                    } else if (xmlr.getAttributeValue(1).contains("gun")) {
                         g.setColor(buildColors.get("gun"));
                         g.fill3DRect(xShift - i10, yShift + i10, i35, i35, true);
-                    } else if (xmlr.getAttributeValue(1).contains("hospital")){
+                    } else if (xmlr.getAttributeValue(1).contains("hospital")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("hospital"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("garage")){
+                    } else if (xmlr.getAttributeValue(1).contains("garage")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
                     } else if (xmlr.getAttributeValue(1).contains("parking")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, yShift + i20, i40, i40, true);
-                    } else if (xmlr.getAttributeValue(1).contains("apartment")){
+                    } else if (xmlr.getAttributeValue(1).contains("apartment")) {
                         g.setColor(buildColors.get("apartment"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x + i5, yShift + i10, i40, i30, true);
                         else
                             g.fill3DRect(x + i5, yShift + i10, i30, i40, true);
-                    } else if (xmlr.getAttributeValue(1).contains("gas")){
+                    } else if (xmlr.getAttributeValue(1).contains("gas")) {
                         g.setColor(buildColors.get("gas"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(xShift, yShift + i10, i30, i25, true);
                         else
                             g.fill3DRect(xShift, yShift + i10, i25, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("field")){
+                    } else if (xmlr.getAttributeValue(1).contains("field")) {
                         g.setColor(buildColors.get("field"));
                         g.fillRect(x + i5, yShift + i5, i25, i25);
-                    } else if (xmlr.getAttributeValue(1).contains("site")){
+                    } else if (xmlr.getAttributeValue(1).contains("site")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift - i5, yShift + i10, i35, i35);
                         g.setColor(buildColors.get("site"));
                         g.fillOval(xShift, yShift + i15, i30, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("trader")){
+                    } else if (xmlr.getAttributeValue(1).contains("trader")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift, yShift, i50, i50);
                         g.setColor(buildColors.get("trader"));
                         g.fillOval(xShift + i5, yShift + i5, i40, i40);
-                    }else {
+                    } else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x, yShift, i30, i25, true);

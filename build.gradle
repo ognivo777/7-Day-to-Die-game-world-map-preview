@@ -32,3 +32,8 @@ dependencies {
 application {
     mainClassName = 'org.obiz.sdtd.tool.rgwmap.App'
 }
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+}

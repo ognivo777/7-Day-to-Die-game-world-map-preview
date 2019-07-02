@@ -1,4 +1,4 @@
-# 7D2D_RGW_Create_Map_Preview_Image_Tool
+# 7D2D_RGW_Create_Map_Preview_Image_Tool ![build](https://travis-ci.org/ognivo777/7D2D_RGW_Create_Map_Preview_Image_Tool.svg?branch=master)
 The simple tool for create informative map image with schematics roads, houses, caves and water towers. Relief information also applied to make map more imformative about the landscape.
 
 ## Prerequists
@@ -28,10 +28,10 @@ k = 2.0
 File saving time:  = 6s
 Roads loaded
 All work done!
-Resulting map image: '5_mapWithObjects.png'.
+Resulting map image: '6_mapWithObjects.png'.
 ```
 
-After that review new created files. World map with all objects may be found in *5_mapWithObjects.png* image.
+After that review new created files. World map with all objects may be found in *6_mapWithObjects.png* image.
 
 ## Example image
-![Example](https://db3pap001files.storage.live.com/y4mqkEaicnjzHH00idbfPXhfIuQE-ToGzUHYzg5xnSbkJY-aM9Dw9XDIdUGWWbWqLYSxzOBdNBgs6YoIPvG14BMw11JFX5B6MYOoFdI6SL_WSnHqso2OfbYmvfZ4k5MFWki9i2N-T_c6wQqHdNYKnW1P9QN1i34buk3_fWpsEqDH9Rmdgt7ZzhaWh-ED6lq5gQ0bFPj74bhBVV-l4U5HGcPuQ/5_mapWithObjects.png?psid=1&width=817&height=817&cropMode=center)
+![Example](https://db3pap001files.storage.live.com/y4mDIOIfF_glPLB94VnahnsN4A1RRZelKrl3SWWz9h_ZKQ-LjpqApatUK34WyujjR6e_An8OWw4aiU3ER6C_WTwq1xdEgU9d4TQ45Qsi2TcEw27Qxnqc0-KN2p3dxh0gmq466gPTQeibRYyyMxtRdlXXBHwdBbUzt-1ZUlfO-tv46URNNnCodEpp-6D4xtgygsXO_l7lEgxgeltgUi48LNoAQ/5_mapWithObjects.png?psid=1&width=817&height=817&cropMode=center)

@@ -35,7 +35,7 @@ public class MapBuilder {
 
     //fixed object sized (autoscaled)
     int i2 = 8/downScale;
-    int i10 = 10/(downScale*3/4);
+    int i10 = 10/(downScale);
     int i15 = (i10*3)/2;
     int i20 = 2 * i10;
     int i25 = (i10*5)/2;
@@ -111,23 +111,26 @@ public class MapBuilder {
         int eventType;
 
         //fixed object sized (autoscaled)
-        int i2 = 8/downScale;
-        int i10 = 10/(downScale*3/4);
-        int i5 = i10/2;
-        int i15 = (i10*3)/2;
+        int i2 = 8 / downScale;
+        int i10 = 10 / (downScale);
+        int i5 = i10 / 2;
+        int i15 = (i10 * 3) / 2;
         int i20 = 2 * i10;
-        int i25 = (i10*5)/2;
+        int i25 = (i10 * 5) / 2;
         int i30 = 3 * i10;
-        int i35 = (7 * i10)/2;
+        int i35 = (7 * i10) / 2;
         int i40 = 4 * i10;
+        int i50 = 5 * i10;
+        int i60 = 6 * i10;
+        int i70 = 7 * i10;
         int i80 = 8 * i10;
         int i160 = 16 * i10;
 
         HashMap<Integer, Color> buildColors = new HashMap();
         buildColors.put(0, new Color(77, 72, 59));
-        buildColors.put(2, new Color(80, 81, 75));
-        buildColors.put(3, new Color(90, 92, 91));
-        buildColors.put(4, new Color(82, 83, 50));
+        buildColors.put(1, new Color(80, 81, 75));
+        buildColors.put(2, new Color(90, 92, 91));
+        buildColors.put(3, new Color(82, 83, 50));
         buildColors.put(4, new Color(84, 62, 43));
 
         while (xmlr.hasNext()) {
@@ -146,20 +149,20 @@ public class MapBuilder {
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
-                        g.fillOval(x, y, i35, i25);
+                        g.fillOval(x, y, i60, i50);
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i2, y + i2, i20, i20);
+                        g.fillOval(x + i2, y + i2, i40, i40);
                     } else if (xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x, y, i30, i30);
+                        g.fillOval(x, y, i40, i40);
                         g.setColor(new Color(22, 116, 168));
-                        g.fillOval(x + i5, y + i5, i20, i20);
+                        g.fillOval(x + i5, y + i5, i30, i30);
                     } else {
-                        g.setColor(buildColors.get(new Random().nextInt(6)));
+                        g.setColor(buildColors.get(new Random().nextInt(5)));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i10, i25, i20, true);
+                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
                         else
-                            g.fill3DRect(x + i10, y + i10, i20, i30, true);
+                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
                     }
                 }
             }

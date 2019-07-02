@@ -1,4 +1,4 @@
-# 7D2D_RGW_Create_Map_Preview_Image_Tool
+# 7D2D_RGW_Create_Map_Preview_Image_Tool ![build](https://travis-ci.org/ognivo777/7D2D_RGW_Create_Map_Preview_Image_Tool.svg?branch=master)
 The simple tool for create informative map image with schematics roads, houses, caves and water towers. Relief information also applied to make map more imformative about the landscape.
 
 ## Prerequists

@@ -34,14 +34,19 @@ public class MapBuilder {
     private int bloorK = 256; //part of image size used as blure radius
 
     //fixed object sized (autoscaled)
-    int i2 = 8/downScale;
-    int i10 = 10/(downScale);
-    int i15 = (i10*3)/2;
+    int i2 = 8 / downScale;
+    int i10 = 10 / (downScale);
+    int i5 = i10 / 2;
+    int i15 = (i10 * 3) / 2;
     int i20 = 2 * i10;
-    int i25 = (i10*5)/2;
+    int i25 = (i10 * 5) / 2;
     int i30 = 3 * i10;
-    int i35 = (7 * i10)/2;
+    int i35 = (7 * i10) / 2;
     int i40 = 4 * i10;
+    int i45 = (9 * i10) / 2;
+    int i50 = 5 * i10;
+    int i60 = 6 * i10;
+    int i70 = 7 * i10;
     int i80 = 8 * i10;
     int i160 = 16 * i10;
     int i250 = 25 * i10;
@@ -62,7 +67,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            System.out.println("All work done!\nResulting map image: '5_mapWithObjects.png'.");
+            System.out.println("All work done!\nResulting map image: '6_mapWithObjects.png'.");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
@@ -110,22 +115,7 @@ public class MapBuilder {
 
         int eventType;
 
-        //fixed object sized (autoscaled)
-        int i2 = 8 / downScale;
-        int i10 = 10 / (downScale);
-        int i5 = i10 / 2;
-        int i15 = (i10 * 3) / 2;
-        int i20 = 2 * i10;
-        int i25 = (i10 * 5) / 2;
-        int i30 = 3 * i10;
-        int i35 = (7 * i10) / 2;
-        int i40 = 4 * i10;
-        int i50 = 5 * i10;
-        int i60 = 6 * i10;
-        int i70 = 7 * i10;
-        int i80 = 8 * i10;
-        int i160 = 16 * i10;
-
+        //fixed buildings colors
         HashMap<String, Color> buildColors = new HashMap();
         buildColors.put("cabin", new Color(77, 72, 59));
         buildColors.put("apartment", new Color(80, 81, 75));
@@ -133,9 +123,10 @@ public class MapBuilder {
         buildColors.put("field", new Color(60, 83, 58));
         buildColors.put("army", new Color(82, 83, 50));
         buildColors.put("gas", new Color(89, 57, 56));
-        buildColors.put("garage", new Color(57, 55, 57));
-        buildColors.put("site", new Color(40, 55, 39));
-        buildColors.put("other", new Color(72, 69, 72));
+        buildColors.put("garage", new Color(51, 49, 51));
+        buildColors.put("site", new Color(61, 71, 55));
+        buildColors.put("trader", new Color(180, 151, 0));
+        buildColors.put("other", new Color(69, 72, 72));
 
 
         while (xmlr.hasNext()) {
@@ -151,65 +142,73 @@ public class MapBuilder {
 
                     //int rgb = Color.RED.getRGB();
                     // iBiomes.setRGB(x, y, rgb);
+                    int xShift = x + i15;
+                    int yShift = y - i50;
+
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
-                        g.fillOval(x, y, i60, i50);
+                        g.fillOval(xShift, yShift, i60, i50);
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i2, y + i2, i40, i40);
+                        g.fillOval(xShift + i2, yShift + i2, i40, i40);
                     } else if (xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x, y, i40, i40);
+                        g.fillOval(x, yShift + i10, i40, i40);
                         g.setColor(new Color(22, 116, 168));
-                        g.fillOval(x + i5, y + i5, i30, i30);
+                        g.fillOval(x + i5, yShift + i15, i30, i30);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                            g.fill3DRect(x, yShift + i10, i40, i35, true);
                         else
-                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                            g.fill3DRect(x, yShift + i10, i35, i40, true);
                     } else if (xmlr.getAttributeValue(1).contains("army")) {
                         g.setColor(buildColors.get("army"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
-                        else
-                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("cabin")){
                         g.setColor(buildColors.get("cabin"));
-                        g.fill3DRect(x + i10, y + i20, i30, i30, true);
+                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("garage")){
                         g.setColor(buildColors.get("garage"));
-                        g.fill3DRect(x + i10, y + i10, i30, i30, true);
+                        g.fill3DRect(x + i5, y - i30, i20, i20, true);
+                    } else if (xmlr.getAttributeValue(1).contains("parking")) {
+                        g.setColor(buildColors.get("garage"));
+                        g.fill3DRect(x + i5, yShift + i10, i40, i40, true);
                     } else if (xmlr.getAttributeValue(1).contains("apartment")){
                         g.setColor(buildColors.get("apartment"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                            g.fill3DRect(x + i5, yShift + i10, i40, i30, true);
                         else
-                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                            g.fill3DRect(x + i5, yShift + i10, i30, i40, true);
                     } else if (xmlr.getAttributeValue(1).contains("gas")){
                         g.setColor(buildColors.get("gas"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                            g.fill3DRect(xShift, yShift + i10, i30, i25, true);
                         else
-                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                            g.fill3DRect(xShift, yShift + i10, i25, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("field")){
                         g.setColor(buildColors.get("field"));
-                        g.fill3DRect(x, y, i20, i20, true);
-                    } else if (xmlr.getAttributeValue(1).contains("trader") || (xmlr.getAttributeValue(1).contains("site"))){
+                        g.fillRect(xShift, yShift + i10, i20, i20);
+                    } else if (xmlr.getAttributeValue(1).contains("site")){
                         g.setColor(buildColors.get("site"));
-                        g.fill3DRect(x + i10, y + i10, i40, i40, true);
-                    } else {
+                        g.fillOval(xShift, yShift + i10, i40, i40);
+                    } else if (xmlr.getAttributeValue(1).contains("trader")){
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillOval(xShift, yShift, i50, i50);
+                        g.setColor(buildColors.get("trader"));
+                        g.fillOval(xShift + i5, yShift + i5, i40, i40);
+                    }else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i10, y + i20, i40, i40, true);
+                            g.fill3DRect(x, yShift + i10, i30, i25, true);
                         else
-                            g.fill3DRect(x + i10, y + i20, i30, i40, true);
+                            g.fill3DRect(x, yShift + i10, i25, i30, true);
                     }
                 }
             }
         }
 
-        File mapWithObjects = new File(path + "\\"+ fileNum+++"5_mapWithObjects.png");
+        File mapWithObjects = new File(path + "\\"+ fileNum+++"_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 

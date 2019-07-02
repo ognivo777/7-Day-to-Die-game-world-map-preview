@@ -125,7 +125,8 @@ public class MapBuilder {
         buildColors.put("gas", new Color(89, 57, 56));
         buildColors.put("garage", new Color(51, 49, 51));
         buildColors.put("site", new Color(61, 71, 55));
-        buildColors.put("trader", new Color(180, 151, 0));
+        buildColors.put("trader", new Color(180, 108, 5));
+        buildColors.put("sky", new Color(76, 121, 126));
         buildColors.put("other", new Color(69, 72, 72));
 
 
@@ -148,9 +149,9 @@ public class MapBuilder {
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
-                        g.fillOval(xShift, yShift, i60, i50);
+                        g.fillArc(xShift, yShift, i40, i70, 0,180);
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(xShift + i2, yShift + i2, i40, i40);
+                        g.fillArc(xShift + i10, yShift + i10, i20, i50, 0,180);
                     } else if (xmlr.getAttributeValue(1).startsWith("water")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x, yShift + i10, i40, i40);
@@ -162,6 +163,9 @@ public class MapBuilder {
                             g.fill3DRect(x, yShift + i10, i40, i35, true);
                         else
                             g.fill3DRect(x, yShift + i10, i35, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("sky")) {
+                        g.setColor(buildColors.get("sky"));
+                        g.fill3DRect(x, yShift - i10, i35, i50, true);
                     } else if (xmlr.getAttributeValue(1).contains("army")) {
                         g.setColor(buildColors.get("army"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);

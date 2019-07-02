@@ -16,10 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class MapBuilder {
 
@@ -48,7 +45,6 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            //water: 22,116,168
             System.out.println("All work done!\nResulting map image: '5_mapWithObjects.png'.");
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,6 +65,7 @@ public class MapBuilder {
         //fixed object sized (autoscaled)
         int i2 = 8/downScale;
         int i10 = 10/(downScale*3/4);
+        int i5 = i10/2;
         int i15 = (i10*3)/2;
         int i20 = 2 * i10;
         int i25 = (i10*5)/2;
@@ -77,6 +74,13 @@ public class MapBuilder {
         int i40 = 4 * i10;
         int i80 = 8 * i10;
         int i160 = 16 * i10;
+
+        HashMap<Integer, Color> buildColors = new HashMap();
+        buildColors.put(0, new Color(77, 72, 59));
+        buildColors.put(2, new Color(80, 81, 75));
+        buildColors.put(3, new Color(90, 92, 91));
+        buildColors.put(4, new Color(82, 83, 50));
+        buildColors.put(4, new Color(84, 62, 43));
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -90,36 +94,25 @@ public class MapBuilder {
                     int rot = Integer.parseInt(xmlr.getAttributeValue(3));
 
                     //int rgb = Color.RED.getRGB();
-                   // iBiomes.setRGB(x, y, rgb);
+                    // iBiomes.setRGB(x, y, rgb);
 
                     if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
                         g.fillOval(x, y, i35, i25);
-                    } else {
-                        if (xmlr.getAttributeValue(1).startsWith("water")) {
-                            g.setColor(Color.DARK_GRAY);
-                            g.fillOval(x, y, i25, i25);
-                            g.setColor(new Color(22, 116, 168));
-                            g.fillOval(x, y, i15, i15);
-                        } else {
-                            g.setColor(Color.DARK_GRAY);
-                            if (rot == 0 || rot == 2)
-                                g.fillRect(x, y, i30, i25);
-                            else
-                                g.fillRect(x, y, i25, i25);
-                            g.setColor(new Color(114, 112, 114));
-                            if (rot == 0 || rot == 2)
-                                g.fill3DRect(x, y, i30, 6, true);
-                            else
-                                g.fill3DRect(x, y - i2, i20, 8, true);
-                        }
-                    }
-
-                    if (xmlr.getAttributeValue(1).startsWith("cave")) {
-                        g.setColor(Color.BLACK);
+                        g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i2, y + i2, i20, i20);
+                    } else if (xmlr.getAttributeValue(1).startsWith("water")) {
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillOval(x, y, i30, i30);
+                        g.setColor(new Color(22, 116, 168));
+                        g.fillOval(x + i5, y + i5, i20, i20);
+                    } else {
+                        g.setColor(buildColors.get(new Random().nextInt(6)));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i10, y + i10, i25, i20, true);
+                        else
+                            g.fill3DRect(x + i10, y + i10, i20, i30, true);
                     }
-
                 }
             }
         }
@@ -138,7 +131,7 @@ public class MapBuilder {
                 int p = roads.getRGB(xi, yi);
                 if(p!=0) {
                     if (p==65280)
-                        roadColor = new Color(97, 80, 75);
+                        roadColor = new Color(141, 129, 106);
                     else
                         roadColor = new Color(52, 59, 65);
 

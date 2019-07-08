@@ -21,7 +21,7 @@ import java.util.*;
 public class MapBuilder {
 
     private String path = ".";
-    private int downScale = 4;
+    private int downScale = 2; //2 - recommended
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
@@ -34,8 +34,9 @@ public class MapBuilder {
     private int bloorK = 256; //part of image size used as blure radius
 
     //fixed object sized (autoscaled)
-    int i2 = 8 / downScale;
     int i10 = 10 / (downScale);
+    int i1 = i10 / 10;
+    int i2 = i1 * 2;
     int i5 = i10 / 2;
     int i15 = (i10 * 3) / 2;
     int i20 = 2 * i10;
@@ -47,6 +48,7 @@ public class MapBuilder {
     int i50 = 5 * i10;
     int i60 = 6 * i10;
     int i70 = 7 * i10;
+    int i7 = i70 / i10;
     int i80 = 8 * i10;
     int i160 = 16 * i10;
     int i500 = 50 * i10;
@@ -101,8 +103,10 @@ public class MapBuilder {
             }
         }
 
-        File waterZones = new File(path + "\\" + fileNum++ + "_waterZones.png");
-        ImageIO.write(iWaterZones, "PNG", waterZones);
+        if (!checkFileExists("_waterZones")) {
+            File waterZones = new File(path + "\\" + fileNum + "_waterZones.png");
+            ImageIO.write(iWaterZones, "PNG", waterZones);
+        }
 
     }
 
@@ -129,13 +133,13 @@ public class MapBuilder {
         buildColors.put("sky", new Color(76, 121, 126));
         buildColors.put("hotel", new Color(83, 47, 61));
         buildColors.put("pharmacy", new Color(33, 126, 46));
-        buildColors.put("hospital", new Color(181, 48, 42));
+        buildColors.put("red", new Color(181, 48, 42));
         buildColors.put("gun", new Color(175, 147, 49));
-        buildColors.put("bank", new Color(208, 208, 0));
+        buildColors.put("yellow", new Color(183, 183, 0));
         buildColors.put("church", new Color(33, 33, 33));
         buildColors.put("water", new Color(22, 116, 168));
         buildColors.put("other", new Color(69, 72, 72));
-
+        //red_mesa
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -160,14 +164,26 @@ public class MapBuilder {
                         g.setColor(Color.DARK_GRAY);
                         g.fillArc(xShift + i10, yShift + i10, i20, i50, 0, 180);
                     } else if (xmlr.getAttributeValue(1).startsWith("water")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x, yShift + i10, i40, i40);
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillOval(x, yShift, i30, i30);
                         g.setColor(buildColors.get("water"));
-                        g.fillArc(x + i5, yShift + i15, i30, i30, 180, 360);
-                    } else if ((xmlr.getAttributeValue(1).startsWith("church")) || (xmlr.getAttributeValue(1).startsWith("cemetery"))) {
+                        g.drawOval(x, yShift, i30, i30);
+                        g.fillArc(x, yShift - i5, i30, i30, 225, 90);
+                        g.fillOval(x + i5, yShift + i7, i20, i20);
+                    } else if (xmlr.getAttributeValue(1).contains("electric")) {
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillOval(x + i10, yShift - i10, i35, i35);
+                        g.setColor(buildColors.get("yellow"));
+                        g.drawOval(x + i10, yShift - i10, i35, i35);
+                        g.fillArc(x + i20, yShift - i40, i30, i60, 180, 80);
+                    } else if (xmlr.getAttributeValue(1).contains("church")) {
                         g.setColor(buildColors.get("church"));
                         g.fillRect(x, yShift + i10, i30, i10);
                         g.fillRect(x + i10, yShift, i10, i40);
+                    } else if (xmlr.getAttributeValue(1).contains("cemetery")) {
+                        g.setColor(buildColors.get("church"));
+                        g.fillArc(x, yShift, i25, i30, 0, 180);
+                        g.fillRect(x, yShift + i15, i25, i20);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
@@ -187,11 +203,21 @@ public class MapBuilder {
                         g.setColor(buildColors.get("army"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                     } else if (xmlr.getAttributeValue(1).contains("bank")) {
-                        g.setColor(buildColors.get("bank"));
-                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                         g.setColor(Color.DARK_GRAY);
-                        g.setFont(new Font("Arial",0,24 / downScale));
-                        g.drawString("$", xShift + i5, y - i15 );
+                        g.fillOval(x + i2, yShift + i5, i35, i35);
+                        g.setColor(buildColors.get("yellow"));
+                        g.drawOval(x + i2, yShift + i5, i35, i35);
+                        g.fillArc(x, yShift - i15, i40, i40, 225, 90);
+                        g.fillArc(x, yShift + i15, i40, i40, 45, 90);
+                    } else if (xmlr.getAttributeValue(1).contains("red_mesa")) {
+                        g.setColor(buildColors.get("red"));
+                        g.fillArc(x, yShift - i15, i40, i40, 225, 90);
+                        g.fillArc(x, yShift + i15, i40, i40, 45, 90);
+                        g.setColor(Color.DARK_GRAY);
+                        g.drawArc(x, yShift - i15, i40, i40, 225, 90);
+                        g.drawArc(x, yShift + i15, i40, i40, 45, 90);
+                        g.drawArc(x + i15, yShift, i40, i40, 135, 90);
+                        g.drawArc(x - i15, yShift, i40, i40, 315, 90);
                     } else if (xmlr.getAttributeValue(1).contains("cabin")) {
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
@@ -203,12 +229,16 @@ public class MapBuilder {
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
                     } else if (xmlr.getAttributeValue(1).contains("gun")) {
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("gun"));
-                        g.fill3DRect(xShift - i10, yShift + i10, i35, i35, true);
+                        g.drawOval(x + i10, yShift - i10, i45, i45);
+                        g.fillRect(x + i20, yShift, i10, i30);
+                        g.fillRect(x + i40, yShift, i10, i30);
                     } else if (xmlr.getAttributeValue(1).contains("hospital")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
-                        g.setColor(buildColors.get("hospital"));
+                        g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
@@ -218,6 +248,9 @@ public class MapBuilder {
                     } else if (xmlr.getAttributeValue(1).contains("parking")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, yShift + i20, i40, i40, true);
+                    } else if (xmlr.getAttributeValue(1).contains("trailer")) {
+                        g.setColor(buildColors.get("garage"));
+                        g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
                     } else if (xmlr.getAttributeValue(1).contains("apartment")) {
                         g.setColor(buildColors.get("apartment"));
                         if (rot == 0 || rot == 2)
@@ -230,6 +263,12 @@ public class MapBuilder {
                             g.fill3DRect(xShift, yShift + i10, i30, i25, true);
                         else
                             g.fill3DRect(xShift, yShift + i10, i25, i30, true);
+                    } else if (xmlr.getAttributeValue(1).contains("fire")) {
+                        g.setColor(Color.lightGray);
+                        g.fillOval(x + i10, yShift - i10, i45, i45);
+                        g.setColor(buildColors.get("red"));
+                        g.drawOval(x + i10, yShift - i10, i45, i45);
+                        g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
                     } else if (xmlr.getAttributeValue(1).contains("field")) {
                         g.setColor(buildColors.get("field"));
                         g.fillRect(x + i5, yShift + i5, i25, i25);
@@ -240,9 +279,11 @@ public class MapBuilder {
                         g.fillOval(xShift, yShift + i15, i30, i30);
                     } else if (xmlr.getAttributeValue(1).contains("trader")) {
                         g.setColor(Color.DARK_GRAY);
-                        g.fillOval(xShift, yShift, i50, i50);
+                        g.fillOval(x + i5, yShift - i5, i45, i45);
                         g.setColor(buildColors.get("trader"));
-                        g.fillOval(xShift + i5, yShift + i5, i40, i40);
+                        g.drawOval(x + i5, yShift - i5, i45, i45);
+                        g.fillArc(x + i10, yShift - i10, i40, i40, 225, 90);
+                        g.fillArc(x + i20, yShift + i5, i20, i20, 45, 90);
                     } else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)
@@ -277,8 +318,11 @@ public class MapBuilder {
             }
         }
 
-        File map_with_roads = new File(path + "\\"+ fileNum+++"_map_with_roads.png");
-        ImageIO.write(iBiomes, "PNG", map_with_roads);
+        fileNum++;
+        if (!checkFileExists("_map_with_roads")) {
+            File map_with_roads = new File(path + "\\"+ fileNum + "_map_with_roads.png");
+            ImageIO.write(iBiomes, "PNG", map_with_roads);
+        }
     }
 
     private void applyHeightsToBiomes() throws IOException {
@@ -335,12 +379,18 @@ public class MapBuilder {
         }
 
         start = System.nanoTime();
-        //write heights image to file
-        File bump = new File(path + "\\"+ fileNum+++"_bump.png");
-        ImageIO.write(iHeigths, "PNG", bump);
-        //write scaled biomes to file
-        File biomes = new File(path + "\\"+ fileNum+++"_biomes.png");
-        ImageIO.write(iBiomes, "PNG", biomes);
+        fileNum++;
+        if (!checkFileExists("_bump")) {
+            //write heights image to file
+            File bump = new File(path + "\\"+ fileNum + "_bump.png");
+            ImageIO.write(iHeigths, "PNG", bump);
+        }
+        fileNum++;
+        if (!checkFileExists("_biomes")) {
+            //write scaled biomes to file
+            File biomes = new File(path + "\\"+ fileNum + "_biomes.png");
+            ImageIO.write(iBiomes, "PNG", biomes);
+        }
         end = System.nanoTime();
         System.out.println("File saving time:  = " + (end-start)/1000000000 + "s");
 
@@ -352,10 +402,12 @@ public class MapBuilder {
         iHeigths.flush();
         //apply bump-mapping using normal vectors
         BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
-
-        //Write bump-mapped biomes
-        File biomesShadow = new File(path + "\\"+ fileNum+++"_biomesShadow.png");
-        ImageIO.write(iBiomes, "PNG", biomesShadow);
+        fileNum++;
+        if (!checkFileExists("_biomesShadow")) {
+            //Write bump-mapped biomes
+            File biomesShadow = new File(path + "\\"+ fileNum + "_biomesShadow.png");
+            ImageIO.write(iBiomes, "PNG", biomesShadow);
+        }
     }
 
     private void autoAjustImage() throws IOException {
@@ -498,5 +550,17 @@ public class MapBuilder {
             }
             System.out.println("|\nDone.");
         }
+    }
+
+    public boolean checkFileExists(String fileName) {
+        String filePath = path + "\\" + fileNum + fileName + ".png";
+        File f = new File(filePath);
+        if(!f.exists() || !f.isFile() || !f.canRead()) {
+            return false;
+        } else {
+            System.out.println("File already exists: " + fileNum + fileName + ".png");
+        }
+
+        return true;
     }
 }

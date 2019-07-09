@@ -21,7 +21,7 @@ import java.util.*;
 public class MapBuilder {
 
     private String path = ".";
-    private int downScale = 4; //2 - better definition
+    private int downScale = 2; //2 - better definition
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
@@ -252,6 +252,8 @@ public class MapBuilder {
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
                     } else if (xmlr.getAttributeValue(1).contains("post_office")) {
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillRect(x + i5, y, i35, i25);
                         g.setColor(Color.DARK_GRAY);
                         g.drawRect(x + i5, y, i35, i25);
                         g.drawLine(x + i5, y, x + i25, y + i10);

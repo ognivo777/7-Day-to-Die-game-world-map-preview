@@ -21,7 +21,7 @@ import java.util.*;
 public class MapBuilder {
 
     private String path = ".";
-    private int downScale = 2; //2 - recommended
+    private int downScale = 4; //2 - better definition
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
@@ -48,7 +48,7 @@ public class MapBuilder {
     int i50 = 5 * i10;
     int i60 = 6 * i10;
     int i70 = 7 * i10;
-    int i7 = i70 / i10;
+    int i7 = i70 / 70;
     int i80 = 8 * i10;
     int i160 = 16 * i10;
     int i500 = 50 * i10;
@@ -69,7 +69,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            System.out.println("All work done!\nResulting map image: '6_mapWithObjects.png'.");
+            System.out.println("All work done!\nResulting map image: 9_mapWithObjects.png");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
@@ -169,7 +169,7 @@ public class MapBuilder {
                         g.setColor(buildColors.get("water"));
                         g.drawOval(x, yShift, i30, i30);
                         g.fillArc(x, yShift - i5, i30, i30, 225, 90);
-                        g.fillOval(x + i5, yShift + i7, i20, i20);
+                        g.fillOval(x + i5, yShift + i15, i20, i20);
                     } else if (xmlr.getAttributeValue(1).contains("electric")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i10, yShift - i10, i35, i35);
@@ -295,7 +295,7 @@ public class MapBuilder {
             }
         }
 
-        File mapWithObjects = new File(path + "\\"+ fileNum+++"_mapWithObjects.png");
+        File mapWithObjects = new File(path + "\\"+ "9_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 

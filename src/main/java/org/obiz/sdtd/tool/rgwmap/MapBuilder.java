@@ -195,6 +195,12 @@ public class MapBuilder {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i25, y - i15, i10, i10);
                         g.fillOval(x + i35, y - i15, i10, i10);
+                    } else if (xmlr.getAttributeValue(1).contains("bombshelter")) {
+                        g.setColor(buildColors.get("black"));
+                        g.fillOval(x + i20, y - i20, i30, i20);
+                        g.fillRect(x + i20, y - i10, i35, i10);
+                        g.setColor(Color.GRAY);
+                        g.fillRect(x + i25, y - i10, i25, i5);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)

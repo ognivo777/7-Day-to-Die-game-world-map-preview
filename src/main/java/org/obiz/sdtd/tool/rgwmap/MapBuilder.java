@@ -21,7 +21,7 @@ import java.util.*;
 public class MapBuilder {
 
     private String path = ".";
-    private int downScale = 4; //2 - better definition
+    private int downScale = 2; //2 - better definition
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
@@ -29,6 +29,7 @@ public class MapBuilder {
     private long totalPixels;
     private BufferedImage iHeigths;
     private BufferedImage iBiomes;
+    private BufferedImage iRad;
     private int waterLine;
     private boolean doBlureBiomes = true;
     private int bloorK = 256; //part of image size used as blure radius
@@ -136,7 +137,7 @@ public class MapBuilder {
         buildColors.put("red", new Color(181, 48, 42));
         buildColors.put("gun", new Color(175, 147, 49));
         buildColors.put("yellow", new Color(183, 183, 0));
-        buildColors.put("church", new Color(33, 33, 33));
+        buildColors.put("black", new Color(33, 33, 33));
         buildColors.put("water", new Color(22, 116, 168));
         buildColors.put("other", new Color(69, 72, 72));
         //red_mesa
@@ -177,13 +178,23 @@ public class MapBuilder {
                         g.drawOval(x + i10, yShift - i10, i35, i35);
                         g.fillArc(x + i20, yShift - i40, i30, i60, 180, 80);
                     } else if (xmlr.getAttributeValue(1).contains("church")) {
-                        g.setColor(buildColors.get("church"));
+                        g.setColor(buildColors.get("black"));
                         g.fillRect(x, yShift + i10, i30, i10);
                         g.fillRect(x + i10, yShift, i10, i40);
                     } else if (xmlr.getAttributeValue(1).contains("cemetery")) {
-                        g.setColor(buildColors.get("church"));
+                        g.setColor(buildColors.get("black"));
                         g.fillArc(x, yShift, i25, i30, 0, 180);
                         g.fillRect(x, yShift + i15, i25, i20);
+                    } else if (xmlr.getAttributeValue(1).contains("snowy_ski_lodge")) {
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillOval(x + i15, y - i30, i45, i45);
+                        g.setColor(buildColors.get("black"));
+                        g.drawOval(x + i15, y - i30, i45, i45);
+                        g.fillOval(x + i20, y - i20, i30, i20);
+                        g.fillRect(x + i30, y - i10, i15, i20);
+                        g.setColor(Color.LIGHT_GRAY);
+                        g.fillOval(x + i25, y - i15, i10, i10);
+                        g.fillOval(x + i35, y - i15, i10, i10);
                     } else if (xmlr.getAttributeValue(1).contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
@@ -211,13 +222,13 @@ public class MapBuilder {
                         g.fillArc(x, yShift + i15, i40, i40, 45, 90);
                     } else if (xmlr.getAttributeValue(1).contains("red_mesa")) {
                         g.setColor(buildColors.get("red"));
-                        g.fillArc(x, yShift - i15, i40, i40, 225, 90);
-                        g.fillArc(x, yShift + i15, i40, i40, 45, 90);
+                        g.fillArc(x, yShift - i15, i45, i45, 225, 90);
+                        g.fillArc(x, yShift + i15, i45, i45, 45, 90);
                         g.setColor(Color.DARK_GRAY);
-                        g.drawArc(x, yShift - i15, i40, i40, 225, 90);
-                        g.drawArc(x, yShift + i15, i40, i40, 45, 90);
-                        g.drawArc(x + i15, yShift, i40, i40, 135, 90);
-                        g.drawArc(x - i15, yShift, i40, i40, 315, 90);
+                        g.drawArc(x, yShift - i15, i45, i45, 225, 90);
+                        g.drawArc(x, yShift + i15, i45, i45, 45, 90);
+                        g.drawArc(x + i15, yShift, i45, i45, 135, 90);
+                        g.drawArc(x - i15, yShift, i45, i45, 315, 90);
                     } else if (xmlr.getAttributeValue(1).contains("cabin")) {
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
@@ -271,7 +282,7 @@ public class MapBuilder {
                         g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
                     } else if (xmlr.getAttributeValue(1).contains("field")) {
                         g.setColor(buildColors.get("field"));
-                        g.fillRect(x + i5, yShift + i5, i25, i25);
+                        g.fillRect(x, yShift, i25, i25);
                     } else if (xmlr.getAttributeValue(1).contains("site")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift - i5, yShift + i10, i35, i35);
@@ -359,6 +370,9 @@ public class MapBuilder {
                 }
             }
         }
+
+        //mark radiation zones
+        drawRadiation();
 
         if(doBlureBiomes) {
             BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
@@ -550,6 +564,43 @@ public class MapBuilder {
             }
             System.out.println("|\nDone.");
         }
+    }
+
+    private void drawRadiation() throws IOException {
+        int newR;
+        int oldR, oldG, oldB;
+
+        BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
+        System.out.println("Radiation png loaded!");
+
+        iRad = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
+
+        // scale the input radiation zone image to the output image size
+        Graphics2D g2d = iRad.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
+        g2d.dispose();
+
+        //free mem
+        inputImage.flush();
+
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
+                int rgb = iBiomes.getRGB(x, y);
+                int rgbRad = iRad.getRGB(x, y);
+                if (rgbRad == -65536) {
+                    oldR = rgb >> 16 & 0xff;
+                    oldG = rgb >> 8 & 0xff;
+                    oldB = rgb & 0xff;
+
+                    newR = (int) (oldR * 1.5);
+                    if (newR > 255) newR = 255;
+                    if (newR<0) newR = 0;
+
+                    iBiomes.setRGB(x, y, new Color(newR, oldG, oldB).getRGB());
+                }
+            }
+        }
+
     }
 
     public boolean checkFileExists(String fileName) {

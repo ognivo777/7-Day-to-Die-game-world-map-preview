@@ -21,7 +21,7 @@ import java.util.*;
 public class MapBuilder {
 
     private String path = ".";
-    private int downScale = 2; //2 - better definition
+    private int downScale = 4; //2 - better definition
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
     private int mapSize;
@@ -207,6 +207,12 @@ public class MapBuilder {
                             g.fill3DRect(x, yShift + i10, i35, i30, true);
                         else
                             g.fill3DRect(x, yShift + i10, i30, i35, true);
+                    } else if (xmlr.getAttributeValue(1).contains("business")) {
+                        g.setColor(buildColors.get("sky"));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x, yShift + i10, i25, i30, true);
+                        else
+                            g.fill3DRect(x, yShift + i10, i30, i25, true);
                     } else if (xmlr.getAttributeValue(1).contains("hotel")) {
                         g.setColor(buildColors.get("hotel"));
                         if (rot == 0 || rot == 2)
@@ -245,6 +251,13 @@ public class MapBuilder {
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
+                    } else if (xmlr.getAttributeValue(1).contains("post_office")) {
+                        g.setColor(Color.DARK_GRAY);
+                        g.drawRect(x + i5, y, i35, i25);
+                        g.drawLine(x + i5, y, x + i25, y + i10);
+                        g.drawLine(x + i40, y, x + i20, y + i10);
+                        g.drawLine(x + i5, y + i25, x + i10, y + i10);
+                        g.drawLine(x + i40, y + i25, x + i35, y + i10);
                     } else if (xmlr.getAttributeValue(1).contains("gun")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);

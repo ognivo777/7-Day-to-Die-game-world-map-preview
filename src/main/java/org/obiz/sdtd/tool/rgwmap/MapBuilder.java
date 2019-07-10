@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -52,6 +53,8 @@ public class MapBuilder {
     int i7 = i70 / 70;
     int i80 = 8 * i10;
     int i160 = 16 * i10;
+    int i200 = 20 * i10;
+    int i250 = 25 * i10;
     int i500 = 50 * i10;
 
     int fileNum = 1;
@@ -70,7 +73,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            System.out.println("All work done!\nResulting map image: 9_mapWithObjects.png");
+            System.out.println("All work done!\nResult map image: 9_mapWithObjects.png");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
@@ -91,14 +94,14 @@ public class MapBuilder {
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
             if (eventType == XMLEvent.START_ELEMENT) {
-                if(xmlr.getAttributeCount()==5) {
+                if (xmlr.getAttributeCount() == 5) {
                     String attributeValue = xmlr.getAttributeValue(0);
                     String[] split = attributeValue.split(",");
-                    int x = (mapSize/2 + Integer.parseInt(split[0].trim()))/downScale;
-                    int y = (mapSize/2 - Integer.parseInt(split[2].trim()))/downScale;
+                    int x = (mapSize / 2 + Integer.parseInt(split[0].trim())) / downScale;
+                    int y = (mapSize / 2 - Integer.parseInt(split[2].trim())) / downScale;
 
                     graphics.setColor(Color.WHITE);
-                    graphics.fillOval(x - i500 /downScale, y - i500 /downScale, i500, i500);
+                    graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
 
                 }
             }
@@ -114,7 +117,7 @@ public class MapBuilder {
     private void drawPrefabs() throws IOException, XMLStreamException {
         String prefabs = "\\prefabs.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
-        XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs,new FileInputStream(path + prefabs));
+        XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
 
         Graphics g = iBiomes.getGraphics();
 
@@ -157,35 +160,36 @@ public class MapBuilder {
                     // iBiomes.setRGB(x, y, rgb);
                     int xShift = x + i15;
                     int yShift = y - i50;
+                    String prefabName = xmlr.getAttributeValue(1);
 
+                    if (prefabName.contains("cave")) {
 
-                    if (xmlr.getAttributeValue(1).startsWith("cave")) {
                         g.setColor(new Color(180, 151, 0));
                         g.fillArc(xShift, yShift, i40, i70, 0, 180);
                         g.setColor(Color.DARK_GRAY);
                         g.fillArc(xShift + i10, yShift + i10, i20, i50, 0, 180);
-                    } else if (xmlr.getAttributeValue(1).startsWith("water")) {
+                    } else if (prefabName.contains("water_tower")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x, yShift, i30, i30);
                         g.setColor(buildColors.get("water"));
                         g.drawOval(x, yShift, i30, i30);
                         g.fillArc(x, yShift - i5, i30, i30, 225, 90);
                         g.fillOval(x + i5, yShift + i15, i20, i20);
-                    } else if (xmlr.getAttributeValue(1).contains("electric")) {
+                    } else if (prefabName.contains("electric")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i10, yShift - i10, i35, i35);
                         g.setColor(buildColors.get("yellow"));
                         g.drawOval(x + i10, yShift - i10, i35, i35);
                         g.fillArc(x + i20, yShift - i40, i30, i60, 180, 80);
-                    } else if (xmlr.getAttributeValue(1).contains("church")) {
+                    } else if (prefabName.contains("church")) {
                         g.setColor(buildColors.get("black"));
                         g.fillRect(x, yShift + i10, i30, i10);
                         g.fillRect(x + i10, yShift, i10, i40);
-                    } else if (xmlr.getAttributeValue(1).contains("cemetery")) {
+                    } else if (prefabName.contains("cemetery")) {
                         g.setColor(buildColors.get("black"));
                         g.fillArc(x, yShift, i25, i30, 0, 180);
                         g.fillRect(x, yShift + i15, i25, i20);
-                    } else if (xmlr.getAttributeValue(1).contains("snowy_ski_lodge")) {
+                    } else if (prefabName.contains("snowy_ski_lodge")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i15, y - i30, i45, i45);
                         g.setColor(buildColors.get("black"));
@@ -195,44 +199,44 @@ public class MapBuilder {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i25, y - i15, i10, i10);
                         g.fillOval(x + i35, y - i15, i10, i10);
-                    } else if (xmlr.getAttributeValue(1).contains("bombshelter")) {
+                    } else if (prefabName.contains("bombshelter")) {
                         g.setColor(buildColors.get("black"));
                         g.fillOval(x + i20, y - i20, i30, i20);
                         g.fillRect(x + i20, y - i10, i35, i10);
                         g.setColor(Color.GRAY);
                         g.fillRect(x + i25, y - i10, i25, i5);
-                    } else if (xmlr.getAttributeValue(1).contains("house")) {
+                    } else if (prefabName.contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x, yShift + i10, i35, i30, true);
                         else
                             g.fill3DRect(x, yShift + i10, i30, i35, true);
-                    } else if (xmlr.getAttributeValue(1).contains("business")) {
+                    } else if (prefabName.contains("business")) {
                         g.setColor(buildColors.get("sky"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x, yShift + i10, i25, i30, true);
                         else
                             g.fill3DRect(x, yShift + i10, i30, i25, true);
-                    } else if (xmlr.getAttributeValue(1).contains("hotel")) {
+                    } else if (prefabName.contains("hotel")) {
                         g.setColor(buildColors.get("hotel"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x + i5, y - i50, i30, i25, true);
                         else
                             g.fill3DRect(x + i5, y - i50, i25, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("sky")) {
+                    } else if (prefabName.contains("sky")) {
                         g.setColor(buildColors.get("sky"));
                         g.fill3DRect(x, yShift - i10, i35, i50, true);
-                    } else if (xmlr.getAttributeValue(1).contains("army")) {
+                    } else if (prefabName.contains("army")) {
                         g.setColor(buildColors.get("army"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("bank")) {
+                    } else if (prefabName.contains("bank")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i2, yShift + i5, i35, i35);
                         g.setColor(buildColors.get("yellow"));
                         g.drawOval(x + i2, yShift + i5, i35, i35);
                         g.fillArc(x, yShift - i15, i40, i40, 225, 90);
                         g.fillArc(x, yShift + i15, i40, i40, 45, 90);
-                    } else if (xmlr.getAttributeValue(1).contains("red_mesa")) {
+                    } else if (prefabName.contains("red_mesa")) {
                         g.setColor(buildColors.get("red"));
                         g.fillArc(x, yShift - i15, i45, i45, 225, 90);
                         g.fillArc(x, yShift + i15, i45, i45, 45, 90);
@@ -241,17 +245,17 @@ public class MapBuilder {
                         g.drawArc(x, yShift + i15, i45, i45, 45, 90);
                         g.drawArc(x + i15, yShift, i45, i45, 135, 90);
                         g.drawArc(x - i15, yShift, i45, i45, 315, 90);
-                    } else if (xmlr.getAttributeValue(1).contains("cabin")) {
+                    } else if (prefabName.contains("cabin")) {
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("pharmacy")) {
+                    } else if (prefabName.contains("pharmacy")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("pharmacy"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("post_office")) {
+                    } else if (prefabName.contains("post_office")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillRect(x + i5, y, i35, i25);
                         g.setColor(Color.DARK_GRAY);
@@ -260,56 +264,62 @@ public class MapBuilder {
                         g.drawLine(x + i40, y, x + i20, y + i10);
                         g.drawLine(x + i5, y + i25, x + i10, y + i10);
                         g.drawLine(x + i40, y + i25, x + i35, y + i10);
-                    } else if (xmlr.getAttributeValue(1).contains("gun")) {
+                    } else if (prefabName.contains("gun")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("gun"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift, i10, i30);
                         g.fillRect(x + i40, yShift, i10, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("hospital")) {
+                    } else if (prefabName.contains("hospital")) {
                         g.setColor(Color.LIGHT_GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillRect(x + i20, yShift + i10, i30, i10);
                         g.fillRect(x + i30, yShift, i10, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("garage")) {
+                    } else if (prefabName.contains("garage")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
-                    } else if (xmlr.getAttributeValue(1).contains("parking")) {
+                    } else if (prefabName.contains("parking")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, yShift + i20, i40, i40, true);
-                    } else if (xmlr.getAttributeValue(1).contains("trailer")) {
+                    } else if (prefabName.contains("trailer")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
-                    } else if (xmlr.getAttributeValue(1).contains("apartment")) {
+                    } else if (prefabName.contains("apartment")) {
                         g.setColor(buildColors.get("apartment"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(x + i5, yShift + i10, i40, i30, true);
                         else
                             g.fill3DRect(x + i5, yShift + i10, i30, i40, true);
-                    } else if (xmlr.getAttributeValue(1).contains("gas")) {
+                    } else if (prefabName.contains("gas")) {
                         g.setColor(buildColors.get("gas"));
                         if (rot == 0 || rot == 2)
                             g.fill3DRect(xShift, yShift + i10, i30, i25, true);
                         else
                             g.fill3DRect(xShift, yShift + i10, i25, i30, true);
-                    } else if (xmlr.getAttributeValue(1).contains("fire")) {
+                    } else if (prefabName.contains("fire")) {
                         g.setColor(Color.lightGray);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
-                    } else if (xmlr.getAttributeValue(1).contains("field")) {
-                        g.setColor(buildColors.get("field"));
-                        g.fillRect(x, yShift, i25, i25);
-                    } else if (xmlr.getAttributeValue(1).contains("site")) {
+                    } else if (prefabName.contains("field")) {
+                        if (prefabName.contains("corn"))
+                            g.setColor(buildColors.get("army"));
+                        else
+                            g.setColor(buildColors.get("field"));
+                        if (prefabName.contains("med"))
+                            g.fillRect(x, yShift, i25, i25);
+                        else
+                            g.fillRect(x, yShift, i15, i15);
+                    } else if (prefabName.contains("site")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift - i5, yShift + i10, i35, i35);
                         g.setColor(buildColors.get("site"));
                         g.fillOval(xShift, yShift + i15, i30, i30);
-                    } else if (xmlr.getAttributeValue(1).contains("trader")) {
+                    } else if (prefabName.contains("trader")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(x + i5, yShift - i5, i45, i45);
                         g.setColor(buildColors.get("trader"));
@@ -327,7 +337,7 @@ public class MapBuilder {
             }
         }
 
-        File mapWithObjects = new File(path + "\\"+ "9_mapWithObjects.png");
+        File mapWithObjects = new File(path + "\\" + "9_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 
@@ -336,23 +346,23 @@ public class MapBuilder {
         System.out.println("Roads loaded");
         Color roadColor;
 
-        for(int xi = roads.getMinX(); xi < roads.getWidth() ; xi ++) {
-            for(int yi = roads.getMinY(); yi < roads.getHeight() ; yi ++) {
+        for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
+            for (int yi = roads.getMinY(); yi < roads.getHeight(); yi++) {
                 int p = roads.getRGB(xi, yi);
-                if(p!=0) {
-                    if (p==65280)
+                if (p != 0) {
+                    if (p == 65280)
                         roadColor = new Color(141, 129, 106);
                     else
                         roadColor = new Color(52, 59, 65);
 
-                    iBiomes.setRGB(xi/downScale, yi/downScale, roadColor.getRGB());
+                    iBiomes.setRGB(xi / downScale, yi / downScale, roadColor.getRGB());
                 }
             }
         }
 
         fileNum++;
         if (!checkFileExists("_map_with_roads")) {
-            File map_with_roads = new File(path + "\\"+ fileNum + "_map_with_roads.png");
+            File map_with_roads = new File(path + "\\" + fileNum + "_map_with_roads.png");
             ImageIO.write(iBiomes, "PNG", map_with_roads);
         }
     }
@@ -361,7 +371,7 @@ public class MapBuilder {
         long start, end;
         BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
 
-        iBiomes = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
+        iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
 
         // scale the input biomes image to the output image size
         Graphics2D g2d = iBiomes.createGraphics();
@@ -395,7 +405,7 @@ public class MapBuilder {
         //mark radiation zones
         drawRadiation();
 
-        if(doBlureBiomes) {
+        if (doBlureBiomes) {
             BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
             new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
             iBiomes.flush();
@@ -406,8 +416,8 @@ public class MapBuilder {
         WritableRaster iHeigthsRaster = iHeigths.getRaster();
         for (int x = 0; x < scaledSize; x++) {
             for (int y = 0; y < scaledSize; y++) {
-                if(iHeigthsRaster.getSample(x, y, 0)<waterLine
-                            && iWaterZones.getRaster().getSample(x, y, 0) > 0) {
+                if (iHeigthsRaster.getSample(x, y, 0) < waterLine
+                        && iWaterZones.getRaster().getSample(x, y, 0) > 0) {
                     iBiomes.setRGB(x, y, new Color(49, 87, 145).getRGB());
                 }
             }
@@ -417,17 +427,17 @@ public class MapBuilder {
         fileNum++;
         if (!checkFileExists("_bump")) {
             //write heights image to file
-            File bump = new File(path + "\\"+ fileNum + "_bump.png");
+            File bump = new File(path + "\\" + fileNum + "_bump.png");
             ImageIO.write(iHeigths, "PNG", bump);
         }
         fileNum++;
         if (!checkFileExists("_biomes")) {
             //write scaled biomes to file
-            File biomes = new File(path + "\\"+ fileNum + "_biomes.png");
+            File biomes = new File(path + "\\" + fileNum + "_biomes.png");
             ImageIO.write(iBiomes, "PNG", biomes);
         }
         end = System.nanoTime();
-        System.out.println("File saving time:  = " + (end-start)/1000000000 + "s");
+        System.out.println("File saving time:  = " + (end - start) / 1000000000 + "s");
 
         // normal vectors array
         float[][] normalVectors = new float[scaledSize * scaledSize][3];
@@ -440,7 +450,7 @@ public class MapBuilder {
         fileNum++;
         if (!checkFileExists("_biomesShadow")) {
             //Write bump-mapped biomes
-            File biomesShadow = new File(path + "\\"+ fileNum + "_biomesShadow.png");
+            File biomesShadow = new File(path + "\\" + fileNum + "_biomesShadow.png");
             ImageIO.write(iBiomes, "PNG", biomesShadow);
         }
     }
@@ -462,37 +472,37 @@ public class MapBuilder {
         int tcount = 0;
 
         start = System.nanoTime();
-        for (int x = raster.getMinX(); x < raster.getMinX()+raster.getWidth(); x++) {
-            for (int y = raster.getMinY(); y < raster.getMinY()+raster.getHeight(); y++) {
+        for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
+            for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
 
                 //get integer height value from a current pixel
                 int color = raster.getSample(x, y, 0);
 
                 //find min and max heights
-                if(color < min) {
+                if (color < min) {
                     min = color;
                 } else if (color > max) {
                     max = color;
                 }
 
                 //build histogram
-                hist[color/256]++;
+                hist[color / 256]++;
 
                 //calulate MEAN
-                mean += color*1./totalPixels;
-                long lColor = (long)color;
-                lColor*=lColor;
-                lColor/=totalPixels;
-                rms+= lColor;
+                mean += color * 1. / totalPixels;
+                long lColor = (long) color;
+                lColor *= lColor;
+                lColor /= totalPixels;
+                rms += lColor;
 
                 //just check pixels count
                 tcount++;
             }
         }
-        assert tcount==totalPixels;
+        assert tcount == totalPixels;
         end = System.nanoTime();
         long t1 = end - start;
-        System.out.println("Time to solve stats: " + t1/1000000 + "ms");
+        System.out.println("Time to solve stats: " + t1 / 1000000 + "ms");
 //        System.out.println("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
@@ -506,31 +516,31 @@ public class MapBuilder {
         StringBuilder sb = new StringBuilder();
         float D = 0;
         for (int i = 0; i < hist.length; i++) {
-            sb.append(i*256+"\t").append(hist[i]).append('\n');
+            sb.append(i * 256 + "\t").append(hist[i]).append('\n');
             long a = i * 256 - rms;
             double tmp = Math.pow(a, 2);
-            tmp/=tcount;
-            tmp*=hist[i];
+            tmp /= tcount;
+            tmp *= hist[i];
             D += tmp;
         }
 
-        Files.write(Paths.get(path+"\\heigthsHistogram.txt"), Collections.singleton(sb));
+        Files.write(Paths.get(path + "\\heigthsHistogram.txt"), Collections.singleton(sb));
 
         D = Math.round(Math.sqrt(D));
         System.out.println("D2 = " + D);
 
-        int startHist = Math.round(intrms - gamma*D);
+        int startHist = Math.round(intrms - gamma * D);
         System.out.println("startHist = " + startHist);
-        float k = 256*256/(max - min);
+        float k = 256 * 256 / (max - min);
         System.out.println("k = " + k);
 
-        waterLine = intrms - Math.round(1.7f*D);
+        waterLine = intrms - Math.round(1.7f * D);
         System.out.println("waterLine = " + waterLine);
-        if(applyGammaCorrection) {
+        if (applyGammaCorrection) {
             waterLine = Math.round((waterLine - min) * k);
             System.out.println("after gamma waterLine = " + waterLine);
-            for (int x = raster.getMinX(); x < raster.getMinX()+raster.getWidth(); x++) {
-                for (int y = raster.getMinY(); y < raster.getMinY()+raster.getHeight(); y++) {
+            for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
+                for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
                     int grayColor = raster.getSample(x, y, 0);
                     int imageColor = Math.round((grayColor - min) * k);
                     raster.setSample(x, y, 0, imageColor);
@@ -542,13 +552,13 @@ public class MapBuilder {
     public void readWorldHeights() throws IOException {
         String dtmFileName = path + "\\dtm.raw";
         File heightsFile = new File(dtmFileName);
-        if(!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
+        if (!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
             System.err.println("File not found: " + dtmFileName);
             System.exit(1);
         }
         long fileLength = heightsFile.length();
         System.out.println("fileLength = " + fileLength);
-        mapSize = (int) Math.round(Math.sqrt(fileLength /2.));
+        mapSize = (int) Math.round(Math.sqrt(fileLength / 2.));
         System.out.println("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
         System.out.println("Resulting image side size will be: " + scaledSize + "px");
@@ -574,7 +584,7 @@ public class MapBuilder {
                     int x = (curPixelNum % mapSize) / downScale;
                     int y = (mapSize - 1 - curPixelNum / mapSize) / downScale;
                     //write pixel to resulting image
-                    int grayColor = (buf[i*2+1]<<8)|(((int)buf[i*2])&0xff);
+                    int grayColor = (buf[i * 2 + 1] << 8) | (((int) buf[i * 2]) & 0xff);
                     raster.setSample(x, y, 0, grayColor);
                     curPixelNum++;
                     //Draw progress bar
@@ -592,9 +602,9 @@ public class MapBuilder {
         int oldR, oldG, oldB;
 
         BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
-        System.out.println("Radiation png loaded!");
+        System.out.println("Beware of radiation!");
 
-        iRad = new BufferedImage(scaledSize,scaledSize,inputImage.getType());
+        iRad = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
 
         // scale the input radiation zone image to the output image size
         Graphics2D g2d = iRad.createGraphics();
@@ -615,7 +625,7 @@ public class MapBuilder {
 
                     newR = (int) (oldR * 1.5);
                     if (newR > 255) newR = 255;
-                    if (newR<0) newR = 0;
+                    if (newR < 0) newR = 0;
 
                     iBiomes.setRGB(x, y, new Color(newR, oldG, oldB).getRGB());
                 }
@@ -627,7 +637,7 @@ public class MapBuilder {
     public boolean checkFileExists(String fileName) {
         String filePath = path + "\\" + fileNum + fileName + ".png";
         File f = new File(filePath);
-        if(!f.exists() || !f.isFile() || !f.canRead()) {
+        if (!f.exists() || !f.isFile() || !f.canRead()) {
             return false;
         } else {
             System.out.println("File already exists: " + fileNum + fileName + ".png");
@@ -635,4 +645,6 @@ public class MapBuilder {
 
         return true;
     }
+
+
 }

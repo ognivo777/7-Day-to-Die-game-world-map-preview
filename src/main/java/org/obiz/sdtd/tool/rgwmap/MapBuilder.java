@@ -222,10 +222,12 @@ public class MapBuilder {
                         }
                     }
 
-                    if(foundPrefabGroup!=null && 1!=1) {
+                    if(foundPrefabGroup!=null) {
                         Path path = icons.get(foundPrefabGroup);
                         System.out.println("prefab name = " + path.toString());
 //                        URL resource = MapBuilder.class.getResource(name);
+
+                        //TODO cache rendered icons
                         SVGUniverse svgUniverse = new SVGUniverse();
 
                         URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());

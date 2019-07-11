@@ -29,6 +29,8 @@ public class MapBuilder {
     private String path;
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
+    private boolean drawAxis = false;
+
     private boolean applyGammaCorrection = true;
     private int mapSize;
     private int scaledSize;
@@ -291,7 +293,7 @@ public class MapBuilder {
 //                        diagram.render((Graphics2D) g.create(x, y, i35, i35));
 //                        svgUniverse.clear();
 
-                        drawIcon(g, foundPrefabGroup, i35, x, y, true);
+                        drawIcon(g, foundPrefabGroup, i35, x, y, drawAxis);
 
                     } else if (prefabName.contains("cave")) {
                         g.setColor(new Color(180, 151, 0));

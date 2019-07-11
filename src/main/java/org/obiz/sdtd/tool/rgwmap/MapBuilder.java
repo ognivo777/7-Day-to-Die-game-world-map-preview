@@ -235,11 +235,6 @@ public class MapBuilder {
                         diagram.setDeviceViewport(new Rectangle(i35, i35));
                         diagram.render((Graphics2D) g.create(x, y, i35, i35));
                         svgUniverse.clear();
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
                     } else if (prefabName.contains("cave")) {
                         g.setColor(new Color(180, 151, 0));
                         g.fillArc(xShift, yShift, i40, i70, 0, 180);

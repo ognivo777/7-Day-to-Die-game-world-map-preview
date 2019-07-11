@@ -3,25 +3,31 @@
  */
 package org.obiz.sdtd.tool.rgwmap;
 
+import com.kitfox.svg.SVGDiagram;
+import com.kitfox.svg.SVGException;
+import com.kitfox.svg.SVGUniverse;
+
 import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class MapBuilder {
 
-    private String path = ".";
+    private String path;
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
     private boolean applyGammaCorrection = true;
@@ -34,6 +40,7 @@ public class MapBuilder {
     private int waterLine;
     private boolean doBlureBiomes = true;
     private int bloorK = 256; //part of image size used as blure radius
+    private Map<String, Path> icons;
 
     //fixed object sized (autoscaled)
     int i10 = 10 / (downScale);
@@ -60,13 +67,29 @@ public class MapBuilder {
     int fileNum = 1;
     private BufferedImage iWaterZones;
 
+    public MapBuilder(String path) {
+        this.path = path;
+        try {
+            icons = loadIcons();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         //TODO command line options
-        new MapBuilder().build();
+        String path = ".";
+        if(args.length==1) {
+            path = args[0];
+        }
+        new MapBuilder(path).build();
     }
 
     private void build() {
         try {
+//            System.exit(0);
             readWorldHeights();
             readWatersPoint();
             autoAjustImage();
@@ -78,7 +101,34 @@ public class MapBuilder {
             e.printStackTrace();
         } catch (XMLStreamException e) {
             e.printStackTrace();
+        } catch (SVGException e) {
+            e.printStackTrace();
         }
+    }
+
+    private Map<String, Path> loadIcons() throws IOException, URISyntaxException {
+        Map<String, Path> result = new HashMap<>();
+        URI uri = getClass().getResource("/icons").toURI();
+        Path myPath;
+        if (uri.getScheme().equals("jar")) {
+            FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+            myPath = fileSystem.getPath("/icons");
+        } else {
+            myPath = Paths.get(uri);
+        }
+        Stream<Path> walk = Files.walk(myPath, 1);
+
+        walk.forEach(
+                next -> {
+                    String nextFile = next.getFileName().toString();
+                    if(Files.isRegularFile(next) && nextFile.endsWith(".svg")) {
+                        nextFile = nextFile.substring(0, nextFile.lastIndexOf("."));
+                        result.put(nextFile, next);
+                        System.out.println(nextFile + ": " + Files.isReadable(next));
+                    }
+                }
+        );
+        return result;
     }
 
     private void readWatersPoint() throws IOException, XMLStreamException {
@@ -114,7 +164,7 @@ public class MapBuilder {
 
     }
 
-    private void drawPrefabs() throws IOException, XMLStreamException {
+    private void drawPrefabs() throws IOException, XMLStreamException, SVGException {
         String prefabs = "\\prefabs.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
@@ -145,6 +195,8 @@ public class MapBuilder {
         buildColors.put("other", new Color(69, 72, 72));
         //red_mesa
 
+        Set<String> prefabsGroups = icons.keySet();
+
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
             if (eventType == XMLEvent.START_ELEMENT) {
@@ -160,10 +212,33 @@ public class MapBuilder {
                     // iBiomes.setRGB(x, y, rgb);
                     int xShift = x + i15;
                     int yShift = y - i50;
+
                     String prefabName = xmlr.getAttributeValue(1);
+                    String foundPrefabGroup = null;
 
-                    if (prefabName.contains("cave")) {
+                    for (String prefabsGroup : prefabsGroups) {
+                        if(prefabName.contains(prefabsGroup)) {
+                            foundPrefabGroup = prefabsGroup;
+                        }
+                    }
 
+                    if(foundPrefabGroup!=null && 1!=1) {
+                        Path path = icons.get(foundPrefabGroup);
+                        System.out.println("prefab name = " + path.toString());
+//                        URL resource = MapBuilder.class.getResource(name);
+                        SVGUniverse svgUniverse = new SVGUniverse();
+
+                        URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
+                        SVGDiagram diagram = svgUniverse.getDiagram(uri);
+                        diagram.setDeviceViewport(new Rectangle(i35, i35));
+                        diagram.render((Graphics2D) g.create(x, y, i35, i35));
+                        svgUniverse.clear();
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (prefabName.contains("cave")) {
                         g.setColor(new Color(180, 151, 0));
                         g.fillArc(xShift, yShift, i40, i70, 0, 180);
                         g.setColor(Color.DARK_GRAY);

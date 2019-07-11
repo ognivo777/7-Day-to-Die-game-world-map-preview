@@ -18,16 +18,21 @@ jar {
     manifest {
         attributes 'Main-Class': 'org.obiz.sdtd.tool.rgwmap.MapBuilder'
     }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+//    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-
+    compile group: 'guru.nidi.com.kitfox', name: 'svgSalamander', version: '1.1.2'
 }
 
 application {

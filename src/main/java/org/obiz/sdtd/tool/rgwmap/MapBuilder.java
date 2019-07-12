@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -29,8 +30,6 @@ public class MapBuilder {
     private String path;
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
-    private boolean drawAxis = false;
-
     private boolean applyGammaCorrection = true;
     private int mapSize;
     private int scaledSize;
@@ -90,7 +89,6 @@ public class MapBuilder {
 
     private void build() {
         try {
-            testGetSprite("bank");
 //            System.exit(0);
             readWorldHeights();
             readWatersPoint();
@@ -106,64 +104,6 @@ public class MapBuilder {
         } catch (SVGException e) {
             e.printStackTrace();
         }
-    }
-
-    private void testGetSprite(String iconName) {
-        BufferedImage map = new BufferedImage(1024, 1024, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D gMap = map.createGraphics();
-        gMap.setColor(Color.GRAY);
-        gMap.drawRect(0, 0, 1023, 1023);
-        for (int i = 0; i < 1024; i+=32) {
-            gMap.drawLine(0, i,1023, i);
-            gMap.drawLine(i,0, i, 1023);
-        }
-        int iconSize = 64;
-        int x = 512, y = 512;
-
-        try {
-            ImageIO.write(map, "PNG", new File("_tst_map.png"));
-
-            drawIcon(gMap, iconName, iconSize, x, y, true);
-
-            ImageIO.write(map, "PNG", new File("_tst_map2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void drawIcon(Graphics2D gMap, String iconName, int targetSize, int x, int y, boolean showAxis) {
-        //TODO cache sprites
-        gMap.drawImage(createSprite(iconName, targetSize, showAxis), x - targetSize *4, y - targetSize *4, null);
-    }
-
-    private BufferedImage createSprite(String name, int width, boolean showAxis) {
-        BufferedImage img = new BufferedImage(width*8, width*8, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
-        try {
-            Path path = icons.get(name);
-            SVGUniverse svgUniverse = new SVGUniverse();
-
-            URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
-            SVGDiagram diagram = svgUniverse.getDiagram(uri);
-            diagram.setDeviceViewport(new Rectangle(width, width));
-            Graphics graphics = g.create(0, 0, width*8, width*8);
-            if(showAxis) {
-                g.setColor(Color.ORANGE);
-                g.drawRect(0, 0, width*8-1, width*8-1);
-                g.setColor(Color.GREEN);
-                g.drawLine(0, width*4, width*8-1, width*4);
-                g.drawLine(width*4,0, width*4, width*8-1);
-            }
-            graphics.translate(width*4, width*4);
-            diagram.render((Graphics2D) graphics);
-//            System.out.println(diagram.getViewRect());
-            svgUniverse.clear();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SVGException e) {
-            e.printStackTrace();
-        }
-        return img;
     }
 
     private Map<String, Path> loadIcons() throws IOException, URISyntaxException {
@@ -229,7 +169,7 @@ public class MapBuilder {
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
 
-        Graphics2D g = iBiomes.createGraphics();
+        Graphics g = iBiomes.getGraphics();
 
         int eventType;
 
@@ -285,16 +225,19 @@ public class MapBuilder {
                     if(foundPrefabGroup!=null) {
                         Path path = icons.get(foundPrefabGroup);
                         System.out.println("prefab name = " + path.toString());
+//                        URL resource = MapBuilder.class.getResource(name);
+                        SVGUniverse svgUniverse = new SVGUniverse();
 
-//                        SVGUniverse svgUniverse = new SVGUniverse();
-//                        URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
-//                        SVGDiagram diagram = svgUniverse.getDiagram(uri);
-//                        diagram.setDeviceViewport(new Rectangle(i35, i35));
-//                        diagram.render((Graphics2D) g.create(x, y, i35, i35));
-//                        svgUniverse.clear();
-
-                        drawIcon(g, foundPrefabGroup, i35, x, y, drawAxis);
-
+                        URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
+                        SVGDiagram diagram = svgUniverse.getDiagram(uri);
+                        diagram.setDeviceViewport(new Rectangle(i35, i35));
+                        diagram.render((Graphics2D) g.create(x, yShift, i35, i35));
+                        svgUniverse.clear();
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     } else if (prefabName.contains("cave")) {
                         g.setColor(new Color(180, 151, 0));
                         g.fillArc(xShift, yShift, i40, i70, 0, 180);

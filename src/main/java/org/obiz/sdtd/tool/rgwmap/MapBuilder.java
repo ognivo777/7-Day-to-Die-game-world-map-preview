@@ -174,16 +174,8 @@ public class MapBuilder {
 
         //fixed buildings colors
         HashMap<String, Color> buildColors = new HashMap();
-        buildColors.put("cabin", new Color(77, 72, 59));
-        buildColors.put("apartment", new Color(80, 81, 75));
-        buildColors.put("house", new Color(90, 92, 91));
-        buildColors.put("gas", new Color(134, 78, 74));
         buildColors.put("garage", new Color(51, 49, 51));
-        buildColors.put("site", new Color(61, 71, 55));
-        buildColors.put("sky", new Color(76, 121, 126));
-        buildColors.put("hotel", new Color(83, 47, 61));
         buildColors.put("red", new Color(181, 48, 42));
-        buildColors.put("water", new Color(22, 116, 168));
         buildColors.put("other", new Color(69, 72, 72));
 
         Set<String> prefabsGroups = icons.keySet();
@@ -224,32 +216,14 @@ public class MapBuilder {
                         URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
                         SVGDiagram diagram = svgUniverse.getDiagram(uri);
                         diagram.setDeviceViewport(new Rectangle(i40, i40));
-                        diagram.render((Graphics2D) g.create(x, yShift, i40, i40));
+                        diagram.render((Graphics2D) g.create(x, yShift, i40, i80));
                         svgUniverse.clear();
                         try {
                             Thread.sleep(10);
-                            if (prefabsCounter % 75 == 0) System.out.print("\u25AF");
+                            if (prefabsCounter % 100 == 0) System.out.print("\u25AF");
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    } else if (prefabName.contains("house")) {
-                        g.setColor(buildColors.get("house"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x, yShift + i10, i35, i30, true);
-                        else
-                            g.fill3DRect(x, yShift + i10, i30, i35, true);
-                    } else if (prefabName.contains("business")) {
-                        g.setColor(buildColors.get("sky"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x, yShift + i10, i25, i30, true);
-                        else
-                            g.fill3DRect(x, yShift + i10, i30, i25, true);
-                    } else if (prefabName.contains("hotel")) {
-                        g.setColor(buildColors.get("hotel"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i5, y - i50, i30, i25, true);
-                        else
-                            g.fill3DRect(x + i5, y - i50, i25, i30, true);
                     } else if (prefabName.contains("garage")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
@@ -259,23 +233,12 @@ public class MapBuilder {
                     } else if (prefabName.contains("trailer")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
-                    } else if (prefabName.contains("apartment")) {
-                        g.setColor(buildColors.get("apartment"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i5, yShift + i10, i40, i30, true);
-                        else
-                            g.fill3DRect(x + i5, yShift + i10, i30, i40, true);
                     } else if (prefabName.contains("fire")) {
                         g.setColor(Color.lightGray);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
-                    } else if (prefabName.contains("site")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(xShift - i5, yShift + i10, i35, i35);
-                        g.setColor(buildColors.get("site"));
-                        g.fillOval(xShift, yShift + i15, i30, i30);
                     } else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)

@@ -177,22 +177,14 @@ public class MapBuilder {
         buildColors.put("cabin", new Color(77, 72, 59));
         buildColors.put("apartment", new Color(80, 81, 75));
         buildColors.put("house", new Color(90, 92, 91));
-        buildColors.put("field", new Color(79, 109, 77));
-        buildColors.put("army", new Color(82, 83, 50));
         buildColors.put("gas", new Color(134, 78, 74));
         buildColors.put("garage", new Color(51, 49, 51));
         buildColors.put("site", new Color(61, 71, 55));
-        buildColors.put("trader", new Color(180, 108, 5));
         buildColors.put("sky", new Color(76, 121, 126));
         buildColors.put("hotel", new Color(83, 47, 61));
-        buildColors.put("pharmacy", new Color(33, 126, 46));
         buildColors.put("red", new Color(181, 48, 42));
-        buildColors.put("gun", new Color(175, 147, 49));
-        buildColors.put("yellow", new Color(183, 183, 0));
-        buildColors.put("black", new Color(33, 33, 33));
         buildColors.put("water", new Color(22, 116, 168));
         buildColors.put("other", new Color(69, 72, 72));
-        //red_mesa
 
         Set<String> prefabsGroups = icons.keySet();
         int prefabsSVGCounter = 0;
@@ -209,9 +201,6 @@ public class MapBuilder {
                     int y = (mapSize / 2 - Integer.parseInt(split[2])) / downScale;
 
                     int rot = Integer.parseInt(xmlr.getAttributeValue(3));
-
-                    //int rgb = Color.RED.getRGB();
-                    // iBiomes.setRGB(x, y, rgb);
                     int xShift = x + i15;
                     int yShift = y - i50;
 
@@ -261,9 +250,6 @@ public class MapBuilder {
                             g.fill3DRect(x + i5, y - i50, i30, i25, true);
                         else
                             g.fill3DRect(x + i5, y - i50, i25, i30, true);
-                    } else if (prefabName.contains("cabin")) {
-                        g.setColor(buildColors.get("cabin"));
-                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
                     } else if (prefabName.contains("garage")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
@@ -279,12 +265,6 @@ public class MapBuilder {
                             g.fill3DRect(x + i5, yShift + i10, i40, i30, true);
                         else
                             g.fill3DRect(x + i5, yShift + i10, i30, i40, true);
-                    } else if (prefabName.contains("gas")) {
-                        g.setColor(buildColors.get("gas"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(xShift, yShift + i10, i30, i25, true);
-                        else
-                            g.fill3DRect(xShift, yShift + i10, i25, i30, true);
                     } else if (prefabName.contains("fire")) {
                         g.setColor(Color.lightGray);
                         g.fillOval(x + i10, yShift - i10, i45, i45);

@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
@@ -196,6 +195,9 @@ public class MapBuilder {
         //red_mesa
 
         Set<String> prefabsGroups = icons.keySet();
+        int prefabsSVGCounter = 0;
+        int prefabsCounter = 0;
+        System.out.print("Processing prefabs: ");
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -219,23 +221,28 @@ public class MapBuilder {
                     for (String prefabsGroup : prefabsGroups) {
                         if(prefabName.contains(prefabsGroup)) {
                             foundPrefabGroup = prefabsGroup;
+                            prefabsSVGCounter++;
                         }
                     }
 
+                    prefabsCounter++;
+
                     if(foundPrefabGroup!=null) {
                         Path path = icons.get(foundPrefabGroup);
-                        System.out.println("prefab name = " + path.toString());
-//                        URL resource = MapBuilder.class.getResource(name);
                         SVGUniverse svgUniverse = new SVGUniverse();
 
                         URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
                         SVGDiagram diagram = svgUniverse.getDiagram(uri);
-                        diagram.setDeviceViewport(new Rectangle(i35, i35));
-                        diagram.render((Graphics2D) g.create(x, yShift, i35, i35));
+                        diagram.setDeviceViewport(new Rectangle(i40, i40));
+                        diagram.render((Graphics2D) g.create(x, yShift, i40, i40));
                         svgUniverse.clear();
                         try {
-                            Thread.sleep(50);
+                            Thread.sleep(10);
+                            if (prefabsCounter%25==0) System.out.print("\u25AF");
+                            if (foundPrefabGroup == "skyscraper") System.out.print("this map has " + foundPrefabGroup + " you're looking for");
+
                         } catch (InterruptedException e) {
+                            System.err.println("prefab name = " + path.toString());
                             e.printStackTrace();
                         }
                     } else if (prefabName.contains("cave")) {
@@ -412,13 +419,16 @@ public class MapBuilder {
             }
         }
 
+        System.out.print( " | " + prefabsCounter + " prefabs added!\n");
+        System.out.println( prefabsSVGCounter + " prefabs added as SVG.");
+
         File mapWithObjects = new File(path + "\\" + "9_mapWithObjects.png");
         ImageIO.write(iBiomes, "PNG", mapWithObjects);
     }
 
     private void drawRoads() throws IOException {
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
-        System.out.println("Roads loaded");
+        System.out.println("Roads loaded.");
         Color roadColor;
 
         for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {

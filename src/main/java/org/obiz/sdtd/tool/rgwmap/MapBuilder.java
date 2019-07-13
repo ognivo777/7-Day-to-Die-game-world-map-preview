@@ -228,6 +228,7 @@ public class MapBuilder {
                     prefabsCounter++;
 
                     if(foundPrefabGroup!=null) {
+                        //System.out.println(foundPrefabGroup);
                         Path path = icons.get(foundPrefabGroup);
                         SVGUniverse svgUniverse = new SVGUniverse();
 
@@ -238,55 +239,10 @@ public class MapBuilder {
                         svgUniverse.clear();
                         try {
                             Thread.sleep(10);
-                            if (prefabsCounter%25==0) System.out.print("\u25AF");
-                            if (foundPrefabGroup == "skyscraper") System.out.print("this map has " + foundPrefabGroup + " you're looking for");
-
+                            if (prefabsCounter % 75 == 0) System.out.print("\u25AF");
                         } catch (InterruptedException e) {
-                            System.err.println("prefab name = " + path.toString());
                             e.printStackTrace();
                         }
-                    } else if (prefabName.contains("cave")) {
-                        g.setColor(new Color(180, 151, 0));
-                        g.fillArc(xShift, yShift, i40, i70, 0, 180);
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillArc(xShift + i10, yShift + i10, i20, i50, 0, 180);
-                    } else if (prefabName.contains("water_tower")) {
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillOval(x, yShift, i30, i30);
-                        g.setColor(buildColors.get("water"));
-                        g.drawOval(x, yShift, i30, i30);
-                        g.fillArc(x, yShift - i5, i30, i30, 225, 90);
-                        g.fillOval(x + i5, yShift + i15, i20, i20);
-                    } else if (prefabName.contains("electric")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i10, yShift - i10, i35, i35);
-                        g.setColor(buildColors.get("yellow"));
-                        g.drawOval(x + i10, yShift - i10, i35, i35);
-                        g.fillArc(x + i20, yShift - i40, i30, i60, 180, 80);
-                    } else if (prefabName.contains("church")) {
-                        g.setColor(buildColors.get("black"));
-                        g.fillRect(x, yShift + i10, i30, i10);
-                        g.fillRect(x + i10, yShift, i10, i40);
-                    } else if (prefabName.contains("cemetery")) {
-                        g.setColor(buildColors.get("black"));
-                        g.fillArc(x, yShift, i25, i30, 0, 180);
-                        g.fillRect(x, yShift + i15, i25, i20);
-                    } else if (prefabName.contains("snowy_ski_lodge")) {
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillOval(x + i15, y - i30, i45, i45);
-                        g.setColor(buildColors.get("black"));
-                        g.drawOval(x + i15, y - i30, i45, i45);
-                        g.fillOval(x + i20, y - i20, i30, i20);
-                        g.fillRect(x + i30, y - i10, i15, i20);
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillOval(x + i25, y - i15, i10, i10);
-                        g.fillOval(x + i35, y - i15, i10, i10);
-                    } else if (prefabName.contains("bombshelter")) {
-                        g.setColor(buildColors.get("black"));
-                        g.fillOval(x + i20, y - i20, i30, i20);
-                        g.fillRect(x + i20, y - i10, i35, i10);
-                        g.setColor(Color.GRAY);
-                        g.fillRect(x + i25, y - i10, i25, i5);
                     } else if (prefabName.contains("house")) {
                         g.setColor(buildColors.get("house"));
                         if (rot == 0 || rot == 2)
@@ -305,61 +261,9 @@ public class MapBuilder {
                             g.fill3DRect(x + i5, y - i50, i30, i25, true);
                         else
                             g.fill3DRect(x + i5, y - i50, i25, i30, true);
-                    } else if (prefabName.contains("sky")) {
-                        g.setColor(buildColors.get("sky"));
-                        g.fill3DRect(x, yShift - i10, i35, i50, true);
-                    } else if (prefabName.contains("army")) {
-                        g.setColor(buildColors.get("army"));
-                        g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (prefabName.contains("bank")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i2, yShift + i5, i35, i35);
-                        g.setColor(buildColors.get("yellow"));
-                        g.drawOval(x + i2, yShift + i5, i35, i35);
-                        g.fillArc(x, yShift - i15, i40, i40, 225, 90);
-                        g.fillArc(x, yShift + i15, i40, i40, 45, 90);
-                    } else if (prefabName.contains("red_mesa")) {
-                        g.setColor(buildColors.get("red"));
-                        g.fillArc(x, yShift - i15, i45, i45, 225, 90);
-                        g.fillArc(x, yShift + i15, i45, i45, 45, 90);
-                        g.setColor(Color.DARK_GRAY);
-                        g.drawArc(x, yShift - i15, i45, i45, 225, 90);
-                        g.drawArc(x, yShift + i15, i45, i45, 45, 90);
-                        g.drawArc(x + i15, yShift, i45, i45, 135, 90);
-                        g.drawArc(x - i15, yShift, i45, i45, 315, 90);
                     } else if (prefabName.contains("cabin")) {
                         g.setColor(buildColors.get("cabin"));
                         g.fill3DRect(xShift, yShift + i10, i30, i30, true);
-                    } else if (prefabName.contains("pharmacy")) {
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillOval(x + i10, yShift - i10, i45, i45);
-                        g.setColor(buildColors.get("pharmacy"));
-                        g.drawOval(x + i10, yShift - i10, i45, i45);
-                        g.fillRect(x + i20, yShift + i10, i30, i10);
-                        g.fillRect(x + i30, yShift, i10, i30);
-                    } else if (prefabName.contains("post_office")) {
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillRect(x + i5, y, i35, i25);
-                        g.setColor(Color.DARK_GRAY);
-                        g.drawRect(x + i5, y, i35, i25);
-                        g.drawLine(x + i5, y, x + i25, y + i10);
-                        g.drawLine(x + i40, y, x + i20, y + i10);
-                        g.drawLine(x + i5, y + i25, x + i10, y + i10);
-                        g.drawLine(x + i40, y + i25, x + i35, y + i10);
-                    } else if (prefabName.contains("gun")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i10, yShift - i10, i45, i45);
-                        g.setColor(buildColors.get("gun"));
-                        g.drawOval(x + i10, yShift - i10, i45, i45);
-                        g.fillRect(x + i20, yShift, i10, i30);
-                        g.fillRect(x + i40, yShift, i10, i30);
-                    } else if (prefabName.contains("hospital")) {
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillOval(x + i10, yShift - i10, i45, i45);
-                        g.setColor(buildColors.get("red"));
-                        g.drawOval(x + i10, yShift - i10, i45, i45);
-                        g.fillRect(x + i20, yShift + i10, i30, i10);
-                        g.fillRect(x + i30, yShift, i10, i30);
                     } else if (prefabName.contains("garage")) {
                         g.setColor(buildColors.get("garage"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
@@ -387,27 +291,11 @@ public class MapBuilder {
                         g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);
                         g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
-                    } else if (prefabName.contains("field")) {
-                        if (prefabName.contains("corn"))
-                            g.setColor(buildColors.get("army"));
-                        else
-                            g.setColor(buildColors.get("field"));
-                        if (prefabName.contains("med"))
-                            g.fillRect(x, yShift, i25, i25);
-                        else
-                            g.fillRect(x, yShift, i15, i15);
                     } else if (prefabName.contains("site")) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillOval(xShift - i5, yShift + i10, i35, i35);
                         g.setColor(buildColors.get("site"));
                         g.fillOval(xShift, yShift + i15, i30, i30);
-                    } else if (prefabName.contains("trader")) {
-                        g.setColor(Color.DARK_GRAY);
-                        g.fillOval(x + i5, yShift - i5, i45, i45);
-                        g.setColor(buildColors.get("trader"));
-                        g.drawOval(x + i5, yShift - i5, i45, i45);
-                        g.fillArc(x + i10, yShift - i10, i40, i40, 225, 90);
-                        g.fillArc(x + i20, yShift + i5, i20, i20, 45, 90);
                     } else {
                         g.setColor(buildColors.get("other"));
                         if (rot == 0 || rot == 2)

@@ -174,9 +174,9 @@ public class MapBuilder {
 
         //fixed buildings colors
         HashMap<String, Color> buildColors = new HashMap();
-        buildColors.put("garage", new Color(51, 49, 51));
+        buildColors.put("black", new Color(51, 49, 51));
         buildColors.put("red", new Color(181, 48, 42));
-        buildColors.put("other", new Color(69, 72, 72));
+        buildColors.put("other", new Color(58, 50, 39));
 
         Set<String> prefabsGroups = icons.keySet();
         int prefabsSVGCounter = 0;
@@ -225,13 +225,10 @@ public class MapBuilder {
                             e.printStackTrace();
                         }
                     } else if (prefabName.contains("garage")) {
-                        g.setColor(buildColors.get("garage"));
+                        g.setColor(buildColors.get("black"));
                         g.fill3DRect(x + i5, y - i30, i20, i20, true);
-                    } else if (prefabName.contains("parking")) {
-                        g.setColor(buildColors.get("garage"));
-                        g.fill3DRect(x + i5, yShift + i20, i40, i40, true);
                     } else if (prefabName.contains("trailer")) {
-                        g.setColor(buildColors.get("garage"));
+                        g.setColor(buildColors.get("black"));
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
                     } else if (prefabName.contains("fire")) {
                         g.setColor(Color.lightGray);

@@ -175,7 +175,7 @@ public class MapBuilder {
         //fixed buildings colors
         HashMap<String, Color> buildColors = new HashMap();
         buildColors.put("black", new Color(51, 49, 51));
-        buildColors.put("red", new Color(181, 48, 42));
+        buildColors.put("red", new Color(139, 52, 48));
         buildColors.put("other", new Color(58, 50, 39));
 
         Set<String> prefabsGroups = icons.keySet();
@@ -220,7 +220,7 @@ public class MapBuilder {
                         svgUniverse.clear();
                         try {
                             Thread.sleep(10);
-                            if (prefabsCounter % 100 == 0) System.out.print("\u25AF");
+                            if (prefabsCounter % 200 == 0) System.out.print("\u25AF");
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -231,7 +231,7 @@ public class MapBuilder {
                         g.setColor(buildColors.get("black"));
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
                     } else if (prefabName.contains("fire")) {
-                        g.setColor(Color.lightGray);
+                        g.setColor(Color.GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("red"));
                         g.drawOval(x + i10, yShift - i10, i45, i45);

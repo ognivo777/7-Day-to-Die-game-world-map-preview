@@ -74,7 +74,7 @@ public class BumpMappingUtils {
         int newR, newG, newB;
         int oldR, oldG, oldB;
         System.out.println("Paint biomes shadows: ");
-
+        //TODO multithread
         for (x = 0; x < width; x++)
         {
             for (y = 0; y < height; y++)

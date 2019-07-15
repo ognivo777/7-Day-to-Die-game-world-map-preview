@@ -320,6 +320,7 @@ public class MapBuilder {
         log("Roads loaded.");
         Color roadColor;
 
+        //TODO multithread
         for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
             for (int yi = roads.getMinY(); yi < roads.getHeight(); yi++) {
                 int p = roads.getRGB(xi, yi);
@@ -417,10 +418,12 @@ public class MapBuilder {
         float[][] normalVectors = new float[scaledSize * scaledSize][3];
         // precalculate normal vectors
         BumpMappingUtils.FindNormalVectors(iHeigths, normalVectors);
+        log("Normal vectors are saved.");
         //free mem
         iHeigths.flush();
         //apply bump-mapping using normal vectors
         BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
+        log("Bump mapping applied.");
         fileNum++;
         if (!checkFileExists("_biomesShadow")) {
             //Write bump-mapped biomes
@@ -446,6 +449,7 @@ public class MapBuilder {
         int tcount = 0;
 
         start = System.nanoTime();
+        //TODO multithread
         for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
             for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
 
@@ -513,6 +517,8 @@ public class MapBuilder {
         if (applyGammaCorrection) {
             waterLine = Math.round((waterLine - min) * k);
             log("after gamma waterLine = " + waterLine);
+            log("Start apply gamma correction.");
+            //TODO multithread
             for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
                 for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
                     int grayColor = raster.getSample(x, y, 0);
@@ -520,6 +526,7 @@ public class MapBuilder {
                     raster.setSample(x, y, 0, imageColor);
                 }
             }
+            log("End apply gamma correction.");
         }
     }
 
@@ -575,19 +582,22 @@ public class MapBuilder {
         int newR;
         int oldR, oldG, oldB;
 
+        log("Load radiation map..");
         BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
         log("Beware of radiation!");
 
         iRad = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
 
         // scale the input radiation zone image to the output image size
+        log("Start scale radiation..");
         Graphics2D g2d = iRad.createGraphics();
         g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
         g2d.dispose();
 
         //free mem
         inputImage.flush();
-
+        log("Start draw radiation.");
+        //TODO multithread
         for (int x = 0; x < scaledSize; x++) {
             for (int y = 0; y < scaledSize; y++) {
                 int rgb = iBiomes.getRGB(x, y);
@@ -605,6 +615,7 @@ public class MapBuilder {
                 }
             }
         }
+        log("End draw radiation.");
 
     }
 

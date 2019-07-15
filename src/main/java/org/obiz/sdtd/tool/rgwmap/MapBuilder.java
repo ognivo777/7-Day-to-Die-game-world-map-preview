@@ -265,8 +265,8 @@ public class MapBuilder {
                     int y = (mapSize / 2 - Integer.parseInt(split[2])) / downScale;
 
                     int rot = Integer.parseInt(xmlr.getAttributeValue(3));
-                    int xShift = x + i15;
-                    int yShift = y - i50;
+                    int xShift = x + i10;
+                    int yShift = y - i45;
 
                     String prefabName = xmlr.getAttributeValue(1);
                     String foundPrefabGroup = null;
@@ -281,7 +281,7 @@ public class MapBuilder {
                     prefabsCounter++;
 
                     if(foundPrefabGroup!=null) {
-                        drawIcon(g, foundPrefabGroup, i40, x, yShift, DRAW_ICON_AXIS);
+                        drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS);
                         if (prefabsCounter % 200 == 0) System.out.print("\u25AF");
                     } else if (prefabName.contains("garage")) {
                         g.setColor(buildColors.get("black"));

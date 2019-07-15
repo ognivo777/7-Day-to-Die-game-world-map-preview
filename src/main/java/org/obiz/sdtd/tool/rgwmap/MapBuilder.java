@@ -79,6 +79,9 @@ public class MapBuilder {
             path = args[0];
         }
 
+
+
+
         Runtime runtime = Runtime.getRuntime();
         long freeMemory = runtime.freeMemory();
         long totalMemory = runtime.totalMemory();
@@ -87,10 +90,11 @@ public class MapBuilder {
         System.out.println("freeMemory = " + freeMemory);
         System.out.println("maxMemory = " + maxMemory);
 
-        JOptionPane.showMessageDialog(null, "Started! Max mem: " + maxMemory/(1024*1024) + "mb","Welcome messsage", JOptionPane.INFORMATION_MESSAGE);
+//        JOptionPane.showMessageDialog(null, "Started! Max mem: " + maxMemory/(1024*1024) + "mb","Welcome messsage", JOptionPane.INFORMATION_MESSAGE);
 
         if(maxMemory < 512*1024*1024) {
             System.out.println("TOO LITTLE");
+            JOptionPane.showMessageDialog(null, "There is too little mem for me :(\nI'm trying to restart my self for grab much mem!","Not enough mem error", JOptionPane.ERROR_MESSAGE);
             String jarName = new File(MapBuilder.class.getProtectionDomain()
                     .getCodeSource()
                     .getLocation()
@@ -100,37 +104,33 @@ public class MapBuilder {
             System.out.println("jarName = " + jarName);
             if(jarName.endsWith("jar")) {
                 System.out.println("Do the magic!");
-                JOptionPane.showMessageDialog(null, "There is too little mem for me :(\nI'm trying to restart my self for grab much mem!","Not enough mem error", JOptionPane.ERROR_MESSAGE);
 
                 try {
                     // re-launch the app itselft with VM option passed
+                    Process p;
                     if(args.length>0) {
                         System.out.println("With args");
-                        Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName, args[0]});
+                        p = Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName, args[0]});
                     } else {
                         System.out.println("Without args");
-                        Process p = Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName});
-//                        System.out.println("p.isAlive() = " + p.isAlive());
-//                        System.out.println("p.exitValue() = " + p.exitValue());
-//                        Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
-                        Thread.sleep(10);
-//                        while(s.hasNext()){
-//                            System.out.println(s.next());
-//                            Thread.sleep(10);
-//                        }
-//                        int exitCode  = p.waitFor();
-//                        System.out.println("exitCode = " + exitCode);
-                        System.exit(0);
+                        p = Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName});
                     }
+                    Thread.sleep(10);
+                    System.exit(0);
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            } else {
+                //just die if it's running from IDE
+                System.exit(-1);
             }
         } else {
+            ConsoleWindow cwnd = new ConsoleWindow();
+
             System.out.println("Enough mem! Let's work!");
-            JOptionPane.showMessageDialog(null, "Enough mem! Let's work!","I can fly!", JOptionPane.INFORMATION_MESSAGE);
+//            JOptionPane.showMessageDialog(null, "Enough mem! Let's work!","I can fly!", JOptionPane.INFORMATION_MESSAGE);
         }
 
         new MapBuilder(path).build();

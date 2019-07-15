@@ -59,6 +59,7 @@ public class MapBuilder {
     private BufferedImage iWaterZones;
     
     private long prevLogTime;
+    private String lastFileName;
 
     public MapBuilder(String path) {
         this.path = path;
@@ -146,7 +147,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            log("All work done!\nResult map image: 9_mapWithObjects.png");
+            log("All work done!\nResult map image: " + lastFileName);
         } catch (IOException e) {
 
             e.printStackTrace();
@@ -276,11 +277,7 @@ public class MapBuilder {
         }
 
         System.out.print(watersPointsCounter + " water sources.\n");
-        if (!checkFileExists("_waterZones")) {
-            File waterZones = new File(path + "\\" + fileNum + "_waterZones.png");
-            ImageIO.write(iWaterZones, "PNG", waterZones);
-        }
-
+        writeToFile("_waterZones", iWaterZones);
     }
 
     private void drawPrefabs() throws IOException, XMLStreamException, SVGException {
@@ -348,8 +345,7 @@ public class MapBuilder {
         log( prefabsCounter + " prefabs added, " + prefabsSVGCounter + " of them added from SVG.");
         Timer.stopTimer("Draw prefabs");
 
-        File mapWithObjects = new File(path + "\\" + "9_mapWithObjects.png");
-        ImageIO.write(iBiomes, "PNG", mapWithObjects);
+        writeToFile("_mapWithObjects", iBiomes, false);
     }
 
     private void drawRoads() throws IOException {
@@ -373,10 +369,7 @@ public class MapBuilder {
         }
 
         fileNum++;
-        if (!checkFileExists("_map_with_roads")) {
-            File map_with_roads = new File(path + "\\" + fileNum + "_map_with_roads.png");
-            ImageIO.write(iBiomes, "PNG", map_with_roads);
-        }
+        writeToFile("_map_with_roads", iBiomes);
     }
 
     private void applyHeightsToBiomes() throws IOException {
@@ -384,6 +377,7 @@ public class MapBuilder {
         BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
 
         iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
+//        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
 
         // scale the input biomes image to the output image size
         Graphics2D g2d = iBiomes.createGraphics();
@@ -437,17 +431,9 @@ public class MapBuilder {
 
         start = System.nanoTime();
         fileNum++;
-        if (!checkFileExists("_bump")) {
-            //write heights image to file
-            File bump = new File(path + "\\" + fileNum + "_bump.png");
-            ImageIO.write(iHeigths, "PNG", bump);
-        }
+        writeToFile("_bump", iHeigths);
         fileNum++;
-        if (!checkFileExists("_biomes")) {
-            //write scaled biomes to file
-            File biomes = new File(path + "\\" + fileNum + "_biomes.png");
-            ImageIO.write(iBiomes, "PNG", biomes);
-        }
+        writeToFile("_biomes", iBiomes);
         end = System.nanoTime();
         log("File saving time:  = " + (end - start) / 1000000000 + "s");
 
@@ -462,10 +448,18 @@ public class MapBuilder {
         BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
         log("Bump mapping applied.");
         fileNum++;
-        if (!checkFileExists("_biomesShadow")) {
-            //Write bump-mapped biomes
-            File biomesShadow = new File(path + "\\" + fileNum + "_biomesShadow.png");
-            ImageIO.write(iBiomes, "PNG", biomesShadow);
+        //Write bump-mapped biomes
+        writeToFile("_biomesShadow", iBiomes);
+    }
+
+    private void writeToFile(String fileName, BufferedImage imgToSave) throws IOException {
+        writeToFile(fileName, imgToSave, true);
+    }
+    private void writeToFile(String fileName, BufferedImage imgToSave, boolean checkExists) throws IOException {
+        if (!checkExists || !checkFileExists(fileName)) {
+            lastFileName = fileNum + fileName + ".png";
+            File biomesShadow = new File(path + "\\" + lastFileName);
+            ImageIO.write(imgToSave, "PNG", biomesShadow);
         }
     }
 

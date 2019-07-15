@@ -42,6 +42,7 @@ public class MapBuilder {
     private boolean doBlureBiomes = true;
     private int bloorK = 256; //part of image size used as blure radius
     private Map<String, Path> icons;
+    private Map<String, BufferedImage> iconsCache = new HashMap<>();
 
     //fixed object sized (autoscaled)
     int i10 = 10 / (downScale);
@@ -132,8 +133,13 @@ public class MapBuilder {
     }
 
     private void drawIcon(Graphics2D gMap, String iconName, int targetSize, int x, int y, boolean showAxis) {
-        //TODO cache sprites
-        gMap.drawImage(createSprite(iconName, targetSize, showAxis), x - targetSize *4, y - targetSize *4, null);
+        BufferedImage sprite;
+        sprite = iconsCache.get(iconName);
+        if(sprite == null) {
+            sprite = createSprite(iconName, targetSize, showAxis);
+            iconsCache.put(iconName, sprite);
+        }
+        gMap.drawImage(sprite, x - targetSize *4, y - targetSize *4, null);
     }
 
     private BufferedImage createSprite(String name, int width, boolean showAxis) {

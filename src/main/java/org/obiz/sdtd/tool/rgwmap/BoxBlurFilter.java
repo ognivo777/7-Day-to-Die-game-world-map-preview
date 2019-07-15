@@ -4,9 +4,7 @@
 
 package org.obiz.sdtd.tool.rgwmap;
 
-import java.awt.*;
 import java.awt.image.*;
-import java.awt.geom.*;
 
 public class BoxBlurFilter extends AbstractBufferedImageOp {
 

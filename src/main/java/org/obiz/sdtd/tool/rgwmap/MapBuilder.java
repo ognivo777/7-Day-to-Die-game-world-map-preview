@@ -201,9 +201,12 @@ public class MapBuilder {
     }
 
     private void readWatersPoint() throws IOException, XMLStreamException {
+        System.out.print("WaterZones: ");
         String prefabs = "\\water_info.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
+
+        int watersPointsCounter = 0;
 
         iWaterZones = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_BINARY);
 
@@ -222,10 +225,12 @@ public class MapBuilder {
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
 
+                    watersPointsCounter++;
                 }
             }
         }
 
+        System.out.print(watersPointsCounter + " water sources.\n");
         if (!checkFileExists("_waterZones")) {
             File waterZones = new File(path + "\\" + fileNum + "_waterZones.png");
             ImageIO.write(iWaterZones, "PNG", waterZones);
@@ -287,19 +292,9 @@ public class MapBuilder {
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
                     } else if (prefabName.contains("sign")) {
                         g.setColor(buildColors.get("black"));
-                        g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
-                    }else if (prefabName.contains("fire")) {
-                        g.setColor(Color.GRAY);
-                        g.fillOval(x + i10, yShift - i10, i45, i45);
-                        g.setColor(buildColors.get("red"));
-                        g.drawOval(x + i10, yShift - i10, i45, i45);
-                        g.fillArc(x + i20, yShift - i40, i30, i70, 225, 70);
-                    } else {
-                        g.setColor(buildColors.get("other"));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x, yShift, i30, i25, true);
-                        else
-                            g.fill3DRect(x, yShift, i25, i30, true);
+                        g.fill3DRect(x, y, i10, i10, true);
+                    }else {
+                        drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS);
                     }
                 }
             }

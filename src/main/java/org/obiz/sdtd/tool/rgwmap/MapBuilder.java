@@ -139,6 +139,7 @@ public class MapBuilder {
 
     private void build() {
         try {
+            Timer.startTimer("OverAll");
             //testGetSprite("bank");
 //            System.exit(0);
             readWorldHeights();
@@ -148,12 +149,11 @@ public class MapBuilder {
             drawRoads();
             drawPrefabs();
             log("All work done!\nResult map image: " + lastFileName);
+            Timer.stopTimer("OverAll");
         } catch (IOException e) {
 
             e.printStackTrace();
         } catch (XMLStreamException e) {
-            e.printStackTrace();
-        } catch (SVGException e) {
             e.printStackTrace();
         }
     }
@@ -280,7 +280,7 @@ public class MapBuilder {
         writeToFile("_waterZones", iWaterZones);
     }
 
-    private void drawPrefabs() throws IOException, XMLStreamException, SVGException {
+    private void drawPrefabs() throws IOException, XMLStreamException {
         String prefabs = "\\prefabs.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
@@ -344,13 +344,15 @@ public class MapBuilder {
 
         log( prefabsCounter + " prefabs added, " + prefabsSVGCounter + " of them added from SVG.");
         Timer.stopTimer("Draw prefabs");
-
+        log("Start write finish image.");
         writeToFile("_mapWithObjects", iBiomes, false);
+        log("Finish write finish image.");
     }
 
     private void drawRoads() throws IOException {
+        log("Load roads file");
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
-        log("Roads loaded.");
+        log("Roads loaded. Start drawing.");
         Color roadColor;
 
         //TODO multithread
@@ -368,13 +370,17 @@ public class MapBuilder {
             }
         }
 
+        log("Finish roads drawing.");
+
         fileNum++;
         writeToFile("_map_with_roads", iBiomes);
     }
 
     private void applyHeightsToBiomes() throws IOException {
         long start, end;
+        log("start load biomes.png");
         BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
+        log("Finish load biomes.png. Start scaling.");
 
         iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
 //        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
@@ -386,6 +392,8 @@ public class MapBuilder {
 
         //free mem
         inputImage.flush();
+
+        log("Finish scaling. Start color mapping.");
 
         //fix Original RGB
         Map<Integer, Color> mapColor = new HashMap<>();
@@ -408,15 +416,19 @@ public class MapBuilder {
             }
         }
 
+        log("Finish color mapping");
+
         //mark radiation zones
         drawRadiation();
 
+        log("Start bluring biomes.");
         if (doBlureBiomes) {
             BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
             new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
             iBiomes.flush();
             iBiomes = iBiomesBlured;
         }
+        log("Finish bluring biomes. Start drawing lakes.");
 
         //Draw lakes
         WritableRaster iHeigthsRaster = iHeigths.getRaster();
@@ -428,6 +440,8 @@ public class MapBuilder {
                 }
             }
         }
+
+        log("Finish drawing lakes.");
 
         start = System.nanoTime();
         fileNum++;

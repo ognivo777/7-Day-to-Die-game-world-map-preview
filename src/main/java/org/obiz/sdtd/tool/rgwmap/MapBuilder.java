@@ -46,25 +46,13 @@ public class MapBuilder {
 
     //fixed object sized (autoscaled)
     int i10 = 10 / (downScale);
-    int i1 = i10 / 10;
-    int i2 = i1 * 2;
     int i5 = i10 / 2;
-    int i15 = (i10 * 3) / 2;
     int i20 = 2 * i10;
-    int i25 = (i10 * 5) / 2;
-    int i30 = 3 * i10;
-    int i35 = (7 * i10) / 2;
     int i40 = 4 * i10;
     int i45 = (9 * i10) / 2;
-    int i50 = 5 * i10;
-    int i60 = 6 * i10;
-    int i70 = 7 * i10;
-    int i7 = i70 / 70;
-    int i80 = 8 * i10;
     int i160 = 16 * i10;
     int i200 = 20 * i10;
     int i250 = 25 * i10;
-    int i500 = 50 * i10;
 
     int fileNum = 1;
     private BufferedImage iWaterZones;
@@ -247,18 +235,12 @@ public class MapBuilder {
 
         int eventType;
 
-        //fixed buildings colors
-        HashMap<String, Color> buildColors = new HashMap();
-        buildColors.put("black", new Color(51, 49, 51));
-        buildColors.put("red", new Color(139, 52, 48));
-        buildColors.put("other", new Color(58, 50, 39));
-
         Set<String> prefabsGroups = icons.keySet();
         int prefabsSVGCounter = 0;
         int prefabsCounter = 0;
-        System.out.print("Processing prefabs: ");
 
         Timer.startTimer("Draw prefabs");
+        log("Processing prefabs: ");
 
         while (xmlr.hasNext()) {
             eventType = xmlr.next();
@@ -276,24 +258,29 @@ public class MapBuilder {
                     String prefabName = xmlr.getAttributeValue(1);
                     String foundPrefabGroup = null;
 
+                    loopPrefabsGroups:
                     for (String prefabsGroup : prefabsGroups) {
                         if(prefabName.contains(prefabsGroup)) {
                             foundPrefabGroup = prefabsGroup;
                             prefabsSVGCounter++;
+                            break loopPrefabsGroups;
                         }
                     }
 
                     prefabsCounter++;
 
-                    if(foundPrefabGroup!=null) {
+                    if (foundPrefabGroup != null) {
                         drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS);
                     } else if (prefabName.contains("trailer")) {
-                        g.setColor(buildColors.get("black"));
-                        g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
+                        g.setColor(new Color(51, 49, 51));
+                        if (rot == 0 || rot == 2)
+                            g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
+                        else
+                            g.fill3DRect(x + i5, yShift + i20, i20, i10, true);
                     } else if (prefabName.contains("sign")) {
-                        g.setColor(buildColors.get("black"));
+                        g.setColor(new Color(51, 49, 51));
                         g.fill3DRect(x, y, i10, i10, true);
-                    }else {
+                    } else {
                         drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS);
                     }
                 }
@@ -301,8 +288,7 @@ public class MapBuilder {
         }
 
 
-        System.out.print( " | " + prefabsCounter + " prefabs added!\n");
-        log( prefabsSVGCounter + " prefabs added as SVG.");
+        log( prefabsCounter + " prefabs added, " + prefabsSVGCounter + " of them added from SVG.");
         Timer.stopTimer("Draw prefabs");
 
         File mapWithObjects = new File(path + "\\" + "9_mapWithObjects.png");

@@ -282,14 +282,13 @@ public class MapBuilder {
 
                     if(foundPrefabGroup!=null) {
                         drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS);
-                        if (prefabsCounter % 200 == 0) System.out.print("\u25AF");
-                    } else if (prefabName.contains("garage")) {
-                        g.setColor(buildColors.get("black"));
-                        g.fill3DRect(x + i5, y - i30, i20, i20, true);
                     } else if (prefabName.contains("trailer")) {
                         g.setColor(buildColors.get("black"));
                         g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
-                    } else if (prefabName.contains("fire")) {
+                    } else if (prefabName.contains("sign")) {
+                        g.setColor(buildColors.get("black"));
+                        g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
+                    }else if (prefabName.contains("fire")) {
                         g.setColor(Color.GRAY);
                         g.fillOval(x + i10, yShift - i10, i45, i45);
                         g.setColor(buildColors.get("red"));

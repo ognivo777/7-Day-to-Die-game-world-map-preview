@@ -68,9 +68,12 @@ public class MapBuilder {
 
     int fileNum = 1;
     private BufferedImage iWaterZones;
+    
+    private long prevLogTime;
 
     public MapBuilder(String path) {
         this.path = path;
+        prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
         } catch (URISyntaxException e) {
@@ -99,7 +102,7 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            System.out.println("All work done!\nResult map image: 9_mapWithObjects.png");
+            log("All work done!\nResult map image: 9_mapWithObjects.png");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (XMLStreamException e) {
@@ -162,7 +165,7 @@ public class MapBuilder {
             }
             graphics.translate(width*4, width*4);
             diagram.render((Graphics2D) graphics);
-//            System.out.println(diagram.getViewRect());
+//            log(diagram.getViewRect());
             svgUniverse.clear();
         } catch (IOException e) {
             e.printStackTrace();
@@ -190,7 +193,7 @@ public class MapBuilder {
                     if(Files.isRegularFile(next) && nextFile.endsWith(".svg")) {
                         nextFile = nextFile.substring(0, nextFile.lastIndexOf("."));
                         result.put(nextFile, next);
-                        System.out.println(nextFile + ": " + Files.isReadable(next));
+                        log(nextFile + ": " + Files.isReadable(next));
                     }
                 }
         );
@@ -305,7 +308,7 @@ public class MapBuilder {
 
 
         System.out.print( " | " + prefabsCounter + " prefabs added!\n");
-        System.out.println( prefabsSVGCounter + " prefabs added as SVG.");
+        log( prefabsSVGCounter + " prefabs added as SVG.");
         Timer.stopTimer("Draw prefabs");
 
         File mapWithObjects = new File(path + "\\" + "9_mapWithObjects.png");
@@ -314,7 +317,7 @@ public class MapBuilder {
 
     private void drawRoads() throws IOException {
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
-        System.out.println("Roads loaded.");
+        log("Roads loaded.");
         Color roadColor;
 
         for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
@@ -408,7 +411,7 @@ public class MapBuilder {
             ImageIO.write(iBiomes, "PNG", biomes);
         }
         end = System.nanoTime();
-        System.out.println("File saving time:  = " + (end - start) / 1000000000 + "s");
+        log("File saving time:  = " + (end - start) / 1000000000 + "s");
 
         // normal vectors array
         float[][] normalVectors = new float[scaledSize * scaledSize][3];
@@ -473,16 +476,16 @@ public class MapBuilder {
         assert tcount == totalPixels;
         end = System.nanoTime();
         long t1 = end - start;
-        System.out.println("Time to solve stats: " + t1 / 1000000 + "ms");
-//        System.out.println("tcount = " + tcount);
+        log("Time to solve stats: " + t1 / 1000000 + "ms");
+//        log("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
         int intrms = Math.toIntExact(rms);
 
-        System.out.println("mean = " + Math.round(mean));
-        System.out.println("rms = " + rms);
-        System.out.println("min = " + min);
-        System.out.println("max = " + max);
+        log("mean = " + Math.round(mean));
+        log("rms = " + rms);
+        log("min = " + min);
+        log("max = " + max);
 
         StringBuilder sb = new StringBuilder();
         float D = 0;
@@ -498,18 +501,18 @@ public class MapBuilder {
         Files.write(Paths.get(path + "\\heigthsHistogram.txt"), Collections.singleton(sb));
 
         D = Math.round(Math.sqrt(D));
-        System.out.println("D2 = " + D);
+        log("D2 = " + D);
 
         int startHist = Math.round(intrms - gamma * D);
-        System.out.println("startHist = " + startHist);
+        log("startHist = " + startHist);
         float k = 256 * 256 / (max - min);
-        System.out.println("k = " + k);
+        log("k = " + k);
 
         waterLine = intrms - Math.round(1.7f * D);
-        System.out.println("waterLine = " + waterLine);
+        log("waterLine = " + waterLine);
         if (applyGammaCorrection) {
             waterLine = Math.round((waterLine - min) * k);
-            System.out.println("after gamma waterLine = " + waterLine);
+            log("after gamma waterLine = " + waterLine);
             for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
                 for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
                     int grayColor = raster.getSample(x, y, 0);
@@ -528,11 +531,11 @@ public class MapBuilder {
             System.exit(1);
         }
         long fileLength = heightsFile.length();
-        System.out.println("fileLength = " + fileLength);
+        log("fileLength = " + fileLength);
         mapSize = (int) Math.round(Math.sqrt(fileLength / 2.));
-        System.out.println("Detected mapSize: " + mapSize);
+        log("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
-        System.out.println("Resulting image side size will be: " + scaledSize + "px");
+        log("Resulting image side size will be: " + scaledSize + "px");
         //TODO rename to totalScaledPixels
         totalPixels = scaledSize;
         totalPixels *= totalPixels;
@@ -564,7 +567,7 @@ public class MapBuilder {
                     }
                 }
             }
-            System.out.println("|\nDone.");
+            log("|\nDone.");
         }
     }
 
@@ -573,7 +576,7 @@ public class MapBuilder {
         int oldR, oldG, oldB;
 
         BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
-        System.out.println("Beware of radiation!");
+        log("Beware of radiation!");
 
         iRad = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
 
@@ -611,11 +614,16 @@ public class MapBuilder {
         if (!f.exists() || !f.isFile() || !f.canRead()) {
             return false;
         } else {
-            System.out.println("File already exists: " + fileNum + fileName + ".png");
+            log("File already exists: " + fileNum + fileName + ".png");
         }
 
         return true;
     }
 
+    private void log(String message) {
+        long now = System.currentTimeMillis();
+        System.out.println("[+" + (now-prevLogTime)/1000f + "s]: " + message);
+        prevLogTime = now;
+    }
 
 }

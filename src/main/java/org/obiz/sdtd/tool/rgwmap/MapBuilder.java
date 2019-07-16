@@ -573,6 +573,7 @@ public class MapBuilder {
     }
 
     private void autoAjustImage() throws IOException {
+        log("Start autoAjustImage");
         WritableRaster raster = iHeigths.getRaster();
         // initialisation of image histogram array
         long hist[] = new long[256];
@@ -590,8 +591,8 @@ public class MapBuilder {
 
         start = System.nanoTime();
         //TODO multithread
-        for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
-            for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
 
                 //get integer height value from a current pixel
                 int color = raster.getSample(x, y, 0);
@@ -621,15 +622,14 @@ public class MapBuilder {
         end = System.nanoTime();
         long t1 = end - start;
         log("Time to solve stats: " + t1 / 1000000 + "ms");
-//        log("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
         int intrms = Math.toIntExact(rms);
 
-        log("mean = " + Math.round(mean));
-        log("rms = " + rms);
-        log("min = " + min);
-        log("max = " + max);
+//        log("mean = " + Math.round(mean));
+//        log("rms = " + rms);
+//        log("min = " + min);
+//        log("max = " + max);
 
         StringBuilder sb = new StringBuilder();
         float D = 0;
@@ -645,10 +645,10 @@ public class MapBuilder {
         Files.write(Paths.get(path + "\\heigthsHistogram.txt"), Collections.singleton(sb));
 
         D = Math.round(Math.sqrt(D));
-        log("D2 = " + D);
+//        log("D2 = " + D);
 
-        int startHist = Math.round(intrms - gamma * D);
-        log("startHist = " + startHist);
+//        int startHist = Math.round(intrms - gamma * D);
+//        log("startHist = " + startHist);
         float k = 256 * 256 / (max - min);
         log("k = " + k);
 

@@ -351,9 +351,25 @@ public class MapBuilder {
 
     private void drawRoads() throws IOException {
         log("Load roads file");
-        BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
+        BufferedImage roadsFull = ImageIO.read(new File(path + "\\splat3.png"));
         log("Roads loaded. Start drawing.");
+
+        BufferedImage roads = new BufferedImage(scaledSize, scaledSize, roadsFull.getType());
+//        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
+
+        // scale the input biomes image to the output image size
+        Graphics2D g2d = iBiomes.createGraphics();
+        g2d.drawImage(roadsFull, 0, 0, scaledSize, scaledSize, null);
+        g2d.dispose();
+
+        //free mem
+        roadsFull.flush();
+
+
+
         Color roadColor;
+
+
 
         //TODO multithread
         for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
@@ -382,11 +398,16 @@ public class MapBuilder {
         BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
         log("Finish load biomes.png. Start scaling.");
 
-        iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
-//        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
+//        iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
+        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
+        BufferedImage iBiomesInd = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
 
         // scale the input biomes image to the output image size
         Graphics2D g2d = iBiomes.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
+        g2d.dispose();
+
+        g2d = iBiomesInd.createGraphics();
         g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
         g2d.dispose();
 
@@ -397,11 +418,20 @@ public class MapBuilder {
 
         //fix Original RGB
         Map<Integer, Color> mapColor = new HashMap<>();
+
         mapColor.put(-16760832, new Color(55, 95, 68));//forest
+        mapColor.put(-16764160, new Color(55, 95, 68));//forest
         mapColor.put(-1, new Color(203, 197, 194));//snow
+        mapColor.put(-197380, new Color(203, 197, 194));//snow
         mapColor.put(-7049, new Color(175, 154, 107));//desert
+        mapColor.put(-13159, new Color(175, 154, 107));//desert
+        mapColor.put(-13210, new Color(175, 154, 107));//desert
+        mapColor.put(-103, new Color(175, 154, 107));//desert
         mapColor.put(-22528, new Color(124, 116, 94));//wasteland
+        mapColor.put(-26368, new Color(124, 116, 94));//wasteland
         mapColor.put(-4587265, new Color(68, 70, 67));//burned
+        mapColor.put(-3407617, new Color(68, 70, 67));//burned
+        mapColor.put(-6749953, new Color(68, 70, 67));//burned
 
         MapBiomeColor:
         for (int x = 0; x < scaledSize; x++) {
@@ -464,6 +494,7 @@ public class MapBuilder {
         fileNum++;
         //Write bump-mapped biomes
         writeToFile("_biomesShadow", iBiomes);
+        writeToFile("_iBiomesInd", iBiomesInd);
     }
 
     private void writeToFile(String fileName, BufferedImage imgToSave) throws IOException {

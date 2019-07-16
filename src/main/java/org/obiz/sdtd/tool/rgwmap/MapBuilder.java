@@ -88,7 +88,7 @@ public class MapBuilder {
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
-//            new ConsoleWindow();
+            new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -166,7 +166,9 @@ public class MapBuilder {
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
-            log("All work done!\nResult map image: " + lastFileName);
+            log(    "\n------------------- All work done! ------------------- \n\n" +
+                    "          Result map image: " + lastFileName + "\n\n" +
+                    "------------------------------------------------------");
             Timer.stopTimer("OverAll");
         } catch (IOException e) {
 

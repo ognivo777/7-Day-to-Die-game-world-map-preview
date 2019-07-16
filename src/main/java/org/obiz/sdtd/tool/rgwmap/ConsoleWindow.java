@@ -36,7 +36,6 @@ public class ConsoleWindow extends JFrame {
         scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         root.add(scrollPane, BorderLayout.CENTER);
-//        root.add(textArea);
         setResizable(false);
 
         sout = System.out;
@@ -61,13 +60,9 @@ public class ConsoleWindow extends JFrame {
                         sout.println(line);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
-            })
-                    .start()
-            ;
-
-//            new InputStreamReader(soutpin).
+            }).start();
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -26,9 +26,6 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.obiz.sdtd.tool.rgwmap.ImageMath.getIntFromRaster;
-import static org.obiz.sdtd.tool.rgwmap.ImageMath.setIntToRaster;
-
 public class MapBuilder {
 
     private static final int MEM_EXPECTED = 512 * 1024 * 1024;
@@ -83,6 +80,8 @@ public class MapBuilder {
     
     private long prevLogTime;
     private String lastFileName;
+    private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);;
+    private Color ROAD_SECONDARY_COLOR = new Color(52, 59, 65);
 
     public MapBuilder(String path) {
         this.path = path;
@@ -413,23 +412,31 @@ public class MapBuilder {
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
         log("Roads loaded. Start drawing.");
 
-        Color roadColor;
+//        Color roadColor;
+
+        DataBuffer db = iBiomes.getRaster().getDataBuffer();
+
+        DataBuffer rdb = roads.getAlphaRaster().getDataBuffer();
+        boolean firstTime = true;
+
+        System.out.println("TEST : " + (rdb.getSize()/4-mapSize*mapSize));
 
         //TODO multithread
-        for (int xi = roads.getMinX(); xi < roads.getWidth(); xi+=downScale) {
-            for (int yi = roads.getMinY(); yi < roads.getHeight(); yi++) {
-                int p = roads.getRGB(xi, yi);
-                if (p != 0) {
-                    if (p == 65280)
-                        roadColor = new Color(141, 129, 106);
-                    else
-                        roadColor = new Color(52, 59, 65);
 
-                    iBiomes.setRGB(xi / downScale, yi / downScale, roadColor.getRGB());
+        for (int i = 0; i < scaledSize; i++) {
+            for (int j = 0; j < scaledSize; j++) {
+                int c2 = rdb.getElem(ImageMath.xy2i(roads,i*downScale, j*downScale, 2));
+                if(c2!=0) {
+//                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(255, 201, 14));
+                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(ROAD_MAIN_COLOR));
+                }
+                int c3 = rdb.getElem(ImageMath.xy2i(roads,i*downScale, j*downScale, 3));
+                if(c3!=0) {
+//                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(67, 163, 203));
+                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(ROAD_SECONDARY_COLOR));
                 }
             }
         }
-
         log("Finish roads drawing.");
 
         writeToFile("_map_with_roads", iBiomes);

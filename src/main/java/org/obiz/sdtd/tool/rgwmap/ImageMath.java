@@ -74,7 +74,20 @@ public class ImageMath {
         return rgb | 0xff<<24;
     }
 
+    public static int xy2i(BufferedImage image, int x, int y, int c) {
+        return image.getHeight()*y*4 + x*4 + c;
+    }
+
     public static int xy2i(BufferedImage image, int x, int y) {
         return image.getHeight()*y + x;
     }
+
+    public static int i2x(BufferedImage image, int i) {
+        return i%image.getHeight();
+    }
+
+    public static int i2y(BufferedImage image, int i) {
+        return i/image.getHeight();
+    }
+
 }

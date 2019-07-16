@@ -157,7 +157,6 @@ public class MapBuilder {
         try {
             Timer.startTimer("OverAll");
             //testGetSprite("bank");
-//            System.exit(0);
             readWorldHeights();
 //            testWalkHeigths();
             readWatersPoint();
@@ -703,7 +702,7 @@ public class MapBuilder {
             while ((readedBytes = hmis.read(buf)) > -1) {
                 //TODO here potential problem if readedBytes%2 != 0
                 //convert every 2 bytes to new gray pixel
-                for (int i = 0; i < readedBytes / 2; i+=downScale) {
+                for (int i = 0; i < readedBytes / 2; i++) {
                     //TODO use avg of pixel color with same coordinate in scaled image.
                     //calculate pixel position
                     int x = (curPixelNum % mapSize) / downScale;

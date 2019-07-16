@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,11 +28,28 @@ import java.util.stream.Stream;
 
 public class MapBuilder {
 
+    private static final int MEM_EXPECTED = 512 * 1024 * 1024;
     private String path;
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
     private final boolean DRAW_ICON_AXIS = false;
 
+    //biome colors
+    public static final Color forest = new Color(55, 95, 68);
+    public static final Color snow = new Color(203, 197, 194);
+    public static final Color desert = new Color(175, 154, 107);
+    public static final Color wasteland = new Color(124, 116, 94);
+    public static final Color burned = new Color(68, 70, 67);
+
+    public static final int forestInt = ImageMath.getPureIntFromRGB(MapBuilder.forest);
+    public static final int burnedInt = ImageMath.getPureIntFromRGB(MapBuilder.burned);
+    public static final int desertInt = ImageMath.getPureIntFromRGB(MapBuilder.desert);
+    public static final int snowInt = ImageMath.getPureIntFromRGB(MapBuilder.snow);
+    public static final int wastelandInt = ImageMath.getPureIntFromRGB(MapBuilder.wasteland);
+
+
+    //    private final  int MAP_IMAGE_TYPE = BufferedImage.TYPE_USHORT_555_RGB;
+    private final  int MAP_IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
     private boolean applyGammaCorrection = true;
     private int mapSize;
     private int scaledSize;
@@ -44,6 +62,8 @@ public class MapBuilder {
     private int bloorK = 256; //part of image size used as blure radius
     private Map<String, Path> icons;
     private Map<String, BufferedImage> iconsCache = new HashMap<>();
+
+    private int[][] bH;
 
     //fixed object sized (autoscaled)
     int i10 = 10 / (downScale);
@@ -60,12 +80,15 @@ public class MapBuilder {
     
     private long prevLogTime;
     private String lastFileName;
+    private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);;
+    private Color ROAD_SECONDARY_COLOR = new Color(52, 59, 65);
 
     public MapBuilder(String path) {
         this.path = path;
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
+//            new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -80,9 +103,7 @@ public class MapBuilder {
             path = args[0];
         }
 
-
-
-
+        //get runtime memory information
         Runtime runtime = Runtime.getRuntime();
         long freeMemory = runtime.freeMemory();
         long totalMemory = runtime.totalMemory();
@@ -91,9 +112,7 @@ public class MapBuilder {
         System.out.println("freeMemory = " + freeMemory);
         System.out.println("maxMemory = " + maxMemory);
 
-//        JOptionPane.showMessageDialog(null, "Started! Max mem: " + maxMemory/(1024*1024) + "mb","Welcome messsage", JOptionPane.INFORMATION_MESSAGE);
-
-        if(maxMemory < 512*1024*1024) {
+        if(maxMemory < MEM_EXPECTED) {
             System.out.println("TOO LITTLE");
             JOptionPane.showMessageDialog(null, "There is too little mem for me :(\nI'm trying to restart my self for grab much mem!","Not enough mem error", JOptionPane.ERROR_MESSAGE);
             String jarName = new File(MapBuilder.class.getProtectionDomain()
@@ -128,10 +147,7 @@ public class MapBuilder {
                 System.exit(-1);
             }
         } else {
-            ConsoleWindow cwnd = new ConsoleWindow();
-
             System.out.println("Enough mem! Let's work!");
-//            JOptionPane.showMessageDialog(null, "Enough mem! Let's work!","I can fly!", JOptionPane.INFORMATION_MESSAGE);
         }
 
         new MapBuilder(path).build();
@@ -141,10 +157,12 @@ public class MapBuilder {
         try {
             Timer.startTimer("OverAll");
             //testGetSprite("bank");
-//            System.exit(0);
             readWorldHeights();
+//            testWalkHeigths();
             readWatersPoint();
             autoAjustImage();
+            loadBiomes();
+//            if(true) return;
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
@@ -156,6 +174,46 @@ public class MapBuilder {
         } catch (XMLStreamException e) {
             e.printStackTrace();
         }
+    }
+
+    private void testWalkHeigths() {
+        log("Start search max H in BufferedImage");
+        //[+0.319s]
+        WritableRaster iHeigthsRaster = iHeigths.getRaster();
+        int maxH = iHeigthsRaster.getSample(0, 0, 0);
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
+                int h = iHeigthsRaster.getSample(x, y, 0);
+                if(h>maxH) {
+                    maxH = h;
+                }
+            }
+        }
+        log("Finish search max H in BufferedImage: " + maxH);
+        log("Start search max H in BufferedImage2");
+        maxH = iHeigths.getRGB(0, 0);
+        //[+1.555s]
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
+                int h = iHeigths.getRGB(x, y);
+                if(h>maxH) {
+                    maxH = h;
+                }
+            }
+        }
+        log("Finish search max H in BufferedImage2: " + maxH);
+        log("Start search max H in int[][]");
+        maxH = bH[0][0];
+        //[+0.018s]
+        for (int i = 0; i < scaledSize; i++) {
+            for (int j = 0; j < scaledSize; j++) {
+                int h = bH[i][j];
+                if(h>maxH) {
+                    maxH = h;
+                }
+            }
+        }
+        log("Finish search max H in int[][]: " + maxH);
     }
 
     private void testGetSprite(String iconName) {
@@ -239,7 +297,6 @@ public class MapBuilder {
                     if(Files.isRegularFile(next) && nextFile.endsWith(".svg")) {
                         nextFile = nextFile.substring(0, nextFile.lastIndexOf("."));
                         result.put(nextFile, next);
-                        log(nextFile + ": " + Files.isReadable(next));
                     }
                 }
         );
@@ -247,7 +304,7 @@ public class MapBuilder {
     }
 
     private void readWatersPoint() throws IOException, XMLStreamException {
-        System.out.print("WaterZones: ");
+        log("Load WaterZones.");
         String prefabs = "\\water_info.xml";
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
@@ -276,7 +333,7 @@ public class MapBuilder {
             }
         }
 
-        System.out.print(watersPointsCounter + " water sources.\n");
+        log(watersPointsCounter + " water sources loaded.");
         writeToFile("_waterZones", iWaterZones);
     }
 
@@ -353,77 +410,46 @@ public class MapBuilder {
         log("Load roads file");
         BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
         log("Roads loaded. Start drawing.");
-        Color roadColor;
+
+//        Color roadColor;
+
+        DataBuffer db = iBiomes.getRaster().getDataBuffer();
+
+        DataBuffer rdb = roads.getAlphaRaster().getDataBuffer();
+        boolean firstTime = true;
+
+        System.out.println("TEST : " + (rdb.getSize()/4-mapSize*mapSize));
 
         //TODO multithread
-        for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
-            for (int yi = roads.getMinY(); yi < roads.getHeight(); yi++) {
-                int p = roads.getRGB(xi, yi);
-                if (p != 0) {
-                    if (p == 65280)
-                        roadColor = new Color(141, 129, 106);
-                    else
-                        roadColor = new Color(52, 59, 65);
 
-                    iBiomes.setRGB(xi / downScale, yi / downScale, roadColor.getRGB());
+        for (int i = 0; i < scaledSize; i++) {
+            for (int j = 0; j < scaledSize; j++) {
+                int c2 = rdb.getElem(ImageMath.xy2i(roads,i*downScale, j*downScale, 2));
+                if(c2!=0) {
+//                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(255, 201, 14));
+                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(ROAD_MAIN_COLOR));
+                }
+                int c3 = rdb.getElem(ImageMath.xy2i(roads,i*downScale, j*downScale, 3));
+                if(c3!=0) {
+//                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(67, 163, 203));
+                    db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(ROAD_SECONDARY_COLOR));
                 }
             }
         }
-
         log("Finish roads drawing.");
 
-        fileNum++;
         writeToFile("_map_with_roads", iBiomes);
     }
 
     private void applyHeightsToBiomes() throws IOException {
         long start, end;
-        log("start load biomes.png");
-        BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
-        log("Finish load biomes.png. Start scaling.");
-
-        iBiomes = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
-//        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
-
-        // scale the input biomes image to the output image size
-        Graphics2D g2d = iBiomes.createGraphics();
-        g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
-        g2d.dispose();
-
-        //free mem
-        inputImage.flush();
-
-        log("Finish scaling. Start color mapping.");
-
-        //fix Original RGB
-        Map<Integer, Color> mapColor = new HashMap<>();
-        mapColor.put(-16760832, new Color(55, 95, 68));//forest
-        mapColor.put(-1, new Color(203, 197, 194));//snow
-        mapColor.put(-7049, new Color(175, 154, 107));//desert
-        mapColor.put(-22528, new Color(124, 116, 94));//wasteland
-        mapColor.put(-4587265, new Color(68, 70, 67));//burned
-
-        MapBiomeColor:
-        for (int x = 0; x < scaledSize; x++) {
-            for (int y = 0; y < scaledSize; y++) {
-                int rgb = iBiomes.getRGB(x, y);
-                if (mapColor.containsKey(rgb))
-                    iBiomes.setRGB(x, y, mapColor.get(rgb).getRGB());
-                else {
-                    System.err.println("Unknown biome color: " + rgb);
-                    break MapBiomeColor;
-                }
-            }
-        }
-
-        log("Finish color mapping");
 
         //mark radiation zones
         drawRadiation();
 
         log("Start bluring biomes.");
         if (doBlureBiomes) {
-            BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
+            BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
             new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
             iBiomes.flush();
             iBiomes = iBiomesBlured;
@@ -444,40 +470,110 @@ public class MapBuilder {
         log("Finish drawing lakes.");
 
         start = System.nanoTime();
-        fileNum++;
         writeToFile("_bump", iHeigths);
-        fileNum++;
         writeToFile("_biomes", iBiomes);
         end = System.nanoTime();
         log("File saving time:  = " + (end - start) / 1000000000 + "s");
 
         // normal vectors array
-        float[][] normalVectors = new float[scaledSize * scaledSize][3];
+        log("Start alloc normal vectors array");
+        float[] normalVectorsX = new float[scaledSize * scaledSize];
+        float[] normalVectorsY = new float[scaledSize * scaledSize];
+        float[] normalVectorsZ = new float[scaledSize * scaledSize];
+        log("Finish alloc normal vectors array");
         // precalculate normal vectors
-        BumpMappingUtils.FindNormalVectors(iHeigths, normalVectors);
+        BumpMappingUtils.FindNormalVectors(iHeigths, normalVectorsX, normalVectorsY, normalVectorsZ);
         log("Normal vectors are saved.");
         //free mem
         iHeigths.flush();
         //apply bump-mapping using normal vectors
-        BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
+        BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectorsX, normalVectorsY, normalVectorsZ);
         log("Bump mapping applied.");
-        fileNum++;
         //Write bump-mapped biomes
         writeToFile("_biomesShadow", iBiomes);
     }
+
+    private BufferedImage loadBiomes() throws IOException {
+        log("start load biomes.png");
+        BufferedImage inputImage = ImageIO.read(new File(path + "\\biomes.png"));
+        log("Finish load biomes.png. Start scaling.");
+
+        iBiomes = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
+
+        // scale the input biomes image to the output image size
+        Graphics2D g2d = iBiomes.createGraphics();
+        g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
+        g2d.dispose();
+
+        //free mem
+        inputImage.flush();
+
+        log("Finish scaling. Start color mapping.");
+
+        DataBuffer dataBuffer = iBiomes.getRaster().getDataBuffer();
+
+        int dataBufferSize = dataBuffer.getSize();
+        System.out.println("dataBufferSize = " + dataBufferSize);
+        for (int i = 0; i < dataBufferSize; i++) {
+            dataBuffer.setElem(i, mapBiomeRasterColor(dataBuffer.getElem(i)));
+        }
+
+        log("Finish color mapping.");
+        writeToFile("_recolorBiomes", iBiomes);
+        log("File written.");
+        return inputImage;
+    }
+
+    private int mapBiomeRasterColor(int rgb) {
+        switch (rgb) {
+            case 16777215:
+                return snowInt; //snow
+            case 16770167:
+                return desertInt;  //desert
+            case 16384:
+                return forestInt; //forest
+            case 16754688:
+                return wastelandInt; //wasteland
+            case 12189951:
+                return burnedInt; //burned
+        }
+        return rgb;
+    }
+
+    private int mapBiomeColor(int rgb) {
+        switch (rgb) {
+            case -16760832:
+                return forest.getRGB();
+            case -1:
+                return snow.getRGB();
+            case -7049:
+                return desert.getRGB();
+            case -22528:
+                return wasteland.getRGB();
+            case -4587265:
+                return burned.getRGB();
+        }
+        return rgb;
+    }
+
 
     private void writeToFile(String fileName, BufferedImage imgToSave) throws IOException {
         writeToFile(fileName, imgToSave, true);
     }
     private void writeToFile(String fileName, BufferedImage imgToSave, boolean checkExists) throws IOException {
+        fileNum++;
         if (!checkExists || !checkFileExists(fileName)) {
             lastFileName = fileNum + fileName + ".png";
             File biomesShadow = new File(path + "\\" + lastFileName);
             ImageIO.write(imgToSave, "PNG", biomesShadow);
+        } else {
+//            fileNum--;
         }
+
     }
 
     private void autoAjustImage() throws IOException {
+        log("Start autoAjustImage");
         WritableRaster raster = iHeigths.getRaster();
         // initialisation of image histogram array
         long hist[] = new long[256];
@@ -495,8 +591,8 @@ public class MapBuilder {
 
         start = System.nanoTime();
         //TODO multithread
-        for (int x = raster.getMinX(); x < raster.getMinX() + raster.getWidth(); x++) {
-            for (int y = raster.getMinY(); y < raster.getMinY() + raster.getHeight(); y++) {
+        for (int x = 0; x < scaledSize; x++) {
+            for (int y = 0; y < scaledSize; y++) {
 
                 //get integer height value from a current pixel
                 int color = raster.getSample(x, y, 0);
@@ -526,15 +622,14 @@ public class MapBuilder {
         end = System.nanoTime();
         long t1 = end - start;
         log("Time to solve stats: " + t1 / 1000000 + "ms");
-//        log("tcount = " + tcount);
 
         rms = Math.round(Math.sqrt(rms));
         int intrms = Math.toIntExact(rms);
 
-        log("mean = " + Math.round(mean));
-        log("rms = " + rms);
-        log("min = " + min);
-        log("max = " + max);
+//        log("mean = " + Math.round(mean));
+//        log("rms = " + rms);
+//        log("min = " + min);
+//        log("max = " + max);
 
         StringBuilder sb = new StringBuilder();
         float D = 0;
@@ -550,10 +645,10 @@ public class MapBuilder {
         Files.write(Paths.get(path + "\\heigthsHistogram.txt"), Collections.singleton(sb));
 
         D = Math.round(Math.sqrt(D));
-        log("D2 = " + D);
+//        log("D2 = " + D);
 
-        int startHist = Math.round(intrms - gamma * D);
-        log("startHist = " + startHist);
+//        int startHist = Math.round(intrms - gamma * D);
+//        log("startHist = " + startHist);
         float k = 256 * 256 / (max - min);
         log("k = " + k);
 
@@ -583,7 +678,7 @@ public class MapBuilder {
             System.exit(1);
         }
         long fileLength = heightsFile.length();
-        log("fileLength = " + fileLength);
+        log("dtm.raw fileLength = " + fileLength);
         mapSize = (int) Math.round(Math.sqrt(fileLength / 2.));
         log("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
@@ -595,11 +690,14 @@ public class MapBuilder {
         iHeigths = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_USHORT_GRAY);
         WritableRaster raster = iHeigths.getRaster();
 
+        bH = new int[scaledSize][scaledSize];
+
         try (FileInputStream hmis = new FileInputStream(heightsFile)) {
             byte buf[] = new byte[mapSize * 4];
 
             int readedBytes;
             int curPixelNum = 0;
+            Set<Integer> grayColors = new HashSet<>();
             System.out.print("File load:\n|----------------|\n|");
             while ((readedBytes = hmis.read(buf)) > -1) {
                 //TODO here potential problem if readedBytes%2 != 0
@@ -611,7 +709,15 @@ public class MapBuilder {
                     int y = (mapSize - 1 - curPixelNum / mapSize) / downScale;
                     //write pixel to resulting image
                     int grayColor = (buf[i * 2 + 1] << 8) | (((int) buf[i * 2]) & 0xff);
+                    if(!grayColors.contains(grayColor)){
+                        grayColors.add(grayColor);
+                    }
                     raster.setSample(x, y, 0, grayColor);
+//                    int sample = raster.getSample(x, y, 0);
+//                    if(sample !=grayColor ) {
+//                        log("PROBLEM: sample="+sample+" grayColor="+grayColor);
+//                    }
+                    bH[x][y] = grayColor;
                     curPixelNum++;
                     //Draw progress bar
                     if (curPixelNum % (mapSize * 512) == 0) {
@@ -619,19 +725,18 @@ public class MapBuilder {
                     }
                 }
             }
-            log("|\nDone.");
+            log("|\nFinish load dtm.raw. Colors count:" + grayColors.size());
         }
     }
 
     private void drawRadiation() throws IOException {
-        int newR;
-        int oldR, oldG, oldB;
+
 
         log("Load radiation map..");
         BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
         log("Beware of radiation!");
 
-        iRad = new BufferedImage(scaledSize, scaledSize, inputImage.getType());
+        iRad = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
 
         // scale the input radiation zone image to the output image size
         log("Start scale radiation..");
@@ -643,22 +748,24 @@ public class MapBuilder {
         inputImage.flush();
         log("Start draw radiation.");
         //TODO multithread
-        for (int x = 0; x < scaledSize; x++) {
-            for (int y = 0; y < scaledSize; y++) {
-                int rgb = iBiomes.getRGB(x, y);
-                int rgbRad = iRad.getRGB(x, y);
-                if (rgbRad == -65536) {
-                    oldR = rgb >> 16 & 0xff;
-                    oldG = rgb >> 8 & 0xff;
-                    oldB = rgb & 0xff;
+        DataBuffer biomesDB = iBiomes.getRaster().getDataBuffer();
+        DataBuffer radiationDB = iRad.getRaster().getDataBuffer();
+        for (int i = 0; i < biomesDB.getSize(); i++) {
+            int rgb = ImageMath.getFillIntFromPureInt(biomesDB.getElem(i));
+            int rgbRad = ImageMath.getFillIntFromPureInt(radiationDB.getElem(i));
+            if (rgbRad == -65536) {
+                int oldR = rgb >> 16 & 0xff;
+                int oldG = rgb >> 8 & 0xff;
+                int oldB = rgb & 0xff;
 
-                    newR = (int) (oldR * 1.5);
-                    if (newR > 255) newR = 255;
-                    if (newR < 0) newR = 0;
+                int newR = (int) (oldR * 1.5);
+                if (newR > 255) newR = 255;
+                if (newR < 0) newR = 0;
 
-                    iBiomes.setRGB(x, y, new Color(newR, oldG, oldB).getRGB());
-                }
+                biomesDB.setElem(i, ImageMath.getPureIntFromRGB(newR, oldG, oldB));
+//                iBiomes.setRGB(x, y, new Color(newR, oldG, oldB).getRGB());
             }
+
         }
         log("End draw radiation.");
 

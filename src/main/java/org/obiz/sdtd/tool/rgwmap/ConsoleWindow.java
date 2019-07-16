@@ -14,6 +14,7 @@ public class ConsoleWindow extends JFrame {
     PrintStream sout;
     PrintStream serr;
     PrintStream wsout;
+    //TODO ERR stream
     PrintStream wserr;
 
     public ConsoleWindow() throws HeadlessException {

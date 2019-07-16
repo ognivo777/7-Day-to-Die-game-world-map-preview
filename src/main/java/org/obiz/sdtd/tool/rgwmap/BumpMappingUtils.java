@@ -26,8 +26,6 @@ public class BumpMappingUtils {
             System.err.println("interrupted waiting for pixels!");
         }
 
-        System.out.println("Find normal vectors: ");
-
         for (int x = 1; x < imageWidth - 1; x++)
         {
             for (int y = 1; y < imageHeight - 1; y++)
@@ -59,11 +57,7 @@ public class BumpMappingUtils {
                 nv[y * imageWidth + x][2] = Nz;
 
             }
-            System.out.print("\b\b\b");
-            System.out.print((int)((float)x/imageWidth * 100) + "%");
         }
-        System.out.print("\b\b\b");
-        System.out.print( "100% \n");
     }
 
     public static void paint(BufferedImage source, int width, int height, float[][] nv)
@@ -73,7 +67,7 @@ public class BumpMappingUtils {
 
         int newR, newG, newB;
         int oldR, oldG, oldB;
-        System.out.println("Paint biomes shadows: ");
+
         //TODO multithread
         for (x = 0; x < width; x++)
         {
@@ -105,11 +99,7 @@ public class BumpMappingUtils {
                 Color c = new Color (newR, newG, newB);
                 source.setRGB(x, y, c.getRGB());
             }
-            System.out.print("\b\b\b");
-            System.out.print((int)((float)x/width * 100) + "%");
         }
-        System.out.print("\b\b\b");
-        System.out.print( "100% \n");
     }
 
     private static float BumpIntensity (int lightX, int lightY, int pixelX, int pixelY, float[][] normalVectors, int width)
@@ -140,4 +130,5 @@ public class BumpMappingUtils {
 
         return intensity;
     }
+
 }

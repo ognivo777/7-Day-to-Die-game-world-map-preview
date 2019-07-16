@@ -351,28 +351,13 @@ public class MapBuilder {
 
     private void drawRoads() throws IOException {
         log("Load roads file");
-        BufferedImage roadsFull = ImageIO.read(new File(path + "\\splat3.png"));
+        BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
         log("Roads loaded. Start drawing.");
-
-        BufferedImage roads = new BufferedImage(scaledSize, scaledSize, roadsFull.getType());
-//        iBiomes = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_INDEXED);
-
-        // scale the input biomes image to the output image size
-        Graphics2D g2d = iBiomes.createGraphics();
-        g2d.drawImage(roadsFull, 0, 0, scaledSize, scaledSize, null);
-        g2d.dispose();
-
-        //free mem
-        roadsFull.flush();
-
-
 
         Color roadColor;
 
-
-
         //TODO multithread
-        for (int xi = roads.getMinX(); xi < roads.getWidth(); xi++) {
+        for (int xi = roads.getMinX(); xi < roads.getWidth(); xi+=downScale) {
             for (int yi = roads.getMinY(); yi < roads.getHeight(); yi++) {
                 int p = roads.getRGB(xi, yi);
                 if (p != 0) {

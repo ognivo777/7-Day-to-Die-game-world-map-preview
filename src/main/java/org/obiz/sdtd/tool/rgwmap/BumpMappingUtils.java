@@ -59,11 +59,7 @@ public class BumpMappingUtils {
                 nv[y * imageWidth + x][2] = Nz;
 
             }
-            System.out.print("\b\b\b");
-            System.out.print((int)((float)x/imageWidth * 100) + "%");
         }
-        System.out.print("\b\b\b");
-        System.out.print( "100% \n");
     }
 
     public static void paint(BufferedImage source, int width, int height, float[][] nv)

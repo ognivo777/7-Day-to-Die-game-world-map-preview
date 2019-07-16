@@ -470,14 +470,18 @@ public class MapBuilder {
         log("File saving time:  = " + (end - start) / 1000000000 + "s");
 
         // normal vectors array
-        float[][] normalVectors = new float[scaledSize * scaledSize][3];
+        log("Start alloc normal vectors array");
+        float[] normalVectorsX = new float[scaledSize * scaledSize];
+        float[] normalVectorsY = new float[scaledSize * scaledSize];
+        float[] normalVectorsZ = new float[scaledSize * scaledSize];
+        log("Finish alloc normal vectors array");
         // precalculate normal vectors
-        BumpMappingUtils.FindNormalVectors(iHeigths, normalVectors);
+        BumpMappingUtils.FindNormalVectors(iHeigths, normalVectorsX, normalVectorsY, normalVectorsZ);
         log("Normal vectors are saved.");
         //free mem
         iHeigths.flush();
         //apply bump-mapping using normal vectors
-        BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectors);
+        BumpMappingUtils.paint(iBiomes, scaledSize, scaledSize, normalVectorsX, normalVectorsY, normalVectorsZ);
         log("Bump mapping applied.");
         //Write bump-mapped biomes
         writeToFile("_biomesShadow", iBiomes);

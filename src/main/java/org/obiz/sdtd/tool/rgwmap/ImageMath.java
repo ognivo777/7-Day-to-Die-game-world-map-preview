@@ -1,6 +1,7 @@
 package org.obiz.sdtd.tool.rgwmap;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
@@ -71,5 +72,9 @@ public class ImageMath {
 
     public static int getFillIntFromPureInt(int rgb) {
         return rgb | 0xff<<24;
+    }
+
+    public static int xy2i(BufferedImage image, int x, int y) {
+        return image.getHeight()*y + x;
     }
 }

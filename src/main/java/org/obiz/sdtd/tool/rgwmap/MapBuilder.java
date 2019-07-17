@@ -294,16 +294,10 @@ public class MapBuilder {
         return img;
     }
 
-    private Map<String, Path> loadIcons() throws IOException, URISyntaxException {
+    public static Map<String, Path> loadIcons() throws IOException, URISyntaxException {
         Map<String, Path> result = new HashMap<>();
-        URI uri = getClass().getResource("/icons").toURI();
-        Path myPath;
-        if (uri.getScheme().equals("jar")) {
-            FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
-            myPath = fileSystem.getPath("/icons");
-        } else {
-            myPath = Paths.get(uri);
-        }
+        String resourceName = "/icons";
+        Path myPath = getPathForResource(resourceName);
         Stream<Path> walk = Files.walk(myPath, 1);
 
         walk.forEach(
@@ -316,6 +310,18 @@ public class MapBuilder {
                 }
         );
         return result;
+    }
+
+    public static Path getPathForResource(String resourceName) throws URISyntaxException, IOException {
+        Path myPath;
+        URI uri = MapBuilder.class.getResource(resourceName).toURI();
+        if (uri.getScheme().equals("jar")) {
+            FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+            myPath = fileSystem.getPath(resourceName);
+        } else {
+            myPath = Paths.get(uri);
+        }
+        return myPath;
     }
 
     private void readWatersPoint() throws IOException, XMLStreamException {
@@ -472,6 +478,7 @@ public class MapBuilder {
         log("Finish bluring biomes. Start drawing lakes.");
 
         //Draw lakes
+        //TODO no need to  walk through whole image. Save water points and use it to walk around +/- water spot square
         WritableRaster iHeigthsRaster = iHeigths.getRaster();
         for (int x = 0; x < scaledSize; x++) {
             for (int y = 0; y < scaledSize; y++) {

@@ -156,13 +156,14 @@ public class MapBuilder {
     private void build() {
         try {
             Timer.startTimer("OverAll");
+//            testShowMap();
+//            if(true) return;
             //testGetSprite("bank");
             readWorldHeights();
 //            testWalkHeigths();
             readWatersPoint();
             autoAjustImage();
             loadBiomes();
-//            if(true) return;
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
@@ -170,10 +171,22 @@ public class MapBuilder {
                     "          Result map image: " + lastFileName + "\n\n" +
                     "------------------------------------------------------");
             Timer.stopTimer("OverAll");
+
+            new PreviewFrame(iBiomes).setVisible(true);
+
         } catch (IOException e) {
 
             e.printStackTrace();
         } catch (XMLStreamException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void testShowMap() {
+        try {
+            BufferedImage map = ImageIO.read(new File("9_mapWithObjects.png"));
+            new PreviewFrame(map).setVisible(true);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

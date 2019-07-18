@@ -88,7 +88,7 @@ public class MapBuilder {
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
-            new ConsoleWindow();
+            //new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -184,7 +184,7 @@ public class MapBuilder {
 
     private void testShowMap() {
         try {
-            BufferedImage map = ImageIO.read(new File("9_mapWithObjects.png"));
+            BufferedImage map = ImageIO.read(new File("8_mapWithObjects.png"));
             new PreviewFrame(map).setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();

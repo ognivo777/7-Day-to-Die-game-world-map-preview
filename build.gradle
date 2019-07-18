@@ -29,10 +29,13 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
 //    jcenter()
     mavenCentral()
+//    maven {url 'http://en.citydata.jp/maven/'}
 }
 
 dependencies {
     compile group: 'guru.nidi.com.kitfox', name: 'svgSalamander', version: '1.1.2'
+//    compile group: 'com.objectplanet.image', name: 'png-encoder', version: '2.0.1'
+//    compile group: 'ar.com.hjg', name: 'pngj', version: '2.1.0'
 }
 
 application {

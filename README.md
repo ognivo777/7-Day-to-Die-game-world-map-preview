@@ -31,11 +31,11 @@ after gamma waterLine = 4120
 File saving time:  = 3s
 Roads loaded
 All work done!
-Resulting map image: '6_mapWithObjects.png'.
+Resulting map image: '8_mapWithObjects.png'.
 
 ```
 
-After that review new created files. World map with all objects may be found in *9_mapWithObjects.png* image.
+After that review new created files. World map with all objects may be found in *8_mapWithObjects.png* image.
 
 ## Example image
 ![Example](https://drive.google.com/uc?export=download&id=1DdlB3AaNib8JxmPC0ydiPzvTLugQ4Mxx)

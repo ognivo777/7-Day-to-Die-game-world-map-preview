@@ -1,6 +1,9 @@
 # 7D2D_RGW_Create_Map_Preview_Image_Tool ![build](https://travis-ci.org/ognivo777/7D2D_RGW_Create_Map_Preview_Image_Tool.svg?branch=master)
 The simple tool for create informative map image with schematics roads, houses, caves and water towers. Relief information also applied to make map more imformative about the landscape.
 
+## Example image
+![Example](https://drive.google.com/uc?export=download&id=1DdlB3AaNib8JxmPC0ydiPzvTLugQ4Mxx)
+
 ## Prerequists
 Java 8 or higher. You can download java [here](https://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
@@ -37,5 +40,9 @@ Resulting map image: '8_mapWithObjects.png'.
 
 After that review new created files. World map with all objects may be found in *8_mapWithObjects.png* image.
 
-## Example image
-![Example](https://drive.google.com/uc?export=download&id=1DdlB3AaNib8JxmPC0ydiPzvTLugQ4Mxx)
+## Troubleshooting
+
+* In some case you get error "TOO LITTLE" helpful add enviroment variable `_JAVA_OPTIONS=-Xmx256m` instead of specifing java vm options directly in command line
+
+## Feedback
+Support and discussion is available in thread on the game official forum: https://7daystodie.com/forums/showthread.php?120690-Random-generated-(RGW)-MAP-Preview-image-export-Tool

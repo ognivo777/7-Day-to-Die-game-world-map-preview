@@ -80,13 +80,22 @@ public class ImagePanel extends JPanel {
         public void mouseWheelMoved(MouseWheelEvent e) {
             int Px = e.getX();
             int Py = e.getY();
-            double d = 1 + e.getWheelRotation() / 10f;
+            double d = 1 + e.getWheelRotation() / 5f;
+            double oldScale = ImagePanel.this.scale;
             ImagePanel.this.scale *= d;
+            if(scale > 2) {
+                scale = 2;
+            }
+            if(scale < 0.2) {
+                scale = 0.2;
+            }
+            double dd = scale/oldScale;
+
             this.x =  Math.round(Math.round(
-                    Px - (Px - this.x)*d
+                    Px - (Px - this.x)*dd
             ));
             this.y =  Math.round(Math.round(
-                    Py - (Py - this.y)*d
+                    Py - (Py - this.y)*dd
             ));
             SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
         }

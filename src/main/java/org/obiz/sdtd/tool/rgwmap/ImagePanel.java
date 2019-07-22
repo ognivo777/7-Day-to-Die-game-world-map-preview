@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 public class ImagePanel extends JPanel {
 
     private BufferedImage image;
-    private double scale = 1;
+    private double scale = 0;
     private final MouseListener mouseListener;
 
     public ImagePanel(BufferedImage image) {
@@ -21,6 +21,8 @@ public class ImagePanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        if(scale==0)
+            scale = Math.min(getHeight(), getWidth())/(1d*Math.max(image.getHeight(), image.getWidth()));
         super.paintComponent(g);
         int width;
         int height;

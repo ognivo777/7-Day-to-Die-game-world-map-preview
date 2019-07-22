@@ -8,15 +8,13 @@ import java.awt.image.BufferedImage;
 public class ImagePanel extends JPanel {
 
     private BufferedImage image;
-    private int width;
-    private int height;
     private double scale = 1;
     private final MouseListener mouseListener;
 
     public ImagePanel(BufferedImage image) {
         this.image = image;
-        width = (int) Math.round(image.getWidth() * scale);
-        height = (int) Math.round(image.getHeight() * scale);
+//        width = (int) Math.round(image.getWidth() * scale);
+//        height = (int) Math.round(image.getHeight() * scale);
 //        setPreferredSize(new Dimension(width, height));
 
         mouseListener = new MouseListener();
@@ -28,6 +26,8 @@ public class ImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        int width;
+        int height;
         width = (int) Math.round(image.getWidth() * scale);
         height = (int) Math.round(image.getHeight() * scale);
         g.drawImage(image, mouseListener.x, mouseListener.y, width, height, this); // see javadoc for more info on the parameters
@@ -89,7 +89,9 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            System.out.format("pos: %d:%d\n", e.getX(), e.getY());
+            int Px = e.getX();
+            int Py = e.getY();
+            System.out.format("pos: %d:%d\n", Px, Py);
             System.out.println(e.getScrollAmount());
             System.out.println(e.getWheelRotation());
             System.out.println(e.getPreciseWheelRotation());
@@ -100,15 +102,13 @@ public class ImagePanel extends JPanel {
             double oldScale = ImagePanel.this.scale;
             ImagePanel.this.scale *= d;
             double dd = oldScale/scale;
-//            double dd = scale/oldScale;
-//            double dd = scale;
-//            double dd = 1/scale;
-//            double dd = 1/d;
             System.out.println("scale = " + scale);
+            System.out.println("d = " + d);
             System.out.println("dd = " + dd);
-            int k = 0;
-            startX = e.getX() - k;
-            startY = e.getY() - k;
+//            int k = 0;
+
+//            startX = Px - k;
+//            startY = Py - k;
 
 //            x =  Math.round(Math.round((startX*(dd-1))/(1-dd)));
 //            y =  Math.round(Math.round((startY*(dd-1))/(1-dd)));
@@ -116,11 +116,18 @@ public class ImagePanel extends JPanel {
 //            x =  Math.round(Math.round(startX));
 //            y =  Math.round(Math.round(startY));
 
-            x =  Math.round(Math.round(dd*(startX+x)-startX));
-            y =  Math.round(Math.round(dd*(startY+y)-startY));
+//            x =  Math.round(Math.round(dd*(startX+x)-startX));
+//            y =  Math.round(Math.round(dd*(startY+y)-startY));
+
+            this.x =  Math.round(Math.round(
+                    Px - (Px - this.x)*d
+            ));
+            this.y =  Math.round(Math.round(
+                    Py - (Py - this.y)*d
+            ));
 
 
-            System.out.println(x + " : " + y);
+            System.out.println(this.x + " : " + this.y);
             SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
         }
     }

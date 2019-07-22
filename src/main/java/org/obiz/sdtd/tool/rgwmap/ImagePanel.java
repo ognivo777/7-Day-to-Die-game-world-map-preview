@@ -9,6 +9,7 @@ public class ImagePanel extends JPanel {
 
     private BufferedImage image;
     private double scale = 0;
+    private double startScale = 0;
     private final MouseListener mouseListener;
 
     public ImagePanel(BufferedImage image) {
@@ -21,8 +22,11 @@ public class ImagePanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if(scale==0)
-            scale = Math.min(getHeight(), getWidth())/(1d*Math.max(image.getHeight(), image.getWidth()));
+        if(scale==0) {
+            scale = Math.min(getHeight(), getWidth()) / (1d * Math.max(image.getHeight(), image.getWidth()));
+            startScale = scale;
+        }
+
         super.paintComponent(g);
         int width;
         int height;
@@ -68,6 +72,7 @@ public class ImagePanel extends JPanel {
             if (started) {
                 x = e.getX() - startX;
                 y = e.getY() - startY;
+                fixPosByBorders();
                 SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
             }
         }
@@ -91,15 +96,35 @@ public class ImagePanel extends JPanel {
             if(scale < 0.2) {
                 scale = 0.2;
             }
-            double dd = scale/oldScale;
 
-            this.x =  Math.round(Math.round(
-                    Px - (Px - this.x)*dd
-            ));
-            this.y =  Math.round(Math.round(
-                    Py - (Py - this.y)*dd
-            ));
+            if(scale<(startScale*.85)) {
+                scale=startScale*.85;
+                x = Math.round(Math.round((getWidth()-image.getWidth()*scale)/2));
+                y = Math.round(Math.round((getHeight()-image.getHeight()*scale)/2));
+            } else {
+                double dd = scale / oldScale;
+                x = Math.round(Math.round(
+                        Px - (Px - this.x) * dd
+                ));
+                y = Math.round(Math.round(
+                        Py - (Py - this.y) * dd
+                ));
+
+                fixPosByBorders();
+
+            }
             SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
+        }
+
+        private void fixPosByBorders() {
+            if(scale>startScale) {
+                if(mouseListener.x>0) {
+                    mouseListener.x = 0;
+                }
+                if(mouseListener.y>0) {
+                    mouseListener.y = 0;
+                }
+            }
         }
     }
 

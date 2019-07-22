@@ -1,7 +1,7 @@
 <svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
  <g>
   <title>background</title>
-  <rect filter="url(#svg_23_blur)" id="svg_23" height="124" width="124" y="1.90625" x="2" fill="#B99E04"/>
+  <rect filter="url(#svg_23_blur)" id="svg_23" height="124" width="124" y="1.90625" x="2" fill="#B99E04" rx="16" ry="16"/>
  </g>
  <g id="svg_1">
   <title>Bank</title>

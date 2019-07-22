@@ -1,7 +1,7 @@
 <svg width="60%" height="60%" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
 <g id="svg_49">
  <title>Blueberry</title>
-    <rect id="svg_50" height="128" width="128" y="0" x="0" fill="#5f87af"/>
+    <rect rx="16" ry="16" id="svg_50" height="128" width="128" y="0" x="0" fill="#5f87af"/>
     <g stroke="#333" stroke-width="2" id="berryboobs">
         <circle fill="#375068" cx="44" cy="74" r="30" id="svg_1"/>
         <circle fill="#375068" cx="82" cy="80" r="30" id="svg_2"/>

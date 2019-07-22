@@ -1,7 +1,7 @@
 <svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
  <g>
   <title>Prison</title>
-  <rect id="svg_11" height="128" width="128" y="0" x="0" fill="#cccccc"/>
+  <rect id="svg_11" height="116" width="116" y="8" x="8" fill="#cccccc"/>
   <rect id="svg_12" height="18" width="114" y="8" x="6" fill="#95572F"/>
   <rect id="svg_12" height="8" width="114" y="114" x="6" fill="#95572F"/>
   <rect id="svg_12" height="40" width="34" y="50" x="70" fill="#95572F"/>

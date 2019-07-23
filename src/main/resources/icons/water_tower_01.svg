@@ -1,6 +1,6 @@
 <svg width="100%" height="100%" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
  <g id="WaterTowers">
-   <title>WaterTowers</title>
+   <title>WaterTower</title>
   <g>
    <rect x="40" y="20" width="48" height="32" id="tower_shell" fill="#888"/>
    <rect x="40" y="40" width="48" height="32" id="water_level" fill="#5f87af"/>

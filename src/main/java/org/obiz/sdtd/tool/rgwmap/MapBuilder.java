@@ -89,7 +89,7 @@ public class MapBuilder {
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
-//            new ConsoleWindow();
+            new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {

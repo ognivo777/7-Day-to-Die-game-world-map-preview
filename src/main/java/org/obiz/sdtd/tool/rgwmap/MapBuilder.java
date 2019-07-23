@@ -157,8 +157,8 @@ public class MapBuilder {
     private void build() {
         try {
             Timer.startTimer("OverAll");
-//            testShowMap();
-//            if(true) return;
+            testShowMap();
+            if(true) return;
             //testGetSprite("bank");
             readWorldHeights();
 //            testWalkHeigths();
@@ -173,7 +173,7 @@ public class MapBuilder {
                     "------------------------------------------------------");
             Timer.stopTimer("OverAll");
 
-            new PreviewFrame(iBiomes).setVisible(true);
+            new PreviewFrame(iBiomes, icons).setVisible(true);
 
         } catch (IOException e) {
 
@@ -186,7 +186,7 @@ public class MapBuilder {
     private void testShowMap() {
         try {
             BufferedImage map = ImageIO.read(new File("8_mapWithObjects.png"));
-            new PreviewFrame(map).setVisible(true);
+            new PreviewFrame(map, icons).setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -255,7 +255,7 @@ public class MapBuilder {
         }
     }
 
-    public static void drawIcon(Graphics2D gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale) {
+    public static void drawIcon(Graphics gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale) {
         BufferedImage sprite;
         sprite = iconsCache.get(iconName);
         if(sprite == null) {

@@ -42,7 +42,23 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                int Px = e.getX();
+                int Py = e.getY();
+                double oldScale = ImagePanel.this.scale;
 
+                startX = Px - x;
+                startY = Py - y;
+                started = true;
+
+                ImagePanel.this.scale = (scale > 1.2) ? 0.5 : ImagePanel.this.scale * 1.6;
+                double dd = scale / oldScale;
+
+                this.x = Math.round(Math.round(Px - (Px - this.x) * dd));
+                this.y = Math.round(Math.round(Py - (Py - this.y) * dd));
+
+                SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
+            }
         }
 
         @Override

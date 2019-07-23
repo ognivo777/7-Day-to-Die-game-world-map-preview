@@ -1,5 +1,5 @@
 <svg width="100%" height="100%" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
- <g>
+ <g transform="translate(-20,0)">
   <title>Campfire</title>
   <circle filter="url(#svg_6_blur)" id="svg_6" r="60" cy="64" cx="64" fill="#545033"/>
   <g id="svg_1">

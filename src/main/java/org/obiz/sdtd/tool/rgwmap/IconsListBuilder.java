@@ -1,5 +1,6 @@
 package org.obiz.sdtd.tool.rgwmap;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,7 +15,6 @@ public class IconsListBuilder {
 
     public static void main(String[] args) {
         StringBuilder objectsHtml = new StringBuilder();
-        StringBuilder imagesHtml = new StringBuilder();
         try {
             Map<String, Path> stringPathMap = MapBuilder.loadIcons();
             int tableSize = Math.round(Math.round(Math.sqrt(stringPathMap.size())))+1;
@@ -30,11 +30,6 @@ public class IconsListBuilder {
                 count++;
             }
 
-            new PreviewFrame(icons).setVisible(true);
-
-//            System.out.println(objectsHtml);
-//            System.out.println(imagesHtml);
-
             Path destinationPath = Paths.get("allIcons.html");
 
             PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(destinationPath));
@@ -47,8 +42,14 @@ public class IconsListBuilder {
             printWriter.close();
 
             Desktop.getDesktop().browse(destinationPath.toUri());
+            Thread.sleep(500);
+            JFrame frame = new PreviewFrame(icons);
+            frame.setAutoRequestFocus(true);
+            frame.setVisible(true);
 
         } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

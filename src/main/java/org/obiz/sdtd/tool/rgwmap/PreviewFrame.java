@@ -12,7 +12,7 @@ public class PreviewFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         add(new ImagePanel(img), BorderLayout.CENTER);
-        add(new LegendPanel(), BorderLayout.EAST);
+//        add(new LegendPanel(), BorderLayout.EAST);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

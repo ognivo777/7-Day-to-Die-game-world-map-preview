@@ -1,5 +1,5 @@
 <svg width="90%" height="90%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
- <g>
+ <g transform="translate(-64,48)">
   <title>Waste</title>
   <path id="svg_5" d="m17.48829,123.78028c0,0 -0.94922,-53.15625 -1.11426,-53.30079c-0.16504,-0.14454 70.64454,0.14454 70.47949,0c-0.16505,-0.14454 20.57325,24.11231 20.4082,23.96777c-0.16505,-0.14454 3.72462,28.85841 3.55957,28.71387c-0.16505,-0.14454 -93.333,0.61915 -93.333,0.61915z" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="null" fill="#4c4c4c"/>
   <rect id="svg_31" height="40" width="20" y="50" x="20" fill="#777"/>

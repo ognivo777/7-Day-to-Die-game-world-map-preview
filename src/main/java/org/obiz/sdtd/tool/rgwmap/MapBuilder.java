@@ -33,6 +33,7 @@ public class MapBuilder {
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
     private final boolean DRAW_ICON_AXIS = false;
+    private final int DRAW_ICON_SPRITE_BUF_SCALE = 2;
 
     //biome colors
     public static final Color forest = new Color(55, 95, 68);
@@ -61,7 +62,7 @@ public class MapBuilder {
     private boolean doBlureBiomes = true;
     private int bloorK = 256; //part of image size used as blure radius
     private Map<String, Path> icons;
-    private Map<String, BufferedImage> iconsCache = new HashMap<>();
+    private static Map<String, BufferedImage> iconsCache = new HashMap<>();
 
     private int[][] bH;
 
@@ -88,7 +89,7 @@ public class MapBuilder {
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
-            new ConsoleWindow();
+//            new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -246,7 +247,7 @@ public class MapBuilder {
         try {
             ImageIO.write(map, "PNG", new File("_tst_map.png"));
 
-            drawIcon(gMap, iconName, iconSize, x, y, true);
+            drawIcon(gMap, iconName, iconSize, x, y, true, icons, DRAW_ICON_SPRITE_BUF_SCALE);
 
             ImageIO.write(map, "PNG", new File("_tst_map2.png"));
         } catch (IOException e) {
@@ -254,18 +255,19 @@ public class MapBuilder {
         }
     }
 
-    private void drawIcon(Graphics2D gMap, String iconName, int targetSize, int x, int y, boolean showAxis) {
+    public static void drawIcon(Graphics2D gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale) {
         BufferedImage sprite;
         sprite = iconsCache.get(iconName);
         if(sprite == null) {
-            sprite = createSprite(iconName, targetSize, showAxis);
+            sprite = createSprite(iconName, targetSize, showAxis, icons, sizeBufferScale);
             iconsCache.put(iconName, sprite);
         }
-        gMap.drawImage(sprite, x - targetSize *4, y - targetSize *4, null);
+        gMap.drawImage(sprite, x - targetSize * sizeBufferScale, y - targetSize * sizeBufferScale, null);
     }
 
-    private BufferedImage createSprite(String name, int width, boolean showAxis) {
-        BufferedImage img = new BufferedImage(width*8, width*8, BufferedImage.TYPE_INT_ARGB);
+    public static BufferedImage createSprite(String name, int width, boolean showAxis, Map<String, Path> icons, int halfSize) {
+        int fullSize = halfSize*2;
+        BufferedImage img = new BufferedImage(width* fullSize, width* fullSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         try {
             Path path = icons.get(name);
@@ -274,17 +276,14 @@ public class MapBuilder {
             URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
             SVGDiagram diagram = svgUniverse.getDiagram(uri);
             diagram.setDeviceViewport(new Rectangle(width, width));
-            Graphics graphics = g.create(0, 0, width*8, width*8);
+            Graphics graphics = g.create(0, 0, width* fullSize, width* fullSize);
             if(showAxis) {
-                g.setColor(Color.ORANGE);
-                g.drawRect(0, 0, width*8-1, width*8-1);
                 g.setColor(Color.GREEN);
-                g.drawLine(0, width*4, width*8-1, width*4);
-                g.drawLine(width*4,0, width*4, width*8-1);
+                g.drawLine(0, width* halfSize, width* fullSize -1, width* halfSize);
+                g.drawLine(width* halfSize,0, width* halfSize, width* fullSize -1);
             }
-            graphics.translate(width*4, width*4);
+            graphics.translate(width* halfSize, width* halfSize);
             diagram.render((Graphics2D) graphics);
-//            log(diagram.getViewRect());
             svgUniverse.clear();
         } catch (IOException e) {
             e.printStackTrace();
@@ -402,7 +401,7 @@ public class MapBuilder {
                     prefabsCounter++;
 
                     if (foundPrefabGroup != null) {
-                        drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS);
+                        drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE);
                     } else if (prefabName.contains("trailer")) {
                         g.setColor(new Color(51, 49, 51));
                         if (rot == 0 || rot == 2)
@@ -413,7 +412,7 @@ public class MapBuilder {
                         g.setColor(new Color(51, 49, 51));
                         g.fill3DRect(x, y, i10, i10, true);
                     } else {
-                        drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS);
+                        drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE);
                     }
                 }
             }

@@ -11,8 +11,8 @@ public class PreviewFrame extends JFrame {
         setSize(1035, 1055);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        ImagePanel image = new ImagePanel(img);
-        add(image, BorderLayout.CENTER);
+        add(new ImagePanel(img), BorderLayout.CENTER);
+        add(new LegendPanel(), BorderLayout.EAST);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

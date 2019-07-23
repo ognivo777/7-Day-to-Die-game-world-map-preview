@@ -23,6 +23,7 @@ public class ImagePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         if(scale==0) {
+            /* For the first time painting calculate staring scale to fit with panel size */
             scale = Math.min(getHeight(), getWidth()) / (1d * Math.max(image.getHeight(), image.getWidth()));
             startScale = scale;
         }
@@ -71,7 +72,9 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (started && scale>startScale) {
+            if (started
+                    /* here skip the dragging if image smaller than panel */
+                    && scale>startScale) {
                 x = e.getX() - startX;
                 y = e.getY() - startY;
                 fixPosByBorders();
@@ -91,13 +94,13 @@ public class ImagePanel extends JPanel {
             applyScale(e, d, false);
         }
 
-        private void applyScale(MouseEvent e, double d, boolean rollZoom) {
+        private void applyScale(MouseEvent e, double scaleMultiplier, boolean cyclicZoom) {
             int Px = e.getX();
             int Py = e.getY();
             double oldScale = ImagePanel.this.scale;
-            ImagePanel.this.scale *= d;
+            ImagePanel.this.scale *= scaleMultiplier;
             if(scale > 2) {
-                if (rollZoom) {
+                if (cyclicZoom) {
                     scale = startScale;
                     x = 0;
                     y = 0;
@@ -131,6 +134,7 @@ public class ImagePanel extends JPanel {
             SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
         }
 
+        /* Prevent drag map corners inside the panel if map size > panel size.*/
         private void fixPosByBorders() {
             if(scale>startScale) {
                 if(mouseListener.x>0) {

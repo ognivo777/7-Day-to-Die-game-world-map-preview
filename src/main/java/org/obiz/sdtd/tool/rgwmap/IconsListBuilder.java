@@ -1,6 +1,7 @@
 package org.obiz.sdtd.tool.rgwmap;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
@@ -16,12 +17,23 @@ public class IconsListBuilder {
         StringBuilder imagesHtml = new StringBuilder();
         try {
             Map<String, Path> stringPathMap = MapBuilder.loadIcons();
+            int tableSize = Math.round(Math.round(Math.sqrt(stringPathMap.size())))+1;
+            int cellSize = 40;
+            BufferedImage icons = new BufferedImage(cellSize *tableSize, cellSize *tableSize, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = icons.createGraphics();
+            int count = 0;
             for (String name : stringPathMap.keySet()) {
                 Files.readAllLines(stringPathMap.get(name)).forEach(s -> objectsHtml.append(s).append("\n"));
+                int x = count % tableSize;
+                int y = count / tableSize;
+                MapBuilder.drawIcon(g, name, cellSize/2, x* cellSize, y* cellSize, true, stringPathMap,2);
+                count++;
             }
 
-            System.out.println(objectsHtml);
-            System.out.println(imagesHtml);
+            new PreviewFrame(icons).setVisible(true);
+
+//            System.out.println(objectsHtml);
+//            System.out.println(imagesHtml);
 
             Path destinationPath = Paths.get("allIcons.html");
 

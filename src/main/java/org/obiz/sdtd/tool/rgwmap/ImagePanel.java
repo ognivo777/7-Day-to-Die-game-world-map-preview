@@ -42,22 +42,8 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                int Px = e.getX();
-                int Py = e.getY();
-                double oldScale = ImagePanel.this.scale;
-
-                startX = Px - x;
-                startY = Py - y;
-                started = true;
-
-                ImagePanel.this.scale = (scale > 1.2) ? 0.5 : ImagePanel.this.scale * 1.6;
-                double dd = scale / oldScale;
-
-                this.x = Math.round(Math.round(Px - (Px - this.x) * dd));
-                this.y = Math.round(Math.round(Py - (Py - this.y) * dd));
-
-                SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
+            if (e.getClickCount() % 2 == 0) {
+                applyScale(e, 1.6, true);
             }
         }
 
@@ -85,7 +71,7 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (started) {
+            if (started && scale>startScale) {
                 x = e.getX() - startX;
                 y = e.getY() - startY;
                 fixPosByBorders();
@@ -101,17 +87,30 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
+            double d = 1 + e.getWheelRotation() / 5f;
+            applyScale(e, d, false);
+        }
+
+        private void applyScale(MouseEvent e, double d, boolean rollZoom) {
             int Px = e.getX();
             int Py = e.getY();
-            double d = 1 + e.getWheelRotation() / 5f;
             double oldScale = ImagePanel.this.scale;
             ImagePanel.this.scale *= d;
             if(scale > 2) {
-                scale = 2;
+                if (rollZoom) {
+                    scale = startScale;
+                    x = 0;
+                    y = 0;
+                    SwingUtilities.invokeLater(() -> e.getComponent().repaint(20));
+                    return;
+                } else {
+                    scale = 2;
+                }
             }
             if(scale < 0.2) {
                 scale = 0.2;
             }
+
 
             if(scale<(startScale*.85)) {
                 scale=startScale*.85;
@@ -139,6 +138,12 @@ public class ImagePanel extends JPanel {
                 }
                 if(mouseListener.y>0) {
                     mouseListener.y = 0;
+                }
+                if(mouseListener.x < -(image.getWidth()*scale-getWidth())) {
+                    mouseListener.x = -Math.round(Math.round(image.getWidth()*scale-getWidth()));
+                }
+                if(mouseListener.y < -(image.getHeight()*scale-getHeight())) {
+                    mouseListener.y = -Math.round(Math.round(image.getHeight()*scale-getHeight()));
                 }
             }
         }

@@ -154,6 +154,10 @@ public class MapBuilder {
         new MapBuilder(path).build();
     }
 
+    public static void clearIconsCache() {
+        iconsCache.clear();
+    }
+
     private void build() {
         try {
             Timer.startTimer("OverAll");
@@ -247,7 +251,7 @@ public class MapBuilder {
         try {
             ImageIO.write(map, "PNG", new File("_tst_map.png"));
 
-            drawIcon(gMap, iconName, iconSize, x, y, true, icons, DRAW_ICON_SPRITE_BUF_SCALE);
+            drawIcon(gMap, iconName, iconSize, x, y, true, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
 
             ImageIO.write(map, "PNG", new File("_tst_map2.png"));
         } catch (IOException e) {
@@ -255,17 +259,20 @@ public class MapBuilder {
         }
     }
 
-    public static void drawIcon(Graphics gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale) {
+    public static void drawIcon(Graphics gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale, boolean ignoreScale) {
+        drawIcon(gMap, iconName, targetSize, x, y, showAxis, icons, sizeBufferScale, iconsCache, ignoreScale);
+    }
+    public static void drawIcon(Graphics gMap, String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale, Map<String, BufferedImage> iconsCache, boolean ignoreScale) {
         BufferedImage sprite;
         sprite = iconsCache.get(iconName);
         if(sprite == null) {
-            sprite = createSprite(iconName, targetSize, showAxis, icons, sizeBufferScale);
+            sprite = createSprite(iconName, targetSize, showAxis, icons, sizeBufferScale, ignoreScale);
             iconsCache.put(iconName, sprite);
         }
         gMap.drawImage(sprite, x - targetSize * sizeBufferScale, y - targetSize * sizeBufferScale, null);
     }
 
-    public static BufferedImage createSprite(String name, int width, boolean showAxis, Map<String, Path> icons, int halfSize) {
+    public static BufferedImage createSprite(String name, int width, boolean showAxis, Map<String, Path> icons, int halfSize, boolean ignoreScale) {
         int fullSize = halfSize*2;
         BufferedImage img = new BufferedImage(width* fullSize, width* fullSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
@@ -275,7 +282,12 @@ public class MapBuilder {
 
             URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
             SVGDiagram diagram = svgUniverse.getDiagram(uri);
-            diagram.setDeviceViewport(new Rectangle(width, width));
+            int svgWidth =  width;
+            if(ignoreScale) {
+                svgWidth = Math.round(width / (diagram.getRoot().getDeviceHeight() / 100));
+            }
+            diagram.setDeviceViewport(new Rectangle(svgWidth, svgWidth));
+//            diagram.
             Graphics graphics = g.create(0, 0, width* fullSize, width* fullSize);
             if(showAxis) {
                 g.setColor(Color.GREEN);
@@ -401,7 +413,7 @@ public class MapBuilder {
                     prefabsCounter++;
 
                     if (foundPrefabGroup != null) {
-                        drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE);
+                        drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
                     } else if (prefabName.contains("trailer")) {
                         g.setColor(new Color(51, 49, 51));
                         if (rot == 0 || rot == 2)
@@ -412,7 +424,7 @@ public class MapBuilder {
                         g.setColor(new Color(51, 49, 51));
                         g.fill3DRect(x, y, i10, i10, true);
                     } else {
-                        drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE);
+                        drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
                     }
                 }
             }

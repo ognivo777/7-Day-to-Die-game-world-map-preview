@@ -22,12 +22,7 @@ public class LegendPanel extends Panel {
         for (String name : icons.keySet()) {
             int x = 0;
             int y = count * size;
-            if(name.equals("football_stadium")) {
-                System.out.println(name);
-            }
-            if(name.equals("waste_")) {
-                System.out.println(name);
-            }
+
             MapBuilder.drawIcon(g, name, size, x, y, false, icons,2, iconsCache,  true);
             g.drawString(name, x + 20, y + 20);
             count++;

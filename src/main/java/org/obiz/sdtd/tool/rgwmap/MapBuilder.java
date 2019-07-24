@@ -3,9 +3,7 @@
  */
 package org.obiz.sdtd.tool.rgwmap;
 
-import com.kitfox.svg.SVGDiagram;
-import com.kitfox.svg.SVGException;
-import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -283,12 +283,21 @@ public class MapBuilder {
             URI uri = svgUniverse.loadSVG(Files.newInputStream(path), path.getFileName().toString());
             SVGDiagram diagram = svgUniverse.getDiagram(uri);
             int svgWidth =  width;
+            int svgX = 0;
+            int svgY = 0;
             if(ignoreScale) {
                 svgWidth = Math.round(width / (diagram.getRoot().getDeviceHeight() / 100));
+                AffineTransform xForm = ((Group) diagram.getRoot().getChild(0)).getXForm();
+                if(xForm!=null) {
+                    int svgViewBoxWidth = diagram.getRoot().getPresAbsolute("viewBox").getIntList()[3];
+                    double scale = svgWidth/(svgViewBoxWidth*1.);
+                    svgX = (int) -(xForm.getTranslateX() * scale);
+                    svgY = (int) -(xForm.getTranslateY() * scale);
+                }
             }
             diagram.setDeviceViewport(new Rectangle(svgWidth, svgWidth));
 //            diagram.
-            Graphics graphics = g.create(0, 0, width* fullSize, width* fullSize);
+            Graphics graphics = g.create(svgX, svgY, width* fullSize, width* fullSize);
             if(showAxis) {
                 g.setColor(Color.GREEN);
                 g.drawLine(0, width* halfSize, width* fullSize -1, width* halfSize);

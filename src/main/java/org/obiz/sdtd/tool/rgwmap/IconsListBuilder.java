@@ -26,7 +26,7 @@ public class IconsListBuilder {
                 Files.readAllLines(stringPathMap.get(name)).forEach(s -> objectsHtml.append(s).append("\n"));
                 int x = count % tableSize;
                 int y = count / tableSize;
-                MapBuilder.drawIcon(g, name, cellSize/2, x* cellSize, y* cellSize, true, stringPathMap,2, false);
+                MapBuilder.drawIcon(g, name, cellSize/2, x* cellSize, y* cellSize, true, stringPathMap,2, true);
                 count++;
             }
 

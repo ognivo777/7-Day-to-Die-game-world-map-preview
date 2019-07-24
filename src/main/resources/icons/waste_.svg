@@ -4,7 +4,7 @@
   <path id="svg_5" d="m17.48829,123.78028c0,0 -0.94922,-53.15625 -1.11426,-53.30079c-0.16504,-0.14454 70.64454,0.14454 70.47949,0c-0.16505,-0.14454 20.57325,24.11231 20.4082,23.96777c-0.16505,-0.14454 3.72462,28.85841 3.55957,28.71387c-0.16505,-0.14454 -93.333,0.61915 -93.333,0.61915z" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="null" fill="#4c4c4c"/>
   <rect id="svg_31" height="40" width="20" y="50" x="20" fill="#777"/>
   <rect id="svg_32" height="40" width="20" y="50.71191" x="54.06738" fill="#555"/>
-  <rect id="svg_10" height="25.5" width="26.25" y="84.25001" x="69.875" fill="#7f7f7f"/>
+  ((SVGRoot)diagram.getRoot()).getPresAbsolute("viewBox").getIntList()[3]  <rect id="svg_10" height="25.5" width="26.25" y="84.25001" x="69.875" fill="#7f7f7f"/>
   <rect id="svg_30" height="25.5" width="26.25" y="84.745" x="31.745" fill="#666666"/>
   <g id="svg_1">
    <path id="svg_3" fill="#333" d="m30.75,81.253l0,29.8l27.8,0l0,-29.8l-27.8,0zm18.53334,19.86667l-9.26667,0l0,-9.93333l9.26667,0l0,9.93333z"/>

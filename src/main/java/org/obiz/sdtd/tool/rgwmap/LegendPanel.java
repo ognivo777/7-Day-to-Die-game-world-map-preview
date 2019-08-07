@@ -8,9 +8,11 @@ import java.util.Map;
 
 public class LegendPanel extends Panel {
     private Map<String, Path> icons;
+    private MapMagnifierPanel loupe;
     Map<String, BufferedImage> iconsCache; //local icons cache because of different render params
-    public LegendPanel(Map<String, Path> icons) {
+    public LegendPanel(Map<String, Path> icons, MapMagnifierPanel loupe) {
         this.icons = icons;
+        this.loupe = loupe;
         iconsCache = new HashMap<>();
     }
 
@@ -19,14 +21,26 @@ public class LegendPanel extends Panel {
         int count = 0;
         int size = 20;
 
+        //Icons from the loupe come first
         for (String name : icons.keySet()) {
             int x = 0;
             int y = count * size;
-
-            MapBuilder.drawIcon(g, name, size, x, y, false, icons,2, iconsCache,  true);
-            g.drawString(name, x + 20, y + 20);
-            count++;
+            if (loupe.getVisibleIcons().contains(name)) {
+                MapBuilder.drawIcon(g, name, size, x, y, false, icons, 2, iconsCache, true);
+                g.drawString(name, x + 20, y + 20);
+                count++;
+            }
         }
-
+        //Todo draw some devider
+        //Icons not from the loupe comes bottom
+        for (String name : icons.keySet()) {
+            int x = 0;
+            int y = count * size;
+            if (!loupe.getVisibleIcons().contains(name)) {
+                MapBuilder.drawIcon(g, name, size, x, y, false, icons, 2, iconsCache, true);
+                g.drawString(name, x + 20, y + 20);
+                count++;
+            }
+        }
     }
 }

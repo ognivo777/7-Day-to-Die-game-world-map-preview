@@ -8,20 +8,32 @@ import java.util.Map;
 
 public class PreviewFrame extends JFrame {
 
+    private final int rightPanelWidth = 150;
+
     public PreviewFrame(BufferedImage img, Map<String, Path> icons) throws HeadlessException {
         super("Map preview");
-        setSize(1035, 1055);
+        setSize(905 + rightPanelWidth, 905);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        add(new ImagePanel(img), BorderLayout.CENTER);
-        LegendPanel legendPanel = new LegendPanel(icons);
+        ImagePanel imagePanel = new ImagePanel(img);
+        add(imagePanel, BorderLayout.CENTER);
+        MapMagnifierPanel loupe = new MapMagnifierPanel(imagePanel);
+        LegendPanel legendPanel = new LegendPanel(icons, loupe);
+
+        //Container for Map magnifier and icons legend
+        Panel rightPanel = new Panel();
+        rightPanel.setPreferredSize(new Dimension(rightPanelWidth + 30, 200));
+        rightPanel.setLayout(new BorderLayout());
+
         ScrollPane jScrollPane = new ScrollPane();
-        legendPanel.setPreferredSize(new Dimension(130, 20*icons.size()));
-        jScrollPane.setPreferredSize(new Dimension(160, 130));
+        loupe.setPreferredSize(new Dimension(rightPanelWidth, rightPanelWidth*4/5));
+        legendPanel.setPreferredSize(new Dimension(rightPanelWidth, 20*icons.size()));
+        jScrollPane.setPreferredSize(new Dimension(rightPanelWidth + 30, rightPanelWidth));
         jScrollPane.add(legendPanel);
 //        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        add(jScrollPane, BorderLayout.EAST);
-        legendPanel.setSize(150, legendPanel.getHeight());
+        rightPanel.add(loupe, BorderLayout.NORTH);
+        rightPanel.add(jScrollPane, BorderLayout.CENTER);
+        add(rightPanel, BorderLayout.LINE_END);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

@@ -22,18 +22,19 @@ public class ImagePanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         if(scale==0) {
             /* For the first time painting calculate staring scale to fit with panel size */
             scale = Math.min(getHeight(), getWidth()) / (1d * Math.max(image.getHeight(), image.getWidth()));
             startScale = scale;
         }
 
-        super.paintComponent(g);
-        int width;
-        int height;
-        width = (int) Math.round(image.getWidth() * scale);
-        height = (int) Math.round(image.getHeight() * scale);
-        g.drawImage(image, mouseListener.x, mouseListener.y, width, height, this);
+        int scaledWidth;
+        int scaledHeight;
+        scaledWidth = (int) Math.round(image.getWidth() * scale);
+        scaledHeight = (int) Math.round(image.getHeight() * scale);
+        g.drawImage(image, mouseListener.x, mouseListener.y, scaledWidth, scaledHeight, this);
     }
 
     class MouseListener implements java.awt.event.MouseListener, MouseMotionListener, MouseWheelListener {
@@ -84,8 +85,8 @@ public class ImagePanel extends JPanel {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            if (started)
-                System.out.format("move: %d:%d\n", x, y);
+//            if (started)
+//                System.out.format("move: %d:%d\n", x, y);
         }
 
         @Override
@@ -98,7 +99,7 @@ public class ImagePanel extends JPanel {
             int Px = e.getX();
             int Py = e.getY();
             double oldScale = ImagePanel.this.scale;
-            ImagePanel.this.scale *= scaleMultiplier;
+            scale /= scaleMultiplier;
             if(scale > 2) {
                 if (cyclicZoom) {
                     scale = startScale;
@@ -153,4 +154,19 @@ public class ImagePanel extends JPanel {
         }
     }
 
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public int getMapDx() {
+        return mouseListener.x;
+    }
+
+    public int getMapDy() {
+        return mouseListener.y;
+    }
 }

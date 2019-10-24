@@ -161,8 +161,8 @@ public class MapBuilder {
     private void build() {
         try {
             Timer.startTimer("OverAll");
-            testShowMap();
-            if(true) return;
+//            testShowMap();
+//            if(true) return;
             //testGetSprite("bank");
             readWorldHeights();
 //            testWalkHeigths();

@@ -18,6 +18,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,9 +27,13 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static javafx.application.ConditionalFeature.SWT;
+import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+
 public class MapBuilder {
 
     private static final int MEM_EXPECTED = 512 * 1024 * 1024;
+    private ConsoleWindow consoleWindow = null;
     private String path;
     private int downScale = 2; //2 - better definition
     private float gamma = 5;
@@ -89,7 +94,7 @@ public class MapBuilder {
         prevLogTime = System.currentTimeMillis();
         try {
             icons = loadIcons();
-            new ConsoleWindow();
+            consoleWindow = new ConsoleWindow();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -687,10 +692,6 @@ public class MapBuilder {
         Files.write(Paths.get(path + "\\heigthsHistogram.txt"), Collections.singleton(sb));
 
         D = Math.round(Math.sqrt(D));
-//        log("D2 = " + D);
-
-//        int startHist = Math.round(intrms - gamma * D);
-//        log("startHist = " + startHist);
         float k = 256 * 256 / (max - min);
         log("k = " + k);
 
@@ -713,12 +714,36 @@ public class MapBuilder {
     }
 
     public void readWorldHeights() throws IOException {
-        String dtmFileName = path + "\\dtm.raw";
-        File heightsFile = new File(dtmFileName);
-        if (!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
-            System.err.println("File not found: " + dtmFileName);
-            System.exit(1);
-        }
+        File heightsFile;
+
+            JFileChooser chooser = new JFileChooser();
+            chooser.setCurrentDirectory(new java.io.File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\7DaysToDie\\GeneratedWorlds"));
+            chooser.setDialogTitle("Choose world..");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setAcceptAllFileFilterUsed(false);
+            chooser.setPreferredSize(new Dimension(860, 550));
+            while (true) {
+                String dtmFileName = path + "\\dtm.raw";
+                heightsFile = new File(dtmFileName);
+                if (!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
+                    System.err.println("File not found: " + dtmFileName);
+                    if (chooser.showOpenDialog(consoleWindow) == JFileChooser.APPROVE_OPTION) {
+                        path = chooser.getSelectedFile().getAbsolutePath();
+                    } else {
+                        System.out.println("No Selection ");
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        System.exit(1);
+                    }
+                } else {
+                    break;
+                }
+            }
+
+
         long fileLength = heightsFile.length();
         log("dtm.raw fileLength = " + fileLength);
         mapSize = (int) Math.round(Math.sqrt(fileLength / 2.));

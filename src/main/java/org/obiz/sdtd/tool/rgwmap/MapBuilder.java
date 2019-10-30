@@ -369,11 +369,11 @@ public class MapBuilder {
                     String attributeValue = xmlr.getAttributeValue(0);
                     String[] split = attributeValue.split(",");
                     int x = (mapSize / 2 + Integer.parseInt(split[0].trim())) / downScale;
+                    waterLine = Integer.parseInt(split[1].trim());
                     int y = (mapSize / 2 - Integer.parseInt(split[2].trim())) / downScale;
 
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
-
                     watersPointsCounter++;
                 }
             }
@@ -620,6 +620,7 @@ public class MapBuilder {
     }
 
     private void autoAjustImage() throws IOException {
+        int maxHeigth = 65545;
         log("Start autoAjustImage");
         WritableRaster raster = iHeigths.getRaster();
         // initialisation of image histogram array
@@ -672,11 +673,12 @@ public class MapBuilder {
 
         rms = Math.round(Math.sqrt(rms));
         int intrms = Math.toIntExact(rms);
+        int wLine = maxHeigth/256 * waterLine;
 
-//        log("mean = " + Math.round(mean));
-//        log("rms = " + rms);
-//        log("min = " + min);
-//        log("max = " + max);
+        //log("mean = " + Math.round(mean));
+        //log("rms = " + rms);
+        //log("min = " + min);
+        //log("max = " + max);
 
         StringBuilder sb = new StringBuilder();
         float D = 0;
@@ -695,7 +697,7 @@ public class MapBuilder {
         float k = 256 * 256 / (max - min);
         log("k = " + k);
 
-        waterLine = intrms - Math.round(1.7f * D);
+        waterLine = wLine; //intrms - Math.round(0.5f * D);
         log("waterLine = " + waterLine);
         if (applyGammaCorrection) {
             waterLine = Math.round((waterLine - min) * k);

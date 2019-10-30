@@ -1,0 +1,18 @@
+<svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+ <g class="layer">
+  <title>Loldwest_strip</title>
+  <rect fill="#8c7560" height="68.0312" id="svg_1" width="67.4118" x="38.4091" y="47.2311"/>
+  <g id="brown"/>
+  <g id="yellow"/>
+  <g fill="#333" id="svg_3"/>
+  <rect fill="#c1b883" height="34.4636" id="svg_8" width="15.0364" x="76.4677" y="56.9537"/>
+  <rect fill="#000000" fill-opacity="0" height="25.5514" id="svg_9" stroke="#333333" stroke-width="4" width="12.5122" x="48.3924" y="81.8495"/>
+  <rect fill="#000000" fill-opacity="0" height="37.06" id="svg_10" stroke="#333333" stroke-width="4" width="16.113" x="75.5636" y="56.635"/>
+  <rect fill="#000000" fill-opacity="0" height="57.3487" id="svg_6" stroke="#333333" stroke-width="5" width="63.8337" x="39.2705" y="49.5705"/>
+  <rect fill="#6b523a" height="8.34848" id="svg_2" width="60.4958" x="41.3048" y="50.4186"/>
+  <path d="m38.60649,110.11069c0,-0.22631 -14.25724,16.06767 -14.37039,15.95452c-0.11315,-0.11315 97.87707,-0.56577 97.76391,-0.67892c-0.11314,-0.11314 -15.95452,-15.2756 -16.06767,-15.38876c-0.11316,-0.11315 -67.32585,0.33945 -67.32585,0.11316l0.00001,0z" fill="#6b523a" id="svg_7" stroke="#333333" stroke-width="5"/>
+  <path d="m41.125,46.37544l28.01097,-20.875l31.61404,20l-59.625,0.875z" fill="#8c7560" id="svg_16" stroke="#333333" stroke-width="3"/>
+  <line fill="none" id="svg_17" stroke="#333333" stroke-width="3" x1="68.625" x2="69.125" y1="6.625" y2="25.625"/>
+  <line fill="none" id="svg_18" stroke="#333333" stroke-width="3" x1="62.375" x2="75.125" y1="13.375" y2="13.125"/>
+ </g>
+</svg>

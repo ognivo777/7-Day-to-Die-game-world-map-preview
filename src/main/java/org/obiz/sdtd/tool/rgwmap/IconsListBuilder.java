@@ -43,7 +43,7 @@ public class IconsListBuilder {
 
 //            Desktop.getDesktop().browse(destinationPath.toUri());
             Thread.sleep(500);
-            JFrame frame = new PreviewFrame(icons, stringPathMap);
+            JFrame frame = new PreviewFrame(icons, stringPathMap, "TEST ICONS");
             frame.setAutoRequestFocus(true);
             frame.setVisible(true);
 

@@ -22,12 +22,14 @@ public class LegendPanel extends Panel {
         int size = 20;
 
         //Icons from the loupe come first
+        int xd = 22;
+        int yd = 13;
         for (String name : icons.keySet()) {
             int x = 0;
             int y = count * size;
             if (loupe.getVisibleIcons().contains(name)) {
                 MapBuilder.drawIcon(g, name, size, x, y, false, icons, 2, iconsCache, true);
-                g.drawString(name, x + 20, y + 20);
+                g.drawString(name, x + xd, y + yd);
                 count++;
             }
         }
@@ -38,7 +40,7 @@ public class LegendPanel extends Panel {
             int y = count * size;
             if (!loupe.getVisibleIcons().contains(name)) {
                 MapBuilder.drawIcon(g, name, size, x, y, false, icons, 2, iconsCache, true);
-                g.drawString(name, x + 20, y + 20);
+                g.drawString(name, x + xd, y + yd);
                 count++;
             }
         }

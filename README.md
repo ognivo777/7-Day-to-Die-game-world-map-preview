@@ -16,7 +16,8 @@ You will see program output in window:
 ![](https://drive.google.com/uc?export=download&id=1BEXWLqO5bD2IOOSQDARtBJ1yAI_iAV97)
 
 And final result appear:
-![](https://drive.google.com/uc?export=download&id=1mRBLDkTL-1--_5n_0MbyEFMLE2iM09Md)
+![](https://drive.google.com/uc?export=download&id=1rcVPmVu8QBkg7eFYtEv22MKxtt60dj7-)
+If you want to use inverse zoom specify `-m` command line argument.
 
 After that review new created files. World map with all objects may be found in *8_mapWithObjects.png* image.
 

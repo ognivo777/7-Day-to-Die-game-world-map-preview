@@ -92,7 +92,11 @@ public class ImagePanel extends JPanel {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             double d = 1 + e.getWheelRotation() / 5f;
-            applyScale(e, d, false);
+            if(MapBuilder.INVERT_MOUSE) {
+                applyScale(e, 1 / d, false);
+            } else {
+                applyScale(e,  d, false);
+            }
         }
 
         private void applyScale(MouseEvent e, double scaleMultiplier, boolean cyclicZoom) {

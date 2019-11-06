@@ -18,7 +18,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,9 +25,6 @@ import java.nio.file.*;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
-
-import static javafx.application.ConditionalFeature.SWT;
-import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
 
 public class MapBuilder {
 
@@ -89,6 +85,10 @@ public class MapBuilder {
     private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);;
     private Color ROAD_SECONDARY_COLOR = new Color(52, 59, 65);
 
+
+    public static boolean INVERT_MOUSE = false;
+    public String mapFolder;
+
     public MapBuilder(String path) {
         this.path = path;
         prevLogTime = System.currentTimeMillis();
@@ -104,8 +104,14 @@ public class MapBuilder {
 
     public static void main(String[] args) {
         //TODO command line options
+        INVERT_MOUSE = (args.length==1 && args[0].equals("-m"));
         String path = ".";
-        if(args.length==1) {
+
+        if(INVERT_MOUSE && args.length==2) {
+            path = args[1];
+        }
+
+        if(!INVERT_MOUSE && args.length==1) {
             path = args[0];
         }
 
@@ -174,6 +180,8 @@ public class MapBuilder {
             readWatersPoint();
             autoAjustImage();
             loadBiomes();
+            //mark radiation zones
+            drawRadiation();
             applyHeightsToBiomes();
             drawRoads();
             drawPrefabs();
@@ -182,7 +190,7 @@ public class MapBuilder {
                     "------------------------------------------------------");
             Timer.stopTimer("OverAll");
 
-            new PreviewFrame(iBiomes, icons).setVisible(true);
+            new PreviewFrame(iBiomes, icons, mapFolder).setVisible(true);
 
         } catch (IOException e) {
 
@@ -195,7 +203,7 @@ public class MapBuilder {
     private void testShowMap() {
         try {
             BufferedImage map = ImageIO.read(new File("8_mapWithObjects.png"));
-            new PreviewFrame(map, icons).setVisible(true);
+            new PreviewFrame(map, icons, "TEST SHOW MAP").setVisible(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -371,6 +379,8 @@ public class MapBuilder {
                     int x = (mapSize / 2 + Integer.parseInt(split[0].trim())) / downScale;
                     waterLine = Integer.parseInt(split[1].trim());
                     int y = (mapSize / 2 - Integer.parseInt(split[2].trim())) / downScale;
+                    int z = Integer.parseInt(split[2].trim());
+//                    int m
 
                     graphics.setColor(Color.WHITE);
                     graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
@@ -490,8 +500,6 @@ public class MapBuilder {
     private void applyHeightsToBiomes() throws IOException {
         long start, end;
 
-        //mark radiation zones
-        drawRadiation();
 
         log("Start bluring biomes.");
         if (doBlureBiomes) {
@@ -724,6 +732,7 @@ public class MapBuilder {
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setAcceptAllFileFilterUsed(false);
             chooser.setPreferredSize(new Dimension(860, 550));
+
             while (true) {
                 String dtmFileName = path + "\\dtm.raw";
                 heightsFile = new File(dtmFileName);
@@ -745,6 +754,8 @@ public class MapBuilder {
                 }
             }
 
+        Path path = Paths.get(this.path).toAbsolutePath().normalize();
+        mapFolder = path.getName(path.getNameCount()-1).toString();
 
         long fileLength = heightsFile.length();
         log("dtm.raw fileLength = " + fileLength);

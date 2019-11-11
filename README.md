@@ -27,4 +27,5 @@ After that review new created files. World map with all objects may be found in 
 
 ## Feedback
 Support and discussion is available in thread on the game official forum: https://7daystodie.com/forums/showthread.php?120690-Random-generated-(RGW)-MAP-Preview-image-export-Tool
+
 Also you can join Discord server https://discord.gg/c8Pt5B2

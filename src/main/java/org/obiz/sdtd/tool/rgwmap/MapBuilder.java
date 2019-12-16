@@ -42,12 +42,15 @@ public class MapBuilder {
     public static final Color desert = new Color(175, 154, 107);
     public static final Color wasteland = new Color(124, 116, 94);
     public static final Color burned = new Color(68, 70, 67);
+    public static final Color darknessFalls = new Color(69, 61, 59);
+
 
     public static final int forestInt = ImageMath.getPureIntFromRGB(MapBuilder.forest);
     public static final int burnedInt = ImageMath.getPureIntFromRGB(MapBuilder.burned);
     public static final int desertInt = ImageMath.getPureIntFromRGB(MapBuilder.desert);
     public static final int snowInt = ImageMath.getPureIntFromRGB(MapBuilder.snow);
     public static final int wastelandInt = ImageMath.getPureIntFromRGB(MapBuilder.wasteland);
+    public static final int darknessFallsInt = ImageMath.getPureIntFromRGB(MapBuilder.darknessFalls);
 
 
     //    private final  int MAP_IMAGE_TYPE = BufferedImage.TYPE_USHORT_555_RGB;
@@ -427,7 +430,7 @@ public class MapBuilder {
 
                     loopPrefabsGroups:
                     for (String prefabsGroup : prefabsGroups) {
-                        if(prefabName.contains(prefabsGroup)) {
+                        if(prefabName.toLowerCase().contains(prefabsGroup)) {
                             foundPrefabGroup = prefabsGroup;
                             prefabsSVGCounter++;
                             break loopPrefabsGroups;
@@ -449,6 +452,7 @@ public class MapBuilder {
                         g.fill3DRect(x, y, i10, i10, true);
                     } else {
                         drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
+                        //g.drawString(prefabName, x, y);
                     }
                 }
             }
@@ -591,7 +595,9 @@ public class MapBuilder {
                 return wastelandInt; //wasteland
             case 12189951:
                 return burnedInt; //burned
-        }
+            case 4986880:
+                return darknessFallsInt;
+           }
         return rgb;
     }
 

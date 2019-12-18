@@ -1,5 +1,7 @@
 package org.obiz.sdtd.tool.rgwmap;
 
+import javafx.scene.layout.Pane;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -8,7 +10,7 @@ import java.util.Map;
 
 public class PreviewFrame extends JFrame {
 
-    private final int rightPanelWidth = 190;
+    private final int rightPanelWidth = 400;
 
     public PreviewFrame(BufferedImage img, Map<String, Path> icons, String mapFolder) throws HeadlessException {
         super("Map preview (" + mapFolder + ")");
@@ -18,20 +20,25 @@ public class PreviewFrame extends JFrame {
         ImagePanel imagePanel = new ImagePanel(img);
         add(imagePanel, BorderLayout.CENTER);
         MapMagnifierPanel loupe = new MapMagnifierPanel(imagePanel);
+        ButtonPanel buttons = new ButtonPanel();
         LegendPanel legendPanel = new LegendPanel(icons, loupe);
 
         //Container for Map magnifier and icons legend
         Panel rightPanel = new Panel();
-//        rightPanel.setPreferredSize(new Dimension(rightPanelWidth + 30, 500));
+        Panel northPanel = new Panel();
         rightPanel.setLayout(new BorderLayout());
+        northPanel.setLayout(new BorderLayout());
 
         ScrollPane jScrollPane = new ScrollPane();
-        loupe.setPreferredSize(new Dimension(rightPanelWidth, rightPanelWidth));
-        legendPanel.setPreferredSize(new Dimension(rightPanelWidth, 20*icons.size()));
+        loupe.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.7),(int)(rightPanelWidth * 0.7)));
+        buttons.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.3), (int)(rightPanelWidth * 0.3)));
+        legendPanel.setPreferredSize(new Dimension(rightPanelWidth, 20*icons.size()/3));
         jScrollPane.setPreferredSize(new Dimension(rightPanelWidth + 30, rightPanelWidth));
         jScrollPane.add(legendPanel);
 //        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        rightPanel.add(loupe, BorderLayout.NORTH);
+        northPanel.add(loupe, BorderLayout.WEST);
+        northPanel.add(buttons, BorderLayout.EAST);
+        rightPanel.add(northPanel, BorderLayout.NORTH);
         rightPanel.add(jScrollPane, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.LINE_END);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

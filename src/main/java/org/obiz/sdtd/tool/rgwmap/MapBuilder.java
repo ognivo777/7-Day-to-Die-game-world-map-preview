@@ -441,12 +441,6 @@ public class MapBuilder {
 
                     if (foundPrefabGroup != null) {
                         drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
-                    } else if (prefabName.contains("trailer")) {
-                        g.setColor(new Color(51, 49, 51));
-                        if (rot == 0 || rot == 2)
-                            g.fill3DRect(x + i5, yShift + i20, i10, i20, true);
-                        else
-                            g.fill3DRect(x + i5, yShift + i20, i20, i10, true);
                     } else if (prefabName.contains("sign")) {
                         g.setColor(new Color(51, 49, 51));
                         g.fill3DRect(x, y, i10, i10, true);

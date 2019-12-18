@@ -28,7 +28,7 @@ public class MapMagnifierPanel extends Panel {
             public void mouseMoved(MouseEvent e) {
 //                System.out.println("I see the moving!");
                 lastCursorPositionX = e.getX();
-                lastCursorPositionY =e.getY();
+                lastCursorPositionY = e.getY();
                 SwingUtilities.invokeLater(() -> repaint());
             }
         });
@@ -43,7 +43,7 @@ public class MapMagnifierPanel extends Panel {
         int x = Math.round(Math.round((this.lastCursorPositionX - imagePanel.getMapDx())/scale));
         int y = Math.round(Math.round((this.lastCursorPositionY - imagePanel.getMapDy())/scale));
 
-        x = getWidth()/2-x;
+        x = getWidth()/2 - x;
         y = getHeight()/2 - y;
 
         //draw bounds

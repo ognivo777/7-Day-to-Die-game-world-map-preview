@@ -1,0 +1,10 @@
+<svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Paintball</title>
+     <circle id="svg_5" r="61.76029" cy="65.5" cx="63.50001" fill="#3f3f3f"/>
+     <circle id="svg_4" r="49.26028" cy="65.5" cx="64" fill="#bfbfbf"/>
+     <circle id="svg_3" r="38.26029" cy="65.5" cx="64.5" fill="#3f3f3f"/>
+     <circle id="svg_2" r="27.76029" cy="65.48214" cx="64.5" fill="#bfbfbf"/>
+     <circle id="svg_1" r="10.98528" cy="69.48214" cx="70.5" fill="#7f0000"/>
+ </g>
+</svg>

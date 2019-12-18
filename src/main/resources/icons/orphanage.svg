@@ -1,0 +1,21 @@
+<svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Orphanage</title>
+     <path id="svg_1" d="m5,55.98214c0,-1 56,-52 56,-52.98214c0,-0.98214 63,53.98214 63,53c0,-0.98214 -22,-7.01786 -22,-7.01786c0,0 -39,-32 -39,-32.98214c0,-0.98214 -47,38.98214 -47,38c0,-0.98214 -11,1.98214 -11,1.98214z" fill="#7f0000"/>
+     <circle id="svg_2" r="7.61577" cy="57.98214" cx="37" fill="#ff7f00"/>
+     <circle id="svg_3" r="7.61577" cy="57.5" cx="61.5" fill="#ff7f00"/>
+     <circle id="svg_4" r="7.61577" cy="57.5" cx="86.5" fill="#ff7f00"/>
+     <g id="svg_10">
+         <circle id="svg_6" r="7.61577" cy="78.5" cx="37.5" fill="#ff7f00"/>
+         <rect id="svg_9" height="28.6875" width="15.1875" y="78.79911" x="29.76785" fill="#ff7f00"/>
+     </g>
+     <g id="svg_11">
+         <circle id="svg_12" r="7.61577" cy="78.23869" cx="61.98229" fill="#ff7f00"/>
+         <rect id="svg_13" height="28.6875" width="15.1875" y="78.53779" x="54.25015" fill="#ff7f00"/>
+     </g>
+     <g id="svg_14">
+         <circle id="svg_15" r="7.61577" cy="78.23869" cx="87.29479" fill="#ff7f00"/>
+         <rect id="svg_16" height="28.6875" width="15.1875" y="78.53779" x="79.56265" fill="#ff7f00"/>
+     </g>
+ </g>
+</svg>

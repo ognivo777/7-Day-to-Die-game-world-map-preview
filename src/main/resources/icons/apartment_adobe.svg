@@ -1,0 +1,27 @@
+<svg width="100%" height="100%"  viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Apartment_Adobe</title>
+  <!--<rect fill="#ccc" x="0" y="0" width="128" height="128" id="svg_3"/>-->
+  <rect fill="#777" x="44.328121" y="97.421873" width="40.750002" height="23.578127" id="svg_4"/>
+  <rect id="svg_2" fill="#CACA98" x="13" y="68.5" width="30" height="21"/>
+  <g id="svg_1">
+   <path id="svg_11" fill="#6d3131" d="m12.581989,8.89112c-4.596424,0 -9.838989,2.48168 -9.838989,6.48961l0,98.22465c0,3.90325 5.105072,7.8796 9.838989,7.8796l35.711879,0l0,-20.41176l32.054313,0l0,20.41176l36.487088,0c5.009749,0 8.220235,-4.1528 8.220235,-7.8796l0,-98.22399c0,-3.76037 -3.294847,-6.49027 -8.220235,-6.49027l-0.000011,0l-104.253269,0z"/>
+  </g>
+  <rect fill="#CACA98" x="67" y="18" width="19" height="13" id="svg_3"/>
+  <rect fill="#777" x="11.87165" y="18.151785" width="21.765628" height="12.593686" id="svg_5"/>
+  <rect fill="#777" x="12" y="39" width="22" height="13" id="svg_8"/>
+  <rect fill="#777" x="12" y="60" width="22" height="13" id="svg_9"/>
+  <rect fill="#777" x="12" y="81" width="22" height="13" id="svg_10"/>
+  <rect fill="#777" x="94" y="18" width="22" height="13" id="svg_12"/>
+  <rect fill="#777" x="94" y="39" width="22" height="13" id="svg_13"/>
+  <rect fill="#777" x="94" y="60" width="22" height="13" id="svg_14"/>
+  <rect fill="#777" x="94" y="81" width="22" height="13" id="svg_15"/>
+  <rect fill="#CACA98" x="42" y="60" width="19" height="13" id="svg_16"/>
+  <rect fill="#7f7f7f" x="42" y="39" width="19" height="13" id="svg_17"/>
+  <rect fill="#7f7f7f" x="42" y="18" width="19" height="13" id="svg_18"/>
+  <rect fill="#7f7f7f" x="67" y="39" width="19" height="13" id="svg_19"/>
+  <rect fill="#7f7f7f" x="42" y="81" width="19" height="13" id="svg_20"/>
+  <rect fill="#7f7f7f" x="67" y="60" width="19" height="13" id="svg_21"/>
+  <rect fill="#7f7f7f" x="68" y="81" width="19" height="13" id="svg_22"/>
+ </g>
+</svg>

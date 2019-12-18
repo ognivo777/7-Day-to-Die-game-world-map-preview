@@ -452,6 +452,7 @@ public class MapBuilder {
                         g.fill3DRect(x, y, i10, i10, true);
                     } else {
                         drawIcon(g, "NA", i40, x, y, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
+                        //Debug svg files by prefab name
                         //g.drawString(prefabName, x, y);
                     }
                 }

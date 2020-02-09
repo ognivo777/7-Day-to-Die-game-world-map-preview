@@ -821,42 +821,49 @@ public class MapBuilder {
     }
 
     private void drawRadiation() throws IOException {
-
+        File radiationFile;
 
         log("Load radiation map..");
-        BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
-        log("Beware of radiation!");
+        String radiationFileName = path + "\\radiation.png";
+        radiationFile = new File(radiationFileName);
+        if (!radiationFile.exists() || !radiationFile.isFile() || !radiationFile.canRead()) {
+            System.err.println("File not found: " + radiationFileName + " and that's OK");
+        } else {
+            BufferedImage inputImage = ImageIO.read(new File(path + "\\radiation.png"));
 
-        iRad = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
+            log("Beware of radiation!");
 
-        // scale the input radiation zone image to the output image size
-        log("Start scale radiation..");
-        Graphics2D g2d = iRad.createGraphics();
-        g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
-        g2d.dispose();
+            iRad = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
 
-        //free mem
-        inputImage.flush();
-        log("Start draw radiation.");
-        //TODO multithread
-        DataBuffer biomesDB = iBiomes.getRaster().getDataBuffer();
-        DataBuffer radiationDB = iRad.getRaster().getDataBuffer();
-        for (int i = 0; i < biomesDB.getSize(); i++) {
-            int rgb = ImageMath.getFillIntFromPureInt(biomesDB.getElem(i));
-            int rgbRad = ImageMath.getFillIntFromPureInt(radiationDB.getElem(i));
-            if (rgbRad == -65536) {
-                int oldR = rgb >> 16 & 0xff;
-                int oldG = rgb >> 8 & 0xff;
-                int oldB = rgb & 0xff;
+            // scale the input radiation zone image to the output image size
+            log("Start scale radiation..");
+            Graphics2D g2d = iRad.createGraphics();
+            g2d.drawImage(inputImage, 0, 0, scaledSize, scaledSize, null);
+            g2d.dispose();
 
-                int newR = (int) (oldR * 1.5);
-                if (newR > 255) newR = 255;
-                if (newR < 0) newR = 0;
+            //free mem
+            inputImage.flush();
+            log("Start draw radiation.");
+            //TODO multithread
+            DataBuffer biomesDB = iBiomes.getRaster().getDataBuffer();
+            DataBuffer radiationDB = iRad.getRaster().getDataBuffer();
+            for (int i = 0; i < biomesDB.getSize(); i++) {
+                int rgb = ImageMath.getFillIntFromPureInt(biomesDB.getElem(i));
+                int rgbRad = ImageMath.getFillIntFromPureInt(radiationDB.getElem(i));
+                if (rgbRad == -65536) {
+                    int oldR = rgb >> 16 & 0xff;
+                    int oldG = rgb >> 8 & 0xff;
+                    int oldB = rgb & 0xff;
 
-                biomesDB.setElem(i, ImageMath.getPureIntFromRGB(newR, oldG, oldB));
+                    int newR = (int) (oldR * 1.5);
+                    if (newR > 255) newR = 255;
+                    if (newR < 0) newR = 0;
+
+                    biomesDB.setElem(i, ImageMath.getPureIntFromRGB(newR, oldG, oldB));
 //                iBiomes.setRGB(x, y, new Color(newR, oldG, oldB).getRGB());
-            }
+                }
 
+            }
         }
         log("End draw radiation.");
 

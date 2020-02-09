@@ -23,24 +23,29 @@ public class PreviewFrame extends JFrame {
         ButtonPanel buttons = new ButtonPanel();
         LegendPanel legendPanel = new LegendPanel(icons, loupe);
 
-        //Container for Map magnifier and icons legend
-        Panel rightPanel = new Panel();
-        Panel northPanel = new Panel();
-        rightPanel.setLayout(new BorderLayout());
-        northPanel.setLayout(new BorderLayout());
+        JScrollPane legendScrollPanel = new JScrollPane(legendPanel);
+        legendScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        legendScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        legendScrollPanel.setBounds(0, 0, rightPanelWidth, 900);
 
-        ScrollPane jScrollPane = new ScrollPane();
         loupe.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.7),(int)(rightPanelWidth * 0.7)));
         buttons.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.3), (int)(rightPanelWidth * 0.3)));
-        legendPanel.setPreferredSize(new Dimension(rightPanelWidth, 20*icons.size()/3));
-        jScrollPane.setPreferredSize(new Dimension(rightPanelWidth + 30, rightPanelWidth));
-        jScrollPane.add(legendPanel);
-//        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        //Container for Map magnifier and icons legend
+        //Set NORTH panel
+        Panel northPanel = new Panel();
+        northPanel.setLayout(new BorderLayout());
         northPanel.add(loupe, BorderLayout.WEST);
         northPanel.add(buttons, BorderLayout.EAST);
+        //Set RIGHT panel
+        Panel rightPanel = new Panel();
+        rightPanel.setLayout(new BorderLayout());
         rightPanel.add(northPanel, BorderLayout.NORTH);
-        rightPanel.add(jScrollPane, BorderLayout.CENTER);
+        rightPanel.add(legendScrollPanel, BorderLayout.CENTER);
+
         add(rightPanel, BorderLayout.LINE_END);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 }

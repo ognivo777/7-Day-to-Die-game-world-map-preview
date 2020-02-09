@@ -42,7 +42,7 @@ public class MapBuilder {
     public static final Color desert = new Color(175, 154, 107);
     public static final Color wasteland = new Color(124, 116, 94);
     public static final Color burned = new Color(68, 70, 67);
-    public static final Color darknessFalls = new Color(69, 61, 59);
+    public static final Color darknessFalls = new Color(100, 83, 67);
 
 
     public static final int forestInt = ImageMath.getPureIntFromRGB(MapBuilder.forest);
@@ -286,6 +286,16 @@ public class MapBuilder {
             iconsCache.put(iconName, sprite);
         }
         gMap.drawImage(sprite, x - targetSize * sizeBufferScale, y - targetSize * sizeBufferScale, null);
+    }
+
+    public static BufferedImage imgDrawIcon(String iconName, int targetSize, int x, int y, boolean showAxis, Map<String, Path> icons, int sizeBufferScale, Map<String, BufferedImage> iconsCache, boolean ignoreScale) {
+        BufferedImage sprite;
+        sprite = iconsCache.get(iconName);
+        if(sprite == null) {
+            sprite = createSprite(iconName, targetSize, showAxis, icons, sizeBufferScale, ignoreScale);
+            iconsCache.put(iconName, sprite);
+        }
+        return sprite;
     }
 
     public static BufferedImage createSprite(String name, int width, boolean showAxis, Map<String, Path> icons, int halfSize, boolean ignoreScale) {

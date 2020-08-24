@@ -23,9 +23,9 @@ After that review new created files. World map with all objects may be found in 
 
 ## Troubleshooting
 
-* In some case you get error "TOO LITTLE" helpful add enviroment variable `_JAVA_OPTIONS=-Xmx256m` instead of specifing java vm options directly in command line
+* In some case you get error "TOO LITTLE". In this case would be helpful add enviroment variable `_JAVA_OPTIONS=-Xmx256m` instead of specifing java vm options directly in command line
 
 ## Feedback
 Support and discussion is available in thread on the game official forum: https://7daystodie.com/forums/showthread.php?120690-Random-generated-(RGW)-MAP-Preview-image-export-Tool
 
-Also you can join Discord server https://discord.gg/c8Pt5B2
+Also you can join Discord server https://discord.gg/c8Pt5B2 and ask me there:)

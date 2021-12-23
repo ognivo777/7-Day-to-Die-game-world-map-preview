@@ -1,6 +1,6 @@
 package org.obiz.sdtd.tool.rgwmap;
 
-import javafx.scene.layout.Pane;
+//import javafx.scene.layout.Pane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class PreviewFrame extends JFrame {
         ImagePanel imagePanel = new ImagePanel(img);
         add(imagePanel, BorderLayout.CENTER);
         MapMagnifierPanel loupe = new MapMagnifierPanel(imagePanel);
-        ButtonPanel buttons = new ButtonPanel();
+//        ButtonPanel buttons = new ButtonPanel();
         LegendPanel legendPanel = new LegendPanel(icons, loupe);
 
         JScrollPane legendScrollPanel = new JScrollPane(legendPanel);
@@ -28,15 +28,15 @@ public class PreviewFrame extends JFrame {
         legendScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         legendScrollPanel.setBounds(0, 0, rightPanelWidth, 900);
 
-        loupe.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.7),(int)(rightPanelWidth * 0.7)));
-        buttons.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.3), (int)(rightPanelWidth * 0.3)));
+        loupe.setPreferredSize(new Dimension((int)(rightPanelWidth * 1),(int)(rightPanelWidth * 1)));
+//        buttons.setPreferredSize(new Dimension((int)(rightPanelWidth * 0.3), (int)(rightPanelWidth * 0.3)));
 
         //Container for Map magnifier and icons legend
         //Set NORTH panel
         Panel northPanel = new Panel();
         northPanel.setLayout(new BorderLayout());
         northPanel.add(loupe, BorderLayout.WEST);
-        northPanel.add(buttons, BorderLayout.EAST);
+//        northPanel.add(buttons, BorderLayout.EAST);
         //Set RIGHT panel
         Panel rightPanel = new Panel();
         rightPanel.setLayout(new BorderLayout());

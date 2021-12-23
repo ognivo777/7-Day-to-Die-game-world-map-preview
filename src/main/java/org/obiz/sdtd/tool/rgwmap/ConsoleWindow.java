@@ -1,6 +1,6 @@
 package org.obiz.sdtd.tool.rgwmap;
 
-import javafx.scene.layout.Pane;
+//import javafx.scene.layout.Pane;
 
 import javax.swing.*;
 import java.awt.*;

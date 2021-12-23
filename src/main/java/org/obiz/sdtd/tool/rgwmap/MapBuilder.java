@@ -373,37 +373,41 @@ public class MapBuilder {
     private void readWatersPoint() throws IOException, XMLStreamException {
         log("Load WaterZones.");
         String prefabs = "\\water_info.xml";
-        XMLInputFactory xmlif = XMLInputFactory.newInstance();
-        XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
+        if(Files.exists(Paths.get(prefabs))) {
+            XMLInputFactory xmlif = XMLInputFactory.newInstance();
+            XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(path + prefabs));
 
-        int watersPointsCounter = 0;
+            int watersPointsCounter = 0;
 
-        iWaterZones = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_BINARY);
+            iWaterZones = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_BYTE_BINARY);
 
-        Graphics graphics = iWaterZones.getGraphics();
+            Graphics graphics = iWaterZones.getGraphics();
 
-        int eventType;
-        while (xmlr.hasNext()) {
-            eventType = xmlr.next();
-            if (eventType == XMLEvent.START_ELEMENT) {
-                if (xmlr.getAttributeCount() == 5) {
-                    String attributeValue = xmlr.getAttributeValue(0);
-                    String[] split = attributeValue.split(",");
-                    int x = (mapSize / 2 + Integer.parseInt(split[0].trim())) / downScale;
-                    waterLine = Integer.parseInt(split[1].trim());
-                    int y = (mapSize / 2 - Integer.parseInt(split[2].trim())) / downScale;
-                    int z = Integer.parseInt(split[2].trim());
+            int eventType;
+            while (xmlr.hasNext()) {
+                eventType = xmlr.next();
+                if (eventType == XMLEvent.START_ELEMENT) {
+                    if (xmlr.getAttributeCount() == 5) {
+                        String attributeValue = xmlr.getAttributeValue(0);
+                        String[] split = attributeValue.split(",");
+                        int x = (mapSize / 2 + Integer.parseInt(split[0].trim())) / downScale;
+                        waterLine = Integer.parseInt(split[1].trim());
+                        int y = (mapSize / 2 - Integer.parseInt(split[2].trim())) / downScale;
+                        int z = Integer.parseInt(split[2].trim());
 //                    int m
 
-                    graphics.setColor(Color.WHITE);
-                    graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
-                    watersPointsCounter++;
+                        graphics.setColor(Color.WHITE);
+                        graphics.fillRect((int) (x - i250 / downScale * 0.75), (int) (y - i250 / downScale * 1.25), i160, i200);
+                        watersPointsCounter++;
+                    }
                 }
             }
-        }
 
-        log(watersPointsCounter + " water sources loaded.");
-        writeToFile("_waterZones", iWaterZones);
+            log(watersPointsCounter + " water sources loaded.");
+            writeToFile("_waterZones", iWaterZones);
+        } else {
+            log("No water zones found!");
+        }
     }
 
     private void drawPrefabs() throws IOException, XMLStreamException {

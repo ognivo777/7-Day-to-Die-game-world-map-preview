@@ -41,3 +41,13 @@ dependencies {
 application {
     mainClassName = 'org.obiz.sdtd.tool.rgwmap.MapBuilder'
 }
+
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}

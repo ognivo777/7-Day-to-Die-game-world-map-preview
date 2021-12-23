@@ -86,6 +86,7 @@ public class MapBuilder {
     private long prevLogTime;
     private String lastFileName;
     private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);;
+    private Color WATER_MAIN_COLOR = new Color(49, 87, 145);
     private Color ROAD_SECONDARY_COLOR = new Color(52, 59, 65);
 
 
@@ -187,6 +188,7 @@ public class MapBuilder {
             drawRadiation();
             applyHeightsToBiomes();
             drawRoads();
+            drawWater();
             drawPrefabs();
             log(    "\n------------------- All work done! ------------------- \n\n" +
                     "          Result map image: " + lastFileName + "\n\n" +
@@ -510,6 +512,36 @@ public class MapBuilder {
         writeToFile("_map_with_roads", iBiomes);
     }
 
+    private void drawWater() throws IOException {
+        log("Load water file");
+        BufferedImage water = ImageIO.read(new File(path + "\\splat4.png"));
+        log("Water loaded. Start drawing.");
+
+//        Color roadColor;
+
+        DataBuffer db = iBiomes.getRaster().getDataBuffer();
+
+        DataBuffer rdb = water.getAlphaRaster().getDataBuffer();
+
+        System.out.println("TEST : " + (rdb.getSize()/4-mapSize*mapSize));
+
+        //TODO multithread
+
+        for (int i = 0; i < scaledSize; i++) {
+            for (int j = 0; j < scaledSize; j++) {
+                for (int k = 0; k < 4; k++) {
+                    int c = rdb.getElem(ImageMath.xy2i(water,i*downScale, j*downScale, k));
+                    if(c!=0) {
+                        db.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(WATER_MAIN_COLOR));
+                    }
+                }
+            }
+        }
+        log("Finish water drawing.");
+
+        writeToFile("_map_with_water", iBiomes);
+    }
+
     private void applyHeightsToBiomes() throws IOException {
         long start, end;
 
@@ -530,7 +562,7 @@ public class MapBuilder {
             for (int y = 0; y < scaledSize; y++) {
                 if (iHeigthsRaster.getSample(x, y, 0) < waterLine
                         && iWaterZones.getRaster().getSample(x, y, 0) > 0) {
-                    iBiomes.setRGB(x, y, new Color(49, 87, 145).getRGB());
+                    iBiomes.setRGB(x, y, WATER_MAIN_COLOR.getRGB());
                 }
             }
         }

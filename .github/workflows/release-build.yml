@@ -17,3 +17,14 @@ jobs:
         uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Upload jvm
+        id: upload-jar
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build/libs/7dtd-rgw-map-image-builder.jar
+          asset_name: 7dtd-rgw-map-image-builder.jar
+          asset_label: jar
+          asset_content_type: application/octet-stream

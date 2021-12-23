@@ -1,16 +1,9 @@
-name: release-build
+name: Java CI
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-on:
-  release:
-    types: [created]
+on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -20,16 +13,7 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
       - name: Build with Gradle
-      run: ./gradlew -PprojVersion="${{ github.event.release.tag_name }}" build
-      - name: Upload jvm
-      id: upload-jar
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./build/libs/7dtd-rgw-map-image-builder.jar
-        asset_name: 7dtd-rgw-map-image-builder.jar
-        asset_label: jar
-        asset_content_type: application/octet-stream
+        run: ./gradlew build

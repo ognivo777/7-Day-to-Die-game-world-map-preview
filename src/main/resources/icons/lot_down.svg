@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="90%" height="90%" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1, 0, 0, 1, -11.494006, -15.747)"/>
+  <path style="paint-order: fill; stroke: rgb(36, 32, 32); fill: rgb(255, 255, 74); stroke-width: 5px;" d="M 19.642 112.175 L 27.469 16.844 L 35.017 16.844 L 39.211 111.896 L 19.642 112.175 Z"/>
+  <path style="stroke-width: 5px; paint-order: fill; stroke: rgb(36, 32, 32); fill: rgb(247, 238, 73);" d="M 10.975 40.887 L 10.975 22.994 L 116.65 24.952 L 116.929 33.618 L 10.975 40.887 Z"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 5px;" d="M 23.835 23.274 L 23.555 39.769"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 5px;" d="M 42.565 23.833 L 42.845 37.532"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 5px;" d="M 62.694 24.113 L 62.414 37.252"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 5px;" d="M 77.511 24.113 L 77.511 35.855"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 5px;" d="M 95.403 24.392 L 95.682 35.016 L 96.242 55.424 L 113.855 55.424 C 113.855 55.424 114.133 70.241 114.133 69.962 C 114.133 69.683 77.791 69.962 77.791 69.962 L 79.189 55.704 L 96.521 55.424"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" d="M 36.974 54.586 L 23.835 54.306"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" d="M 38.931 69.123 L 23.555 69.123"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" d="M 39.77 83.381 L 22.437 83.847"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 4px;" d="M 40.05 98.197 L 21.318 98.197"/>
+</svg>

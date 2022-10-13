@@ -446,7 +446,7 @@ public class MapBuilder {
 
                     loopPrefabsGroups:
                     for (String prefabsGroup : prefabsGroups) {
-                        if(prefabName.toLowerCase().contains(prefabsGroup)) {
+                        if (prefabName.toLowerCase().contains(prefabsGroup)) {
                             foundPrefabGroup = prefabsGroup;
                             prefabsSVGCounter++;
                             break loopPrefabsGroups;
@@ -457,6 +457,11 @@ public class MapBuilder {
 
                     if (foundPrefabGroup != null) {
                         drawIcon(g, foundPrefabGroup, i40, xShift, yShift, DRAW_ICON_AXIS, icons, DRAW_ICON_SPRITE_BUF_SCALE, false);
+                    } else if (prefabName.startsWith("part_") || prefabName.startsWith("deco_") || prefabName.startsWith("sign_") || prefabName.startsWith("street_") ||
+                            prefabName.startsWith("streets_") || prefabName.startsWith("player_") || prefabName.startsWith("desert_") || prefabName.startsWith("rock_")) {
+                        //skip, this is part of main object (signs, boards, road_parts etc)
+                    } else if (prefabName.contains("rwg_tile_")) {
+                        //skip, this is part of rural streets roads
                     } else if (prefabName.contains("sign")) {
                         g.setColor(new Color(51, 49, 51));
                         g.fill3DRect(x, y, i10, i10, true);

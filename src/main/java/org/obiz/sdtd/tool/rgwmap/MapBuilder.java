@@ -24,6 +24,8 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MapBuilder {
@@ -778,8 +780,34 @@ public class MapBuilder {
     public void readWorldHeights() throws IOException {
         File heightsFile;
 
-            JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new java.io.File(System.getenv("USERPROFILE")+"\\AppData\\Roaming\\7DaysToDie\\GeneratedWorlds"));
+        JFileChooser chooser = new JFileChooser();
+        String generatedWorlds = System.getenv("USERPROFILE")+"\\AppData\\Roaming\\7DaysToDie\\GeneratedWorlds";
+
+
+        Path libFilders = Path.of("C:\\Program Files (x86)\\Steam\\SteamApps\\libraryfolders.vdf");
+        List<String> steamConfigStrings = Files.lines(libFilders).collect(Collectors.toList());
+        String currPath = ".";
+        for (String steamConfigString : steamConfigStrings) {
+            if (steamConfigString.contains("\"path\"")) {
+                currPath = steamConfigString.trim().split("\\s+")[1];
+                currPath = currPath.substring(1, currPath.length() - 1);
+            } else if (steamConfigString.contains("\"251570\"")) { // it's steam game id of 7dtd
+                break;
+            }
+        }
+
+        log("Found steam library: " + currPath);
+        String predefinedWorlds = currPath + "\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
+//        String predefinedWorlds = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
+            String lookAt = ".";
+            if (Files.exists(Path.of(generatedWorlds))) {
+                log("Generated worlds found here: " + generatedWorlds);
+                lookAt = generatedWorlds;
+            } else if (Files.exists(Path.of(predefinedWorlds))) {
+                log("Generated worlds not found. But found predefined worlds here: " + predefinedWorlds);
+                lookAt = predefinedWorlds;
+            }
+            chooser.setCurrentDirectory(new java.io.File(lookAt));
             chooser.setDialogTitle("Choose world..");
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             chooser.setAcceptAllFileFilterUsed(false);

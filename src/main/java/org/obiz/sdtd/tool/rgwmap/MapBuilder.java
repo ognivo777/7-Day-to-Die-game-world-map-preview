@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 public class MapBuilder {
 
     private static final int MEM_EXPECTED = 512 * 1024 * 1024;
+    public static final String DTM_RAW = "dtm.raw";
     private ConsoleWindow consoleWindow = null;
     private String path;
     private int downScale = 2; //2 - better definition
@@ -87,7 +88,7 @@ public class MapBuilder {
     
     private long prevLogTime;
     private String lastFileName;
-    private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);;
+    private Color ROAD_MAIN_COLOR = new Color(141, 129, 106);
     private Color WATER_MAIN_COLOR = new Color(49, 87, 145);
     private Color ROAD_SECONDARY_COLOR = new Color(52, 59, 65);
 
@@ -181,6 +182,8 @@ public class MapBuilder {
 //            testShowMap();
 //            if(true) return;
             //testGetSprite("bank");
+            Path path = showFolderChooser();
+            mapFolder = path.getName(path.getNameCount()-1).toString();
             readWorldHeights();
 //            testWalkHeigths();
             readWatersPoint();
@@ -777,8 +780,7 @@ public class MapBuilder {
         }
     }
 
-    public void readWorldHeights() throws IOException {
-        File heightsFile;
+    private Path showFolderChooser() throws IOException {
 
         JFileChooser chooser = new JFileChooser();
         String generatedWorlds = System.getenv("USERPROFILE")+"\\AppData\\Roaming\\7DaysToDie\\GeneratedWorlds";
@@ -799,46 +801,49 @@ public class MapBuilder {
         log("Found steam library: " + currPath);
         String predefinedWorlds = currPath + "\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
 //        String predefinedWorlds = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
-            String lookAt = ".";
-            if (Files.exists(Path.of(generatedWorlds))) {
-                log("Generated worlds found here: " + generatedWorlds);
-                lookAt = generatedWorlds;
-            } else if (Files.exists(Path.of(predefinedWorlds))) {
-                log("Generated worlds not found. But found predefined worlds here: " + predefinedWorlds);
-                lookAt = predefinedWorlds;
-            }
-            chooser.setCurrentDirectory(new java.io.File(lookAt));
-            chooser.setDialogTitle("Choose world..");
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setAcceptAllFileFilterUsed(false);
-            chooser.setPreferredSize(new Dimension(860, 550));
+        String lookAt = ".";
+        if (Files.exists(Path.of(generatedWorlds))) {
+            log("Generated worlds found here: " + generatedWorlds);
+            lookAt = generatedWorlds;
+        } else if (Files.exists(Path.of(predefinedWorlds))) {
+            log("Generated worlds not found. But found predefined worlds here: " + predefinedWorlds);
+            lookAt = predefinedWorlds;
+        }
+        chooser.setCurrentDirectory(new java.io.File(lookAt));
+        chooser.setDialogTitle("Choose world..");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setPreferredSize(new Dimension(860, 550));
 
-            while (true) {
-                String dtmFileName = path + "\\dtm.raw";
-                heightsFile = new File(dtmFileName);
-                if (!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
-                    System.err.println("File not found: " + dtmFileName);
-                    if (chooser.showOpenDialog(consoleWindow) == JFileChooser.APPROVE_OPTION) {
-                        path = chooser.getSelectedFile().getAbsolutePath();
-                    } else {
-                        System.out.println("No Selection ");
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        System.exit(1);
-                    }
+        while (true) {
+            String dtmFileName = path + "\\" + DTM_RAW;
+            File heightsFile = new File(dtmFileName);
+            if (!heightsFile.exists() || !heightsFile.isFile() || !heightsFile.canRead()) {
+                System.err.println("File not found: " + dtmFileName);
+                if (chooser.showOpenDialog(consoleWindow) == JFileChooser.APPROVE_OPTION) {
+                    path = chooser.getSelectedFile().getAbsolutePath();
                 } else {
-                    break;
+                    System.out.println("No Selection ");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.exit(1);
                 }
+            } else {
+                break;
             }
+        }
 
         Path path = Paths.get(this.path).toAbsolutePath().normalize();
-        mapFolder = path.getName(path.getNameCount()-1).toString();
+        return path;
+    }
 
+    public void readWorldHeights() throws IOException {
+        File heightsFile = new File(path + "\\" + DTM_RAW);
         long fileLength = heightsFile.length();
-        log("dtm.raw fileLength = " + fileLength);
+        log(DTM_RAW + " fileLength = " + fileLength);
         mapSize = (int) Math.round(Math.sqrt(fileLength / 2.));
         log("Detected mapSize: " + mapSize);
         scaledSize = mapSize / downScale;
@@ -885,9 +890,10 @@ public class MapBuilder {
                     }
                 }
             }
-            log("|\nFinish load dtm.raw. Colors count:" + grayColors.size());
+            log("|\nFinish load " + DTM_RAW + ". Colors count:" + grayColors.size());
         }
     }
+
 
     private void drawRadiation() throws IOException {
         File radiationFile;

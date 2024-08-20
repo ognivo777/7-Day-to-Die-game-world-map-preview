@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.obiz.sdtd.tool.rgwmap.parts.Icons.imgDrawIcon;
+
 public class LegendPanel extends Panel {
     private Map<String, Path> icons;
     private MapMagnifierPanel loupe;
@@ -60,7 +62,7 @@ public class LegendPanel extends Panel {
             c.gridy = countY;
 
             if (!loupe.getVisibleIcons().contains(name)) {
-                JLabel iconLabel = new JLabel(new ImageIcon(MapBuilder.imgDrawIcon(name, size, 0, 0, false, icons, 2, iconsCache, true)));
+                JLabel iconLabel = new JLabel(new ImageIcon(imgDrawIcon(name, size, 0, 0, false, icons, 2, iconsCache, true)));
                 //Todo add localization
                 iconLabel.setToolTipText(name);
                 iconGBL.add(iconLabel, c);

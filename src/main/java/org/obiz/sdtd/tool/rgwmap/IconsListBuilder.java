@@ -1,5 +1,7 @@
 package org.obiz.sdtd.tool.rgwmap;
 
+import org.obiz.sdtd.tool.rgwmap.parts.Icons;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,12 +13,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import static org.obiz.sdtd.tool.rgwmap.parts.Icons.drawIcon;
+
 public class IconsListBuilder {
 
     public static void main(String[] args) {
         StringBuilder objectsHtml = new StringBuilder();
         try {
-            Map<String, Path> stringPathMap = MapBuilder.loadIcons();
+            Icons icons1 = new Icons();
+            Map<String, Path> stringPathMap = icons1.getIcons();
             int tableSize = Math.round(Math.round(Math.sqrt(stringPathMap.size())))+1;
             int cellSize = 40;
             BufferedImage icons = new BufferedImage(cellSize *tableSize, cellSize *tableSize, BufferedImage.TYPE_INT_ARGB);
@@ -26,7 +31,7 @@ public class IconsListBuilder {
                 Files.readAllLines(stringPathMap.get(name)).forEach(s -> objectsHtml.append(s).append("\n"));
                 int x = count % tableSize;
                 int y = count / tableSize;
-                MapBuilder.drawIcon(g, name, cellSize/2, x* cellSize, y* cellSize, true, stringPathMap,2, false);
+                drawIcon(g, name, cellSize/2, x* cellSize, y* cellSize, true, stringPathMap,2, false);
                 count++;
             }
 

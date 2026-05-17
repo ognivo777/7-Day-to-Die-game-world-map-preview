@@ -144,7 +144,7 @@ public class Biomes {
         float[] normalVectorsZ = new float[scaledSize * scaledSize];
         log("Finish alloc normal vectors array");
         // precalculate normal vectors
-        BumpMappingUtils.FindNormalVectors(iHeigths, normalVectorsX, normalVectorsY, normalVectorsZ);
+        BumpMappingUtils.findNormalVectors(iHeigths, normalVectorsX, normalVectorsY, normalVectorsZ);
         log("Normal vectors are saved.");
         //free mem
         iHeigths.flush();

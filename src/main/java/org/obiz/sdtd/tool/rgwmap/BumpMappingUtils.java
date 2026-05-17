@@ -1,65 +1,51 @@
 package org.obiz.sdtd.tool.rgwmap;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 
 public class BumpMappingUtils {
-    public static void FindNormalVectors(BufferedImage imagemap, float[] nvX, float[] nvY, float[] nvZ) {
-        Raster r = imagemap.getRaster();
-//        DataBuffer db = r.getDataBuffer();
 
-        int imageWidth = imagemap.getWidth();
-        int imageHeight = imagemap.getHeight();
+    public static void findNormalVectors(
+            BufferedImage image,
+            float[] nvX,
+            float[] nvY,
+            float[] nvZ)
+    {
+        final Raster r = image.getRaster();
 
-        // get pixels into pixelarray
-//        int[] pixelarraymap = new int [imageWidth * imageHeight];
+        final int width = image.getWidth();
+        final int height = image.getHeight();
 
-//        pg = new PixelGrabber (imagemap, 0, 0, imageWidth, imageHeight, pixelarraymap, 0, imageWidth);
+        final float scale = 1.0f / (256.0f * 256.0f);
 
-//        try {
-//            pg.grabPixels ();
-//        }
-//        catch (InterruptedException e) {
-//            System.err.println("interrupted waiting for pixels!");
-//        }
+        for (int y = 1; y < height - 1; y++) {
 
-        for (int x = 1; x < imageWidth - 1; x++)
-        {
-            for (int y = 1; y < imageHeight - 1; y++)
-            {
+            final int row = y * width;
 
-                int X0 = r.getSample(x + 1, y, 0);
-                int X1 = r.getSample(x - 1, y, 0);
-//                int X0 = db.getElem(ImageMath.xy2i(imagemap, x + 1, y));
-//                int X1 = db.getElem(ImageMath.xy2i(imagemap, x - 1, y));
+            for (int x = 1; x < width - 1; x++) {
 
-                int Y0 = r.getSample(x, y + 1, 0);
-                int Y1 = r.getSample(x, y - 1, 0);
-//                int Y0 = db.getElem(ImageMath.xy2i(imagemap, x, y + 1));
-//                int Y1 = db.getElem(ImageMath.xy2i(imagemap, x, y - 1));
+                final float xd =
+                        (r.getSample(x + 1, y, 0) -
+                                r.getSample(x - 1, y, 0)) * scale;
 
-                float Xd = X0 - X1;
-                float Yd = Y0 - Y1;
+                final float yd =
+                        (r.getSample(x, y + 1, 0) -
+                                r.getSample(x, y - 1, 0)) * scale;
 
-                // maximum for Xd, Yd is: (MAX - 0) + (MAX - 0) + (MAX - 0) = 3 * MAX
+                final float len2 = xd * xd + yd * yd;
 
-                Xd /= (float)(256*256);
-                Yd /= (float)(256*256);
+                float nz = 1.0f - (float)Math.sqrt(len2);
 
-                float Nx = Xd;
-                float Ny = Yd;
-                float Nz = (float)(1 - Math.sqrt ((Xd * Xd) + (Yd * Yd)));
+                if (nz < 0.0f) {
+                    nz = 0.0f;
+                }
 
-                if (Nz < 0.0f)
-                    Nz = 0.0f;
+                final int idx = row + x;
 
-                nvX[y * imageWidth + x] = Nx;
-                nvY[y * imageWidth + x] = Ny;
-                nvZ[y * imageWidth + x] = Nz;
-
+                nvX[idx] = xd;
+                nvY[idx] = yd;
+                nvZ[idx] = nz;
             }
         }
     }

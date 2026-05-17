@@ -182,28 +182,33 @@ public class Water {
 
     public void drawWater(BufferedImage iBiomes) throws IOException {
         log("Load water file");
-        BufferedImage water = ImageIO.read(new File(world.getPath() + SPLAT_4_PNG));
-        log("Water loaded. Start drawing.");
+        File waterData = new File(world.getPath() + SPLAT_4_PNG);
+        if(waterData.exists()) {
+            BufferedImage water = ImageIO.read(waterData);
+            log("Water loaded. Start drawing.");
 
-        DataBuffer buffer = iBiomes.getRaster().getDataBuffer();
-        DataBuffer alfaBuffer = water.getAlphaRaster().getDataBuffer();
+            DataBuffer buffer = iBiomes.getRaster().getDataBuffer();
+            DataBuffer alfaBuffer = water.getAlphaRaster().getDataBuffer();
 
-        System.out.println("TEST : " + (alfaBuffer.getSize()/4-mapSize*mapSize));
+            System.out.println("TEST : " + (alfaBuffer.getSize() / 4 - mapSize * mapSize));
 
-        //TODO multithread
+            //TODO multithread
 
-        for (int i = 0; i < scaledSize; i++) {
-            for (int j = 0; j < scaledSize; j++) {
-                for (int k = 0; k < 4; k++) {
-                    int c = alfaBuffer.getElem(ImageMath.xy2i(water,i*downScale, j*downScale, k));
-                    if(c!=0) {
-                        buffer.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(WATER_MAIN_COLOR));
+            for (int i = 0; i < scaledSize; i++) {
+                for (int j = 0; j < scaledSize; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        int c = alfaBuffer.getElem(ImageMath.xy2i(water, i * downScale, j * downScale, k));
+                        if (c != 0) {
+                            buffer.setElem(ImageMath.xy2i(iBiomes, i, j), ImageMath.getPureIntFromRGB(WATER_MAIN_COLOR));
+                        }
                     }
                 }
             }
+            writeToFile(world.getPath(), "_map_with_water", iBiomes);
+            log("Finish water drawing.");
+        } else {
+            log("No water found.");
         }
-        writeToFile(world.getPath(), "_map_with_water", iBiomes);
-        log("Finish water drawing.");
     }
 
 

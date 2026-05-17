@@ -187,7 +187,14 @@ public class MapBuilder {
         Path myPath;
         URI uri = MapBuilder.class.getResource(resourceName).toURI();
         if (uri.getScheme().equals("jar")) {
-            FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object>emptyMap());
+            FileSystem fileSystem;
+            try {
+                // Try to create a new file system instance
+                fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+            } catch (FileSystemAlreadyExistsException e) {
+                // If it already exists, retrieve the open instance
+                fileSystem = FileSystems.getFileSystem(uri);
+            }
             myPath = fileSystem.getPath(resourceName);
         } else {
             myPath = Paths.get(uri);

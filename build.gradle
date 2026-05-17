@@ -20,7 +20,7 @@ jar {
     }
 
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -28,12 +28,15 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
 //    jcenter()
+    mavenLocal()
     mavenCentral()
 //    maven {url 'http://en.citydata.jp/maven/'}
 }
 
 dependencies {
-    compile group: 'guru.nidi.com.kitfox', name: 'svgSalamander', version: '1.1.2'
+//    implementation 'org.obiz:parse7dtd:1.0-SNAPSHOT'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'guru.nidi.com.kitfox:svgSalamander:1.1.3'
 //    compile group: 'com.objectplanet.image', name: 'png-encoder', version: '2.0.1'
 //    compile group: 'ar.com.hjg', name: 'pngj', version: '2.1.0'
 }

@@ -2,7 +2,7 @@ package org.obiz.sdtd.tool.rgwmap;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
+import java.awt.image.DataBufferUShort;
 
 public class BumpMappingUtils {
 
@@ -12,7 +12,8 @@ public class BumpMappingUtils {
             float[] nvY,
             float[] nvZ)
     {
-        final Raster r = image.getRaster();
+        final short[] pixels =
+                ((DataBufferUShort) image.getRaster().getDataBuffer()).getData();
 
         final int width = image.getWidth();
         final int height = image.getHeight();
@@ -25,13 +26,15 @@ public class BumpMappingUtils {
 
             for (int x = 1; x < width - 1; x++) {
 
+                final int idx = row + x;
+
                 final float xd =
-                        (r.getSample(x + 1, y, 0) -
-                                r.getSample(x - 1, y, 0)) * scale;
+                        ((pixels[idx + 1] & 0xFFFF) -
+                                (pixels[idx - 1] & 0xFFFF)) * scale;
 
                 final float yd =
-                        (r.getSample(x, y + 1, 0) -
-                                r.getSample(x, y - 1, 0)) * scale;
+                        ((pixels[idx + width] & 0xFFFF) -
+                                (pixels[idx - width] & 0xFFFF)) * scale;
 
                 final float len2 = xd * xd + yd * yd;
 
@@ -40,8 +43,6 @@ public class BumpMappingUtils {
                 if (nz < 0.0f) {
                     nz = 0.0f;
                 }
-
-                final int idx = row + x;
 
                 nvX[idx] = xd;
                 nvY[idx] = yd;

@@ -1,7 +1,7 @@
 package org.obiz.sdtd.tool.rgwmap.parts;
 
-import org.obiz.sdtd.tool.rgwmap.BoxBlurFilter;
 import org.obiz.sdtd.tool.rgwmap.BumpMappingUtils;
+import org.obiz.sdtd.tool.rgwmap.FastBoxBlurFilter;
 import org.obiz.sdtd.tool.rgwmap.ImageMath;
 
 import javax.imageio.ImageIO;
@@ -157,10 +157,7 @@ public class Biomes {
 
     public void blure() {
         log("Start bluring biomes.");
-        BufferedImage iBiomesBlured = new BufferedImage(scaledSize, scaledSize, MAP_IMAGE_TYPE);
-        new BoxBlurFilter(scaledSize / bloorK, scaledSize / bloorK, 1).filter(iBiomes, iBiomesBlured);
-        iBiomes.flush();
-        iBiomes = iBiomesBlured;
+        new FastBoxBlurFilter(scaledSize / bloorK, 1).filter(iBiomes);
         log("Finish bluring biomes. Start drawing lakes.");
     }
 

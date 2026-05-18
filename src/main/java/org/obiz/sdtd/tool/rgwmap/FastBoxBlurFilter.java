@@ -2,6 +2,7 @@ package org.obiz.sdtd.tool.rgwmap;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.stream.IntStream;
 
 public final class FastBoxBlurFilter {
 
@@ -29,7 +30,7 @@ public final class FastBoxBlurFilter {
 
     /**
      * Blur image in-place.
-     *
+     * <p>
      * Requirements:
      * - image must be square
      * - TYPE_INT_ARGB or TYPE_INT_RGB recommended
@@ -96,7 +97,7 @@ public final class FastBoxBlurFilter {
 
     /**
      * Blur + transpose.
-     *
+     * <p>
      * This is the key optimization.
      */
     private void blurTranspose(
@@ -104,68 +105,71 @@ public final class FastBoxBlurFilter {
             int[] out
     ) {
 
+        final int size = this.size;
+        final int radius = this.radius;
         final int sizeMinus1 = size - 1;
+
         final int[] divide = this.divide;
+        final int[] clampTable = this.clampTable;
 
-        int inIndex = 0;
+        IntStream.range(0, size)
+                .parallel()
+                .forEach(y -> {
 
-        for (int y = 0; y < size; y++) {
+                    final int inIndex = y * size;
 
-            int outIndex = y;
+                    int outIndex = y;
 
-            int ta = 0;
-            int tr = 0;
-            int tg = 0;
-            int tb = 0;
+                    int ta = 0;
+                    int tr = 0;
+                    int tg = 0;
+                    int tb = 0;
 
-            // initial window
-            for (int i = -radius; i <= radius; i++) {
+                    // initial window
+                    for (int i = -radius; i <= radius; i++) {
 
-                final int rgb =
-                        //in[inIndex + clamp(i, 0, sizeMinus1)];
-                        in[inIndex + clampTable[i + radius]];
+                        final int rgb =
+                                in[inIndex + clampTable[i + radius]];
 
-                ta += (rgb >>> 24);
-                tr += (rgb >> 16) & 0xFF;
-                tg += (rgb >> 8) & 0xFF;
-                tb += rgb & 0xFF;
-            }
+                        ta += (rgb >>> 24);
+                        tr += (rgb >> 16) & 0xFF;
+                        tg += (rgb >> 8) & 0xFF;
+                        tb += rgb & 0xFF;
+                    }
 
-            for (int x = 0; x < size; x++) {
+                    for (int x = 0; x < size; x++) {
 
-                out[outIndex] =
-                        (divide[ta] << 24)
-                                | (divide[tr] << 16)
-                                | (divide[tg] << 8)
-                                | divide[tb];
+                        out[outIndex] =
+                                (divide[ta] << 24)
+                                        | (divide[tr] << 16)
+                                        | (divide[tg] << 8)
+                                        | divide[tb];
 
-                int i1 = x + radius + 1;
-                if (i1 > sizeMinus1) {
-                    i1 = sizeMinus1;
-                }
+                        int i1 = x + radius + 1;
+                        if (i1 > sizeMinus1) {
+                            i1 = sizeMinus1;
+                        }
 
-                int i2 = x - radius;
-                if (i2 < 0) {
-                    i2 = 0;
-                }
+                        int i2 = x - radius;
+                        if (i2 < 0) {
+                            i2 = 0;
+                        }
 
-                final int rgb1 = in[inIndex + i1];
-                final int rgb2 = in[inIndex + i2];
+                        final int rgb1 = in[inIndex + i1];
+                        final int rgb2 = in[inIndex + i2];
 
-                ta += ((rgb1 >>> 24) - (rgb2 >>> 24));
-                tr += (((rgb1 >> 16) & 0xFF) -
-                        ((rgb2 >> 16) & 0xFF));
-                tg += (((rgb1 >> 8) & 0xFF) -
-                        ((rgb2 >> 8) & 0xFF));
-                tb += ((rgb1 & 0xFF) -
-                        (rgb2 & 0xFF));
+                        ta += ((rgb1 >>> 24) - (rgb2 >>> 24));
+                        tr += (((rgb1 >> 16) & 0xFF) -
+                                ((rgb2 >> 16) & 0xFF));
+                        tg += (((rgb1 >> 8) & 0xFF) -
+                                ((rgb2 >> 8) & 0xFF));
+                        tb += ((rgb1 & 0xFF) -
+                                (rgb2 & 0xFF));
 
-                // transpose write
-                outIndex += size;
-            }
-
-            inIndex += size;
-        }
+                        // transpose write
+                        outIndex += size;
+                    }
+                });
     }
 
     private static int clamp(int v, int min, int max) {

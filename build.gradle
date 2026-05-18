@@ -37,11 +37,7 @@ application {
     mainClass = 'org.obiz.sdtd.tool.rgwmap.MapBuilder'
 }
 
-compileJava {
+tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-parameters'
-}
-
-compileTestJava {
-    options.encoding = 'UTF-8'
 }

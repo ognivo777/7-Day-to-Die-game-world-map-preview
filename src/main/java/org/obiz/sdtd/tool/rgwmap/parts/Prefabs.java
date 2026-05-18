@@ -2,7 +2,7 @@ package org.obiz.sdtd.tool.rgwmap.parts;
 
 import org.obiz.sdtd.tool.rgwmap.Timer;
 
-
+import javax.imageio.ImageIO;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 import static org.obiz.sdtd.tool.rgwmap.MapBuilder.*;
@@ -34,7 +36,7 @@ public class Prefabs {
         icons = new Icons();
     }
 
-    public void drawPrefabsIcons(BufferedImage iBiomes) throws IOException, XMLStreamException {
+    public void drawRealPrefabs(BufferedImage iBiomes) throws IOException, XMLStreamException, URISyntaxException {
         String prefabs = PREFABS_XML;
         XMLInputFactory xmlif = XMLInputFactory.newInstance();
         XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(world.getPath() + prefabs));
@@ -43,6 +45,54 @@ public class Prefabs {
 
         int eventType;
 
+        int prefabsCounter = 0;
+
+        Timer.startTimer("Draw prefabs");
+        log("Processing prefabs: ");
+
+        while (xmlr.hasNext()) {
+            eventType = xmlr.next();
+            if (eventType == XMLEvent.START_ELEMENT && xmlr.getAttributeCount() == 4) {
+
+                String attributeValue = xmlr.getAttributeValue(2);
+                String[] split = attributeValue.split(",");
+                int x = (mapSize / 2 + Integer.parseInt(split[0])) / downScale;
+                int y = (mapSize / 2 - Integer.parseInt(split[2]) - 150) / downScale;
+
+                int rot = Integer.parseInt(xmlr.getAttributeValue(3));
+
+                String prefabName = xmlr.getAttributeValue(1);
+
+                if (!prefabName.startsWith("part_")) {
+                    String resourceName = "/prefabs/" + prefabName + "_top.png";
+                    Path prefabTopViewImagePath = getPathForResource(resourceName);
+                    if (prefabTopViewImagePath != null && Files.exists(prefabTopViewImagePath)) {
+                        BufferedImage prefabTopViewImage = ImageIO.read(Files.newInputStream(prefabTopViewImagePath));
+                        BufferedImage orientatedPrefab = rotateClockwise90(prefabTopViewImage, (4 - rot) % 4, downScale);
+                        g.drawImage(orientatedPrefab, null, x, y);
+                    } else {
+                        System.out.println("Prefab image not found for: " + prefabName);
+                    }
+                }
+                prefabsCounter++;
+            }
+        }
+
+        log(prefabsCounter + " prefabs added");
+        Timer.stopTimer("Draw prefabs");
+        log("Start write finish image.");
+        writeToFile(world.getPath(), "_mapWithObjects", iBiomes, false);
+        log("Finish write finish image.");
+    }
+
+    public void drawPrefabsIcons(BufferedImage iBiomes) throws IOException, XMLStreamException {
+        String prefabs = PREFABS_XML;
+        XMLInputFactory xmlif = XMLInputFactory.newInstance();
+        XMLStreamReader xmlr = xmlif.createXMLStreamReader(prefabs, new FileInputStream(world.getPath() + prefabs));
+
+        Graphics2D g = iBiomes.createGraphics();
+
+        int eventType;
 
 
         Set<String> prefabsGroups = icons.getIcons().keySet();
@@ -99,7 +149,7 @@ public class Prefabs {
         }
 
 
-        log( prefabsCounter + " prefabs added, " + prefabsSVGCounter + " of them added from SVG.");
+        log(prefabsCounter + " prefabs added, " + prefabsSVGCounter + " of them added from SVG.");
         Timer.stopTimer("Draw prefabs");
         log("Start write finish image.");
         writeToFile(world.getPath(), "_mapWithObjects", iBiomes, false);

@@ -42,7 +42,7 @@ public class World {
     }
 
 
-    public void readAll(boolean applyGammaCorrection, boolean doBlureBiomes) throws IOException, XMLStreamException {
+    public void readAll(boolean applyGammaCorrection, boolean doBlureBiomes) throws IOException, XMLStreamException, URISyntaxException {
         dtmHeights.readWorldHeights();
         water.readWatersPoint();
         water.autoAjustImage(applyGammaCorrection, dtmHeights.getiHeigths());
@@ -54,7 +54,8 @@ public class World {
         biomes.applyHeightsToBiomes(dtmHeights.getiHeigths());
         roads.drawRoadsTo(biomes.getiBiomes());
         water.drawWater(biomes.getiBiomes());
-        prefabs.drawPrefabsIcons(biomes.getiBiomes());
+//        prefabs.drawPrefabsIcons(biomes.getiBiomes());
+        prefabs.drawRealPrefabs(biomes.getiBiomes());
     }
 
 

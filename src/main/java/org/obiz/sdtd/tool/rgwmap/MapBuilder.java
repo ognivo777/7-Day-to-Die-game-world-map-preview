@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.Path;
 import java.util.*;
@@ -100,20 +101,17 @@ public class MapBuilder {
                 System.out.println("Do the magic!");
 
                 try {
-                    // re-launch the app itselft with VM option passed
-                    Process p;
+                    // re-launch the app itself with VM option passed
                     if(args.length>0) {
                         System.out.println("With args");
-                        p = Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName, args[0]});
+                        Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName, args[0]});
                     } else {
                         System.out.println("Without args");
-                        p = Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName});
+                        Runtime.getRuntime().exec(new String[]{"java", "-Xmx1024m", "-jar", jarName});
                     }
                     Thread.sleep(10);
                     System.exit(0);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             } else {
@@ -123,7 +121,6 @@ public class MapBuilder {
         } else {
             System.out.println("Enough mem! Let's work!");
         }
-
         new MapBuilder(path).build();
     }
 
@@ -131,9 +128,6 @@ public class MapBuilder {
     private void build() {
         try {
             Timer.startTimer("OverAll");
-//            testShowMap();
-//            if(true) return;
-            //testGetSprite("bank");
 
             world.readAll(applyGammaCorrection, doBlureBiomes);
 
@@ -144,17 +138,10 @@ public class MapBuilder {
 
             new PreviewFrame(
                     world.getBiomes().getiBiomes(),
-                    //TODO use single Icons in whole app
-                    new Icons().getIcons(),
                     world.getMapFolder()).setVisible(true);
 
-        } catch (IOException e) {
-
+        } catch (IOException | XMLStreamException | URISyntaxException e) {
             e.printStackTrace();
-        } catch (XMLStreamException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -181,11 +168,98 @@ public class MapBuilder {
 //        }
 //    }
 
+    public static BufferedImage rotateClockwise90(BufferedImage src, int count, int downScale) {
 
+        if (src == null) {
+            throw new IllegalArgumentException("Source image is null");
+        }
+
+        // normalize rotation count to 0..3
+        count = ((count % 4) + 4) % 4;
+
+        if (downScale < 1) {
+            throw new IllegalArgumentException("downScale must be >= 1");
+        }
+
+        final int srcWidth = src.getWidth();
+        final int srcHeight = src.getHeight();
+
+        final boolean swapSides = (count & 1) == 1;
+
+        final int rotatedWidth = swapSides ? srcHeight : srcWidth;
+        final int rotatedHeight = swapSides ? srcWidth : srcHeight;
+
+        final int targetWidth = Math.max(1, rotatedWidth / downScale);
+        final int targetHeight = Math.max(1, rotatedHeight / downScale);
+
+        BufferedImage result = new BufferedImage(
+                targetWidth,
+                targetHeight,
+                src.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : src.getType()
+        );
+
+        Graphics2D g = result.createGraphics();
+
+
+        try {
+            g.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR
+            );
+
+            g.setRenderingHint(
+                    RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY
+            );
+
+            g.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            // scale first
+            g.scale(
+                    (double) targetWidth / rotatedWidth,
+                    (double) targetHeight / rotatedHeight
+            );
+
+            // rotate around origin
+            switch (count) {
+                case 1 -> {
+                    g.translate(srcHeight, 0);
+                    g.rotate(Math.PI / 2);
+                }
+                case 2 -> {
+                    g.translate(srcWidth, srcHeight);
+                    g.rotate(Math.PI);
+                }
+                case 3 -> {
+                    g.translate(0, srcWidth);
+                    g.rotate(-Math.PI / 2);
+                }
+                default -> {
+                    // no rotation
+                }
+            }
+            int center = (srcHeight - srcWidth) / 2; g.translate(center, center);
+            g.translate(center, center);
+            g.drawImage(src, 0, 0, null);
+
+        } finally {
+            g.dispose();
+        }
+
+        return result;
+    }
 
     public static Path getPathForResource(String resourceName) throws URISyntaxException, IOException {
         Path myPath;
-        URI uri = MapBuilder.class.getResource(resourceName).toURI();
+        URL resource = MapBuilder.class.getResource(resourceName);
+        if(resource==null) {
+            System.out.println("Resource not found: " + resourceName);
+            return null;
+        }
+        URI uri = resource.toURI();
         if (uri.getScheme().equals("jar")) {
             FileSystem fileSystem;
             try {

@@ -11,6 +11,9 @@ public final class FastBoxBlurFilter {
     private int[] divide;
     private int divideRadius = -1;
 
+    private int[] clampTable;
+    private int size;
+
     public FastBoxBlurFilter(int radius, int iterations) {
         if (radius < 1) {
             throw new IllegalArgumentException("radius must be > 0");
@@ -43,7 +46,15 @@ public final class FastBoxBlurFilter {
             );
         }
 
-        final int size = width;
+        size = width;
+
+        clampTable = new int[size + radius * 2];
+
+        for (int i = -radius; i < size + radius; i++) {
+            clampTable[i + radius] =
+                    //Math.max(0, Math.min(i, size - 1));
+                    (i < 0) ? 0 : Math.min(i, size - 1);
+        }
 
         final int[] pixels =
                 ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
@@ -56,16 +67,12 @@ public final class FastBoxBlurFilter {
 
             blurTranspose(
                     pixels,
-                    temp,
-                    size,
-                    radius
+                    temp
             );
 
             blurTranspose(
                     temp,
-                    pixels,
-                    size,
-                    radius
+                    pixels
             );
         }
     }
@@ -94,9 +101,7 @@ public final class FastBoxBlurFilter {
      */
     private void blurTranspose(
             int[] in,
-            int[] out,
-            int size,
-            int radius
+            int[] out
     ) {
 
         final int sizeMinus1 = size - 1;
@@ -117,7 +122,8 @@ public final class FastBoxBlurFilter {
             for (int i = -radius; i <= radius; i++) {
 
                 final int rgb =
-                        in[inIndex + clamp(i, 0, sizeMinus1)];
+                        //in[inIndex + clamp(i, 0, sizeMinus1)];
+                        in[inIndex + clampTable[i + radius]];
 
                 ta += (rgb >>> 24);
                 tr += (rgb >> 16) & 0xFF;

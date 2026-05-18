@@ -4,7 +4,7 @@
 
 package org.obiz.sdtd.tool.rgwmap;
 
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
 
 public class BoxBlurFilter extends AbstractBufferedImageOp {
 
@@ -80,41 +80,5 @@ public class BoxBlurFilter extends AbstractBufferedImageOp {
             }
             inIndex += width;
         }
-    }
-
-    public void setHRadius(int hRadius) {
-        this.hRadius = hRadius;
-    }
-
-    public int getHRadius() {
-        return hRadius;
-    }
-
-    public void setVRadius(int vRadius) {
-        this.vRadius = vRadius;
-    }
-
-    public int getVRadius() {
-        return vRadius;
-    }
-
-    public void setRadius(int radius) {
-        this.hRadius = this.vRadius = radius;
-    }
-
-    public int getRadius() {
-        return hRadius;
-    }
-
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
-    }
-
-    public int getIterations() {
-        return iterations;
-    }
-
-    public String toString() {
-        return "Blur/Box Blur...";
     }
 }

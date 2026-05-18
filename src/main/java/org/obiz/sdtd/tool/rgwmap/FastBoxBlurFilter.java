@@ -8,7 +8,6 @@ public final class FastBoxBlurFilter {
     private final int radius;
     private final int iterations;
 
-    // Reusable divide table cache
     private int[] divide;
     private int divideRadius = -1;
 
@@ -33,6 +32,7 @@ public final class FastBoxBlurFilter {
      * - TYPE_INT_ARGB or TYPE_INT_RGB recommended
      */
     public void filter(BufferedImage image) {
+
         final int width = image.getWidth();
         final int height = image.getHeight();
 
@@ -53,22 +53,34 @@ public final class FastBoxBlurFilter {
         ensureDivideTable(radius);
 
         for (int i = 0; i < iterations; i++) {
-            blurHorizontal(pixels, temp, size, radius);
-            blurVertical(temp, pixels, size, radius);
+
+            blurTranspose(
+                    pixels,
+                    temp,
+                    size,
+                    radius
+            );
+
+            blurTranspose(
+                    temp,
+                    pixels,
+                    size,
+                    radius
+            );
         }
     }
 
     private void ensureDivideTable(int radius) {
+
         if (divideRadius == radius) {
             return;
         }
 
         final int tableSize = radius * 2 + 1;
-        final int max = 256 * tableSize;
 
-        divide = new int[max];
+        divide = new int[256 * tableSize];
 
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < divide.length; i++) {
             divide[i] = i / tableSize;
         }
 
@@ -76,32 +88,36 @@ public final class FastBoxBlurFilter {
     }
 
     /**
-     * Horizontal pass
+     * Blur + transpose.
+     *
+     * This is the key optimization.
      */
-    private void blurHorizontal(
+    private void blurTranspose(
             int[] in,
             int[] out,
             int size,
             int radius
     ) {
-        final int widthMinus1 = size - 1;
+
+        final int sizeMinus1 = size - 1;
         final int[] divide = this.divide;
 
         int inIndex = 0;
 
         for (int y = 0; y < size; y++) {
 
-            int outIndex = y * size;
+            int outIndex = y;
 
             int ta = 0;
             int tr = 0;
             int tg = 0;
             int tb = 0;
 
-            // Initial accumulation
+            // initial window
             for (int i = -radius; i <= radius; i++) {
 
-                final int rgb = in[inIndex + clamp(i, 0, widthMinus1)];
+                final int rgb =
+                        in[inIndex + clamp(i, 0, sizeMinus1)];
 
                 ta += (rgb >>> 24);
                 tr += (rgb >> 16) & 0xFF;
@@ -111,15 +127,15 @@ public final class FastBoxBlurFilter {
 
             for (int x = 0; x < size; x++) {
 
-                out[outIndex + x] =
+                out[outIndex] =
                         (divide[ta] << 24)
                                 | (divide[tr] << 16)
                                 | (divide[tg] << 8)
                                 | divide[tb];
 
                 int i1 = x + radius + 1;
-                if (i1 > widthMinus1) {
-                    i1 = widthMinus1;
+                if (i1 > sizeMinus1) {
+                    i1 = sizeMinus1;
                 }
 
                 int i2 = x - radius;
@@ -131,69 +147,18 @@ public final class FastBoxBlurFilter {
                 final int rgb2 = in[inIndex + i2];
 
                 ta += ((rgb1 >>> 24) - (rgb2 >>> 24));
-                tr += (((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF));
-                tg += (((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF));
-                tb += ((rgb1 & 0xFF) - (rgb2 & 0xFF));
+                tr += (((rgb1 >> 16) & 0xFF) -
+                        ((rgb2 >> 16) & 0xFF));
+                tg += (((rgb1 >> 8) & 0xFF) -
+                        ((rgb2 >> 8) & 0xFF));
+                tb += ((rgb1 & 0xFF) -
+                        (rgb2 & 0xFF));
+
+                // transpose write
+                outIndex += size;
             }
 
             inIndex += size;
-        }
-    }
-
-    private void blurVertical(
-            int[] in,
-            int[] out,
-            int size,
-            int radius
-    ) {
-        final int widthMinus1 = size - 1;
-        final int[] divide = this.divide;
-
-        for (int x = 0; x < size; x++) {
-
-            int ta = 0;
-            int tr = 0;
-            int tg = 0;
-            int tb = 0;
-
-            // Initial accumulation
-            for (int i = -radius; i <= radius; i++) {
-
-                final int y = clamp(i, 0, widthMinus1);
-                final int rgb = in[y * size + x];
-
-                ta += (rgb >>> 24);
-                tr += (rgb >> 16) & 0xFF;
-                tg += (rgb >> 8) & 0xFF;
-                tb += rgb & 0xFF;
-            }
-
-            for (int y = 0; y < size; y++) {
-
-                out[y * size + x] =
-                        (divide[ta] << 24)
-                                | (divide[tr] << 16)
-                                | (divide[tg] << 8)
-                                | divide[tb];
-
-                int i1 = y + radius + 1;
-                if (i1 > widthMinus1) {
-                    i1 = widthMinus1;
-                }
-
-                int i2 = y - radius;
-                if (i2 < 0) {
-                    i2 = 0;
-                }
-
-                final int rgb1 = in[i1 * size + x];
-                final int rgb2 = in[i2 * size + x];
-
-                ta += ((rgb1 >>> 24) - (rgb2 >>> 24));
-                tr += (((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF));
-                tg += (((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF));
-                tb += ((rgb1 & 0xFF) - (rgb2 & 0xFF));
-            }
         }
     }
 

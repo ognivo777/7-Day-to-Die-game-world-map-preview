@@ -25,7 +25,7 @@ import static org.obiz.sdtd.tool.rgwmap.parts.Biomes.WATER_MAIN_COLOR;
 public class Water {
     public static final String HEIGTHS_HISTOGRAM_TXT = "\\heigthsHistogram.txt";
     public static final String WATER_INFO_XML = "\\water_info.xml";
-    public static final String SPLAT_4_PNG = "\\splat4.png";
+    public static final String SPLAT_4_PNG = "\\splat4_processed.png";
     private final int scaledSize;
     private final int mapSize;
     private final int downScale;

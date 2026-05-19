@@ -34,7 +34,7 @@ public class Roads {
 
     public void drawRoadsTo(BufferedImage iBiomes) throws IOException {
         log("Load roads file");
-        BufferedImage roads = ImageIO.read(new File(path + "\\splat3.png"));
+        BufferedImage roads = ImageIO.read(new File(path + "\\splat3_processed.png"));
         log("Roads loaded. Start drawing.");
 
 //        Color roadColor;

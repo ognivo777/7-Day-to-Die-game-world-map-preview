@@ -17,7 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -299,7 +298,7 @@ public class MapBuilder {
         String generatedWorlds = System.getenv("USERPROFILE")+"\\AppData\\Roaming\\7DaysToDie\\GeneratedWorlds";
 
 
-        Path libFilders = Path.of("C:\\Program Files (x86)\\Steam\\SteamApps\\libraryfolders.vdf");
+        Path libFilders = Paths.get("C:\\Program Files (x86)\\Steam\\SteamApps\\libraryfolders.vdf");
         List<String> steamConfigStrings = Files.lines(libFilders).collect(Collectors.toList());
         String currPath = ".";
         for (String steamConfigString : steamConfigStrings) {
@@ -315,14 +314,14 @@ public class MapBuilder {
         String predefinedWorlds = currPath + "\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
 //        String predefinedWorlds = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\7 Days To Die\\Data\\Worlds";
         String lookAt = ".";
-        if (Files.exists(Path.of(generatedWorlds))) {
+        if (Files.exists(Paths.get(generatedWorlds))) {
             log("Generated worlds found here: " + generatedWorlds);
             lookAt = generatedWorlds;
-        } else if (Files.exists(Path.of(predefinedWorlds))) {
+        } else if (Files.exists(Paths.get(predefinedWorlds))) {
             log("Generated worlds not found. But found predefined worlds here: " + predefinedWorlds);
             lookAt = predefinedWorlds;
         }
-        chooser.setCurrentDirectory(new java.io.File(lookAt));
+        chooser.setCurrentDirectory(new File(lookAt));
         chooser.setDialogTitle("Choose world..");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);

@@ -57,19 +57,21 @@ public class Prefabs {
                 String attributeValue = xmlr.getAttributeValue(2);
                 String[] split = attributeValue.split(",");
                 int x = (mapSize / 2 + Integer.parseInt(split[0])) / downScale;
-                int y = (mapSize / 2 - Integer.parseInt(split[2]) - 150) / downScale;
+                int y = (mapSize / 2 - Integer.parseInt(split[2])) / downScale;
 
                 int rot = Integer.parseInt(xmlr.getAttributeValue(3));
 
                 String prefabName = xmlr.getAttributeValue(1);
 
                 if (!prefabName.startsWith("part_")) {
-                    String resourceName = "/prefabs/" + prefabName + "_top.png";
+                    String resourceName = "/prefabs/" + prefabName + ".png";
                     Path prefabTopViewImagePath = getPathForResource(resourceName);
                     if (prefabTopViewImagePath != null && Files.exists(prefabTopViewImagePath)) {
+//                        if(prefabName.startsWith("rwg_tile_"))
+//                            y = y - 150/downScale;
                         BufferedImage prefabTopViewImage = ImageIO.read(Files.newInputStream(prefabTopViewImagePath));
                         BufferedImage orientatedPrefab = rotateClockwise90(prefabTopViewImage, (4 - rot) % 4, downScale);
-                        g.drawImage(orientatedPrefab, null, x, y);
+                        g.drawImage(orientatedPrefab, null, x, y- orientatedPrefab.getHeight());
                     } else {
                         System.out.println("Prefab image not found for: " + prefabName);
                     }
